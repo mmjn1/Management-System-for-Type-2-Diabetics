@@ -1,4 +1,5 @@
-# Your project name here
+# A web-based application for managing chronic patients health
+
 
 ## Information about this repository
 
