@@ -1,4 +1,4 @@
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Group, Permission
+from django.contrib.auth.models import AbstractUser, BaseUserManager, PermissionsMixin
 from django.db import models
 
 """
@@ -11,41 +11,35 @@ It creates a superuser with administrative privileges
 """
 
 class CustomUserManager(BaseUserManager):   
-    def create_user(self, first_name, last_name, email, password=None):
+    def create_user(self, name, email, password=None):
         if not email:
             raise ValueError('Users must have an email address')
         
         email = self.normalize_email(email)
         email = email.lower()
 
-        user = self.model(
-            email=email,
-            first_name=first_name,
-            last_name=last_name,
-        )
+        user = self.model(email=email,name=name)
 
         user.set_password(password)
         user.save(using=self._db)
 
         return user
 
-    def create_superuser(self, first_name, last_name, email, password=None):
+    def create_superuser(self, name,email, password=None):
         user = self.create_user(
             email=email,
-            first_name=first_name,
-            last_name=last_name,
+            name=name,
             password=password,
         )
 
-        user_is_staff = True
-        user_is_superuser = True
+        user.is_staff = True
+        user.is_superuser = True
         user.save(using=self._db)
 
-        return self.create_user(email, password)
+        return user 
 
-class CustomUser(AbstractBaseUser, PermissionsMixin):
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
+class CustomUser(AbstractUser, PermissionsMixin):
+    name = models.CharField(max_length=100)
     email = models.EmailField(unique=True, max_length=100)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -53,10 +47,13 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     objects = CustomUserManager()
        
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['first_name', 'last_name']
-        
+    REQUIRED_FIELDS = ['name']
+    
     def __str__(self):
         return self.email
+    
+    def get_full_name(self):
+        return self.name
 
 
 class Doctor(models.Model):
