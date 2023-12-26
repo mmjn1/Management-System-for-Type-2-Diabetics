@@ -206,7 +206,5 @@ const patientSlice = createSlice({
 
 
 // login the user
-
 export const { setPatientData, resetRegistered } = patientSlice.actions;
-
 export default patientSlice.reducer;

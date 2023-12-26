@@ -4,14 +4,14 @@ import WelcomePage from "./containers/WelcomePage";
 
 import store from "./store.js";
 
-import PatientRegisterPage from "../src/containers/patientContainers/PatientRegisterPage.jsx";
-// import PatientLoginPage from './containers/PatientLoginPage.jsx';
+import PatientRegisterPage from "../src/containers/patientContainers/PatientRegisterPage";
+import PatientLoginPage from '../src/containers/patientContainers/PatientLoginPage';
 
 const App = () => {
   return (
     <Routes>
       <Route path="/welcomePage" element={<WelcomePage />} />
-      {/* <Route path="/login" element={<PatientLoginPage/>} />  */}
+      <Route path="/login" element={<PatientLoginPage/>} />  
       <Route path="/" element={<PatientRegisterPage />} />
     </Routes>
   );

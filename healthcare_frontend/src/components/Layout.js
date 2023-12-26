@@ -1,13 +1,13 @@
 import { useLayoutEffect, useState } from "react";
 import { Helmet } from "react-helmet";
-import MainNavbar from "../../components/Navbar";
+import MainNavbar from "../components/Navbar";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
-import { user, selectUser, logoutUser } from "../../features/user";
+import { user, selectUser, logoutUser } from "../features/user";
 import { BounceLoader } from "react-spinners";
 
-import { NavProfile } from "../../components/navbars/navComponents/NavProfile";
+import { NavProfile } from "../components/navbars/NavProfile";
 
 import { ScrollTop } from 'primereact/scrolltop';
 

@@ -394,7 +394,7 @@ const PatientRegisterPage = () => {
 
 
 
-    // const isEmployerRegister = false;
+    
     const isDoctorRegister = false; // differentiates between doctor and patient registration
 
     const steps = [
@@ -445,7 +445,7 @@ const PatientRegisterPage = () => {
     ];
 
     return (
-        <Layout title="Student Registration | Placement Assistance" content="Student Register page">
+        // <Layout title="Student Registration | Placement Assistance" content="Student Register page">
 
         <div className={
             "position-relative  "
@@ -474,7 +474,7 @@ const PatientRegisterPage = () => {
                                 {registered ? "Account Created" : "Create Your Patient Account"} </h1>
                             <span className="text-muted fs-6">
 
-                                {registered ? "Your account has been created successfully" : "Please fill the form to create your student profile"}
+                                {registered ? "Your account has been created successfully" : "Please fill the form to create your patient profile"}
                             </span>
                         </div>
                         <div className="container">

@@ -47,10 +47,11 @@ const AccountForm = (props) => {
     setErrors,
     errorInStep,
     setCurrentStepWithErrors,
-    isEmployerRegister,
+    //isEmployerRegister,
+    isDoctorRegister,
   } = props;
 
-  console.log(props.isEmployerRegister);
+  console.log(props.isDoctorRegister);
   console.log("AccountForm -> props.error", props.error);
 
   const handleSubmit = (values) => {
@@ -407,7 +408,7 @@ const AccountForm = (props) => {
                   Already have an account?
                   <Link
                     to={
-                      isEmployerRegister ? "/employer/login" : "/student/login"
+                      isDoctorRegister ? "/doctor/login" : "/patient/login"
                     }
                     className="btn btn-link
                                     text-decoration-none
