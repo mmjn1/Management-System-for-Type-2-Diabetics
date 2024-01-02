@@ -41,13 +41,19 @@ class CustomUserManager(BaseUserManager):
 class CustomUser(AbstractUser, PermissionsMixin):
     name = models.CharField(max_length=100)
     email = models.EmailField(unique=True, max_length=100)
-    is_active = models.BooleanField(default=True)
+    gender = models.CharField(max_length=10)
+    date_of_birth = models.DateField(null=True)
+    phone_number = models.CharField(max_length=20)
+    is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
-    
+    is_doctor = models.BooleanField(default=False)
+    is_patient = models.BooleanField(default=False)
+
+
     objects = CustomUserManager()
        
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['name']
+    REQUIRED_FIELDS = ['name','gender','phone_number', 'date_of_birth']
     
     def __str__(self):
         return self.email
@@ -58,7 +64,11 @@ class CustomUser(AbstractUser, PermissionsMixin):
 
 class Doctor(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True)
+    years_of_experience = models.IntegerField()
     patients = models.ManyToManyField('Patient', related_name='treated_by_doctors')
+
+    def __str__(self):
+        return self.user.name
 
 class Patient(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True)
@@ -66,4 +76,9 @@ class Patient(models.Model):
     medical_conditions = models.TextField(blank=True)
     prescription = models.CharField(max_length=100)
     medical_history = models.TextField(blank=True)
+    weight = models.FloatField()
     height = models.FloatField()
+
+    def __str__(self):
+        return self.user.name
+
