@@ -50,7 +50,7 @@ export const Navbar = () => {
       onKeyDown={toggleDrawer(anchor, false)}
     >
       <List>
-        {["Home", "Features", "Services", "Listed", "Contact"].map(
+        {["Home", "About", "Features", "Data Privacy"].map(
           (text, index) => (
             <ListItem key={text} disablePadding>
               <ListItemButton>
@@ -156,11 +156,11 @@ export const Navbar = () => {
           gap: "1rem",
         }}
       >
-      <Link to="patient/register">
+      <Link to="/patient/register">
         <NavLink variant="body2">Sign Up</NavLink>
       </Link>
 
-      <Link to="/login">
+      <Link to="/patient/login">
         <CustomButton
           backgroundColor="#0F1B4C"
           color="#fff"

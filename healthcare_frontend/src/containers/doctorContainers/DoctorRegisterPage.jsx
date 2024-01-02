@@ -7,7 +7,7 @@ import { registerUserDoctor, setStateErrors, } from "../../features/user";
 
 import AccountForm from "../../components/userRegisterForm/AccountForm";
 import DoctorProfileForm from "../../components/userRegisterForm/DoctorProfileForm";
-import DoctorInfoForm from "../../components/userRegisterForm/DiabetesInfoForm";
+import DoctorInfoForm from "../../components/userRegisterForm/MedicalHistoryForm";
 
 import { Image } from "@themesberg/react-bootstrap";
 

@@ -24,6 +24,12 @@ const AccountFormValidationSchema = Yup.object({
     .required("Email is required")
     .label("Email Address <span className='text-danger'>*</span>"),
 
+  name: Yup.string()
+    .required("Full name is required")
+    .matches(/^[a-zA-Z]+$/, "First name must be only letters")
+    // .notRequired()
+    .label("Full name"),
+
   password: Yup.string()
     .required("Password is required")
     .min(8, "Password must be at least 8 characters")
@@ -33,6 +39,7 @@ const AccountFormValidationSchema = Yup.object({
     .matches(/[A-Z]+/, "One uppercase character")
     .matches(/[@$!%*#?&]+/, "One special character")
     .matches(/\d+/, "One number"),
+
   re_password: Yup.string()
     .required("Confirmed password is required")
     .label("Confirmed Password")
@@ -47,10 +54,10 @@ const AccountForm = (props) => {
     setErrors,
     errorInStep,
     setCurrentStepWithErrors,
-    isEmployerRegister,
+    isDoctorRegister,
   } = props;
 
-  console.log(props.isEmployerRegister);
+  console.log(props.isDoctorRegister);
   console.log("AccountForm -> props.error", props.error);
 
   const handleSubmit = (values) => {
@@ -407,7 +414,7 @@ const AccountForm = (props) => {
                   Already have an account?
                   <Link
                     to={
-                      isEmployerRegister ? "/employer/login" : "/student/login"
+                      isDoctorRegister ? "/employer/login" : "/student/login"
                     }
                     className="btn btn-link
                                     text-decoration-none

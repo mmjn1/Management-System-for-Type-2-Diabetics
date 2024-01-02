@@ -114,7 +114,7 @@ class Patient(models.Model):
     smoking_habits = models.CharField(max_length=50, blank=True, null=True)
     alcohol_consumption = models.CharField(max_length=50, blank=True, null=True)
 
-    date_last_HbA1c_test_and_result = models.CharField(max_length=50, blank=True, null=True)
+    insurance_information = models.CharField(max_length=50, blank=True, null=True)
 
     def __str__(self):
         return f'Patient {self.user.name}: Type of Diabetes - {self.type_of_diabetes}, Date of Diagnosis - {self.date_of_diagnosis}'

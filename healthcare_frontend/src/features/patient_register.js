@@ -4,39 +4,33 @@ import userReducer from './commonSlice';
 import { API_URL } from 'config';
 
 
-export const registerUserPatient = createAsyncThunk(`/api/auth/patient-register`, async (data, thunkAPI) => {
+export const registerUserPatient = createAsyncThunk(`/api/auth/patient/register`, async (data, thunkAPI) => {
     // console.log("data on createAsyncThunk", data);
     const body = JSON.stringify({
 
-        profile: {
-            first_name: data.first_name,
-            middle_name: data.middle_name,
-            last_name: data.last_name,
-            mobile_number: data.mobile_number,
+        "email": data.email,
+        "password": data.password,
+        "name": data.name,
+        "patient": {
+            "current_diabetes_medication": data.current_diabetes_medication,
+            "dietary_habits": data.dietary_habits,
+            "type_of_diabetes": data.type_of_diabetes,
+            "date_of_diagnosis": data.date_of_diagnosis,
+            "blood_sugar_level": data.blood_sugar_level,
+            "target_blood_sugar_level": data.target_blood_sugar_level,
+            "medical_history": data.medical_history,
+            "physical_activity_level": data.physical_activity_level,
+            "smoking_habits": data.smoking_habits,
+            "alcohol_consumption": data.alcohol_consumption,
+            "insurance_information": data.insurance_information,
         },
-
-        patient: {
-            type_of_diabetes: data.type_of_diabetes,
-            date_of_diagnosis: data.date_of_diagnosis,
-            current_diabetes_medication: data.current_diabeitc_medication,
-            blood_sugar_level: data.blood_sugar_level,
-            medical_history: data.medical_history,
-            
-            dietary_habits: data.dietary_habits,
-            physical_activity_level: data.phsyical_activity_level,
-            smoking_habits: data.smoking_habits,
-            alcohol_consumption: data.alcohol_consumption,
-
-            date_last_HbA1c_test_and_result: data.date_last_HbA1c_test_and_result,
-        },
-
-        email: data.email,
-        password: data.password,
-        re_password: data.re_password,
+        "re_password": data.re_password,
+      
+    
     });
 
     try {
-        const res = await fetch(`/api/auth/patient-register`, {
+        const res = await fetch(`/api/auth/patient/register`, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',

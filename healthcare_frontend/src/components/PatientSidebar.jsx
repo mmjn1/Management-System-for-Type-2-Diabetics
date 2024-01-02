@@ -22,7 +22,7 @@ const Sidebar = () => {
     return (
         <div className="sidebar">
             <div className="top"> 
-                <span className="logo"> PatientUser</span> 
+                <span className="logo"> PatientUser </span> 
             </div>
             <hr     />
             <div className="centre"> 

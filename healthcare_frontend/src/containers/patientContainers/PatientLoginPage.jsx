@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import {
     useGetPatientsQuery, 
-} from '../features/authslice';
+} from '../../features/api/authslice';
 
 const PatientLoginPage = () => {
     const dispatch = useDispatch();

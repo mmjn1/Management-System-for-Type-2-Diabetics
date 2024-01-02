@@ -4,6 +4,7 @@ import React from "react";
 import Navbar from "../../components/WelcomePageComponents/Navigation";
 import heroImg from "../../assets/img/doctor-patient.png";
 import StyledButton from "../WelcomePageComponents/StyledButton";
+import { Link } from 'react-router-dom';
 
 const Hero = () => {
   const CustomBox = styled(Box)(({ theme }) => ({
@@ -56,12 +57,15 @@ const Hero = () => {
               Manage your Type 2 diabetes effectively with personalized care plans, medication tracking, 
               and easy communication with your healthcare team.
             </Typography>
+            <Link to="/patient/login">
             <StyledButton
               backgroundColor="#0F1B4C"
               color="#fff"
               buttonText="Login to get started"
               heroBtn={true}
+            
             />
+            </Link>
           </Box>
 
           <Box sx={{ flex: "1.25" }}>

@@ -6,8 +6,8 @@ import { useNavigate, useLocation, unstable_usePrompt as usePrompt, useHistory }
 import { selectIsAuthenticated, registerUserPatient } from "../../features/user";
 
 import AccountForm from "../../components/userRegisterForm/AccountForm";
-import ProfileForm from "../../components/userRegisterForm/ProfileForm";
-import DiabetesInfoForm from "../../components/userRegisterForm/DiabetesInfoForm";
+import ProfileForm from "../../components/userRegisterForm/DiabetesLifestyleForm";
+import DiabetesInfoForm from "../../components/userRegisterForm/MedicalHistoryForm";
 
 import { Image } from "@themesberg/react-bootstrap";
 
@@ -409,7 +409,7 @@ const PatientRegisterPage = () => {
             setCurrentStepWithErrors={setCurrentStepWithErrors}
             isDoctorRegister={isDoctorRegister}
         />,
-        <ProfileForm
+        <DiabetesLifestyleForm
             next={handleNextStep}
             prev={handlePrevStep}
             data={data}
@@ -423,7 +423,7 @@ const PatientRegisterPage = () => {
         />,
 
         // this is last step of the form which is showing to user
-        <DiabetesInfoForm
+        <MedicalHistoryForm
             prev={handlePrevStep}
             next={handleNextStep}
             data={data}

@@ -4,43 +4,7 @@ import { TextField } from "../formComponents/TextField";
 import * as Yup from "yup";
 
 const ProfileFormValidationSchema = Yup.object({
-    email: Yup.string()
-        .email("Invalid email address")
-        .required("Email is required")
-        .label("Email address <span class='text-danger'>*</span>"),
-    // .placeholder("Email address"),
-    password: Yup.string()
-        .required("Password is required")
-        .min(8, "Password must be at least 8 characters")
-        .label("Password"),
-    re_password: Yup.string()
-        .required("Confirmed password is required")
-        .oneOf([Yup.ref("password"), null], "Passwords must match")
-        .label("Confirmed password"),
-    first_name: Yup.string()
-        .required("First name is required")
-        .matches(/^[a-zA-Z]+$/, "First name must be only letters")
-        // .notRequired()
-        .label("First name"),
-    middle_name: Yup.string()
-        .notRequired().label("Middle name")
-        .matches(/^[a-zA-Z]+$/, "Middle name must be only letters"),
-
-
-    last_name: Yup.string()
-        .required("Last name is required")
-        .matches(/^[a-zA-Z]+$/, "Last name must be only letters")
-        .label("Last name"),
-
-    mobile_number: Yup.string()
-        .required("Mobile number is required")
-        .matches(
-            /^(\+\d{1,3})?\d{8,10}$/,
-            "Please enter a valid phone number"
-        )
-        .label("Telephone number")
-        .max(15, "Phone number is too long")
-        .min(10, "Phone number is too short"),
+    
 
     type_of_diabetes: Yup.string()
         .required("Type of diabetes is required")
@@ -57,6 +21,11 @@ const ProfileFormValidationSchema = Yup.object({
         .min(0, "Blood sugar level must be a positive number")
         .label("Blood Sugar Level"),
 
+    target_blood_sugar_level: Yup.number()
+        .required("Target blood sugar level is required")
+        .min(0, "Target blood sugar level must be a positive number")
+        .label("Target Blood Sugar Level"),
+
     dietary_habits: Yup.string()
         .required("Dietary habits are required")
         .label("Dietary Habits"),
@@ -64,12 +33,14 @@ const ProfileFormValidationSchema = Yup.object({
     physical_activity_level: Yup.string()
         .required("Physical activity level is required")
         .label("Physical Activity Level"),
-    
-    date_last_HbA1c_test_and_result: Yup.date()
-        .required("Date of last HbA1c test and result is required")
-        .max(new Date(), "Date of last HbA1c test can't be in the future")
-        .label("Date of Last HbA1c Test and Result"),
-   
+
+    smoking_habits: Yup.string()
+        .required("Smoking habits are required")
+        .label("Smoking Habits"),
+
+    alcohol_consumption: Yup.string()
+        .required("Alcohol consumption is required")
+        .label("Alcohol Consumption"),
  
 });
 
@@ -103,26 +74,27 @@ const ProfileForm = (props) => {
                 <Form className="d-flex flex-column">
                     <div className="name-section">
                         <div className="header lead">
-                            <h3 className="fs-5">Your Name</h3>
+                            <h3 className="fs-5"> Diabetes Information</h3>
                         </div>
                         <div className=" name-section-group d-flex gap-md-2 gap-sm-2 justify-content-between flex-md-row flex-column">
                             <div className="form-group col-md-4"
                             // style={{ width: "30%" }}
                             >
                                 <TextField
-                                    label="First Name"
-                                    name="first_name"
+                                    label="Type of Diabetes"
+                                    name="type_of_diabetes"
                                     required={true}
                                     tabIndex={1}
                                     type="text"
-                                    error={props.error.first_name}
+                                    placeholder="Which type of diabetes have you been disagnoised with (e.g. Type 1, Type 2, Gestational, Other)?)"
+                                    error={props.error.type_of_diabetes}
                                     currentSubmitCount={currentFormSubmitCount}
                                     // className="p-inputtext p-component p-text-input w-100"
 
                                     onChange={(e) => {
                                         handleChange(e);
                                         // check the field error and reset error from the error object
-                                        if (props.error.first_name) {
+                                        if (props.error.type_of_diabetes) {
                                             props.setErrors({});
                                             // delete formErrors from local storage
                                             if (localStorage.getItem("formErrors")) {
@@ -139,17 +111,18 @@ const ProfileForm = (props) => {
                             // style={{ width: "30%" }}
                             >
                                 <TextField
-                                    label="Middle Name"
-                                    name="middle_name"
+                                    label="Date of Diagnosis"
+                                    name="date_of_diagnosis"
                                     required={false}
                                     type="text"
+                                    placeholder="When were you diagnosed with diabetes?"
                                     tabIndex={2}
-                                    error={props.error.middle_name}
+                                    error={props.error.date_of_diagnosis}
                                     currentSubmitCount={currentFormSubmitCount}
                                     onChange={(e) => {
                                         handleChange(e);
                                         // check the field error and reset error from the error object
-                                        if (props.error.middle_name) {
+                                        if (props.error.date_of_diagnosis) {
                                             props.setErrors({});
                                             // delete formErrors from local storage
                                             if (localStorage.getItem("formErrors")) {
@@ -166,12 +139,13 @@ const ProfileForm = (props) => {
                             // style={{ width: "30%" }}
                             >
                                 <TextField
-                                    label="Last Name"
+                                    label="Medications"
                                     required={true}
                                     tabIndex={3}
-                                    name="last_name"
+                                    name="current_diabetes_medication"
                                     type="text"
-                                    error={props.error.last_name}
+                                    placeholder="What medications are you currently taking?"
+                                    error={props.error.current_diabetes_medication}
                                     currentSubmitCount={currentFormSubmitCount}
                                     onChange={(e) => {
                                         handleChange(e);
@@ -193,9 +167,9 @@ const ProfileForm = (props) => {
                         </div>
                     </div>
 
-                    {/* <div className="address-section">
+                    <div className="address-section">
                         <div className="header lead d-flex gap-2 align-items-center">
-                            <h3 className="fs-5">Your Address</h3>
+                            <h3 className="fs-5"> Glucose Levels and Lifestyle</h3>
                         </div>
                         <div className=" address-section-group d-flex flex-column">
                             <div className="half-address-section d-flex gap-md-2 gap-sm-2  gap-2 justify-content-between flex-md-row flex-column">
@@ -203,17 +177,18 @@ const ProfileForm = (props) => {
                                 // style={{ width: "30%" }}
                                 >
                                     <TextField
-                                        label="Address Line 1"
+                                        label="Blood Sugar Level"
                                         required={true}
                                         tabIndex={4}
-                                        name="address_line_1"
+                                        name="blood_sugar_level"
                                         type="text"
-                                        error={props.error.address_line_1}
+                                        placeholder="What was your most recent blood sugar level reading (mg/dL or mmol/L)?"
+                                        error={props.error.blood_sugar_level}
                                         currentSubmitCount={currentFormSubmitCount}
                                         onChange={(e) => {
                                             handleChange(e);
                                             // check the field error and reset error from the error object
-                                            if (props.error.address_line_1) {
+                                            if (props.error.blood_sugar_level) {
                                                 props.setErrors({});
                                                 // delete formErrors from local storage
                                                 if (localStorage.getItem("formErrors")) {
@@ -231,17 +206,18 @@ const ProfileForm = (props) => {
                                 // style={{ width: "30%" }}
                                 >
                                     <TextField
-                                        label="Address Line 2"
-                                        name="address_line_2"
+                                        label="Target Blood Sugar Level"
+                                        name="target_blood_sugar_level"
                                         required={false}
                                         tabIndex={5}
                                         type="text"
-                                        error={props.error.address_line_2}
+                                        placeholder="What is your target blood sugar level set by doctor (mg/dL or mmol/L)?"
+                                        error={props.error.target_blood_sugar_level}
                                         currentSubmitCount={currentFormSubmitCount}
                                         onChange={(e) => {
                                             handleChange(e);
                                             // check the field error and reset error from the error object
-                                            if (props.error.address_line_2) {
+                                            if (props.error.target_blood_sugar_level) {
                                                 props.setErrors({});
                                                 // delete formErrors from local storage
                                                 if (localStorage.getItem("formErrors")) {
@@ -259,17 +235,18 @@ const ProfileForm = (props) => {
                                 // style={{ width: "30%" }}
                                 >
                                     <TextField
-                                        label="City"
+                                        label="Dietary Habits"
                                         required={true}
                                         tabIndex={6}
-                                        name="city"
+                                        name="dietary_habits"
                                         type="text"
-                                        error={props.error.city}
+                                        placeholder="Describe your dietary habits (e.g. low carb, low fat, vegan, etc.)"
+                                        error={props.error.dietary_habits}
                                         currentSubmitCount={currentFormSubmitCount}
                                         onChange={(e) => {
                                             handleChange(e);
                                             // check the field error and reset error from the error object
-                                            if (props.error.city) {
+                                            if (props.error.dietary_habits) {
                                                 props.setErrors({});
                                                 // delete formErrors from local storage
                                                 if (localStorage.getItem("formErrors")) {
@@ -288,17 +265,18 @@ const ProfileForm = (props) => {
                                 // style={{ width: "30%" }}
                                 >
                                     <TextField
-                                        label="County"
-                                        name="county"
+                                        label="Physical Activity Level"
+                                        name="physical_activity_level"
                                         type="text"
+                                        placeholder="Describe your physical activity level (e.g. sedentary, light, moderate, heavy, etc.)"
                                         required={false}
                                         tabIndex={7}
-                                        error={props.error.county}
+                                        error={props.error.physical_activity_level}
                                         currentSubmitCount={currentFormSubmitCount}
                                         onChange={(e) => {
                                             handleChange(e);
                                             // check the field error and reset error from the error object
-                                            if (props.error.county) {
+                                            if (props.error.physical_activity_level) {
                                                 props.setErrors({});
                                                 // delete formErrors from local storage
                                                 if (localStorage.getItem("formErrors")) {
@@ -316,17 +294,18 @@ const ProfileForm = (props) => {
                                 // style={{ width: "30%" }}
                                 >
                                     <TextField
-                                        label="Zipcode"
-                                        name="zipcode"
+                                        label="Smoking Habits"
+                                        name="smoking_habits"
                                         tabIndex={8}
                                         required={true}
                                         type="text"
-                                        error={props.error.zipcode}
+                                        placeholder="Do you smoke? If so, how often"
+                                        error={props.error.smoking_habits}
                                         currentSubmitCount={currentFormSubmitCount}
                                         onChange={(e) => {
                                             handleChange(e);
                                             // check the field error and reset error from the error object
-                                            if (props.error.zipcode) {
+                                            if (props.error.smoking_habits) {
                                                 props.setErrors({});
                                                 // delete formErrors from local storage
                                                 if (localStorage.getItem("formErrors")) {
@@ -343,12 +322,13 @@ const ProfileForm = (props) => {
                                 // style={{ width: "30%" }}
                                 >
                                     <TextField
-                                        label="Country"
-                                        name="country"
+                                        label="Alcohol Consumption"
+                                        name="alchohol_consumption"
                                         required={true}
                                         tabIndex={9}
                                         type="text"
-                                        error={props.error.country}
+                                        placeholder="How frequently do you consume alcohol, and what are the typical quantities?"
+                                        error={props.error.alcohol_consumption}
                                         currentSubmitCount={currentFormSubmitCount}
                                         onChange={(e) => {
                                             handleChange(e);
@@ -368,96 +348,9 @@ const ProfileForm = (props) => {
                                 </div>
                             </div>
                         </div>
-                    </div> */}
-
-                    <div className="contact-section">
-                        <div className="header lead">
-                            <h3 className="fs-5">Your Contact Details</h3>
-                        </div>
-                        <div className=" contact-section-group d-flex gap-md-2 gap-sm-2  gap-2 justify-content-between flex-md-row flex-column">
-                            <div className="form-group col-md-4"
-                            // style={{ width: "30%" }}
-                            >
-                                <TextField
-                                    label="Mobile Number"
-                                    required={true}
-                                    name="mobile_number"
-                                    type="text"
-                                    tabIndex={10}
-                                    error={props.error.mobile_number}
-                                    currentSubmitCount={currentFormSubmitCount}
-                                    onChange={(e) => {
-                                        handleChange(e);
-                                        // check the field error and reset error from the error object
-                                        if (props.error.mobile_number || props.error.contact_person_mobile_number) {
-                                            props.setErrors({});
-                                            console.log("i am here")
-                                            // delete formErrors from local storage
-                                            if (localStorage.getItem("formErrors")) {
-                                                localStorage.removeItem("formErrors");
-                                            }
-                                            if (localStorage.getItem("currentStepWithErrors")) {
-                                                localStorage.removeItem("currentStepWithErrors");
-                                            }
-                                        }
-                                    }}
-                                />
-                            </div>
-                            <div className="form-group col-md-4"
-                            // style={{ width: "30%" }}
-                            >
-                                <TextField
-                                    label="Telephone Number"
-                                    name="tel_number"
-                                    type="text"
-                                    required={true}
-                                    tabIndex={11}
-                                    error={props.error.tel_number}
-                                    currentSubmitCount={currentFormSubmitCount}
-                                    onChange={(e) => {
-                                        handleChange(e);
-                                        // check the field error and reset error from the error object
-                                        if (props.error.tel_number) {
-                                            props.setErrors({});
-                                            // delete formErrors from local storage
-                                            if (localStorage.getItem("formErrors")) {
-                                                localStorage.removeItem("formErrors");
-                                            }
-                                            if (localStorage.getItem("currentStepWithErrors")) {
-                                                localStorage.removeItem("currentStepWithErrors");
-                                            }
-                                        }
-                                    }}
-                                />
-                            </div>
-                            <div className="form-group col-md-4"
-                            // style={{ width: "30%" }}
-                            >
-                                <TextField
-                                    label="Personal Email"
-                                    name="secondary_email"
-                                    type="text"
-                                    tabIndex={12}
-                                    error={props.error.secondary_email}
-                                    currentSubmitCount={currentFormSubmitCount}
-                                    onChange={(e) => {
-                                        handleChange(e);
-                                        // check the field error and reset error from the error object
-                                        if (props.error.secondary_email) {
-                                            props.setErrors({});
-                                            // delete formErrors from local storage
-                                            if (localStorage.getItem("formErrors")) {
-                                                localStorage.removeItem("formErrors");
-                                            }
-                                            if (localStorage.getItem("currentStepWithErrors")) {
-                                                localStorage.removeItem("currentStepWithErrors");
-                                            }
-                                        }
-                                    }}
-                                />
-                            </div>
-                        </div>
                     </div>
+
+                 
 
                     {/* # sub form */}
                     <div className="d-flex w-100 flex-column col-md-2 gap-md-2 gap-2 mt-4 mt-md-5 md-sm-4">

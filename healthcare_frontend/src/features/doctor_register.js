@@ -6,31 +6,24 @@ export const registerUserDoctor = createAsyncThunk('/api/doctor/register', async
     // console.log("data on createAsyncThunk", data);
 
     const body = JSON.stringify({
-        profile: {
-            first_name: data.first_name,
-            middle_name: data.middle_name,
-            last_name: data.last_name,
-            mobile_number: data.mobile_number,
-            
-           
-        },
+        "email": data.email,
+        "password": data.password,
+
         doctor: {
-            speciality: data.speciality,
-            years_of_experience: data.years_of_experience,
-            medical_license_number: data.medical_license_number,
-            country_of_issue: data.country_of_issue,
-            year_of_issue: data.year_of_issue,
-            diabetes_management_experience: data.diabetes_management_experience,
-            treatement_approach: data.treatement_approach,
-            contact_hours: data.contact_hours,
-            communication_method_for_patients: data.communication_method_for_patients,
-            tel_number: data.tel_number,
-            emergency_consulations: data.emergency_consulations
+            "speciality": data.speciality,
+            "years_of_experience": data.years_of_experience,
+            "medical_license_number": data.medical_license_number,
+            "country_of_issue": data.country_of_issue,
+            "year_of_issue": data.year_of_issue,
+            "diabetes_management_experience": data.diabetes_management_experience,
+            "treatement_approach": data.treatement_approach,
+            "contact_hours": data.contact_hours,
+            "communication_method_for_patients": data.communication_method_for_patients,
+            "tel_number": data.tel_number,
+            "emergency_consulations": data.emergency_consulations
 
         },
-        email: data.email,
-        password: data.password,
-        re_password: data.re_password,
+        "re_password": data.re_password,
     });
 
     // console.log("body before try", body);

@@ -88,6 +88,7 @@ const DoctorInfoForm = (props) => {
                                     tabIndex={1}
                                     type="text"
                                     error={props.error.specialty}
+                                    placeholder="What is your medical specialty?"
                                     currentSubmitCount={currentFormSubmitCount}
                                     onChange={(e) => {
                                         handleChange(e);
@@ -113,6 +114,7 @@ const DoctorInfoForm = (props) => {
                                     label="How many years of experience do you have?"
                                     name="years_of_experience"
                                     type="text"
+                                    placeholder="How many years of medical practice experience do you have?"
                                     tabIndex={2}
                                     required={true}
                                     error={props.error.years_of_experience}
@@ -143,6 +145,7 @@ const DoctorInfoForm = (props) => {
                                     tabIndex={3}
                                     name="medical_license_number"
                                     type="text"
+                                    placeholder="What is your medical license number?"
                                     error={props.error.medical_license_number}
                                     currentSubmitCount={currentFormSubmitCount}
                                     onChange={(e) => {
@@ -170,8 +173,8 @@ const DoctorInfoForm = (props) => {
                     <div className="address-section">
 
                         <div className="header lead d-flex gap-2 align-items-center">
-                            <h3 className="fs-5"> Placement Address </h3>
-                            <span className=" fw-light text-muted" style={{ fontSize: ".8rem" }}>(Main office/premises address)</span>
+                            <h3 className="fs-5"> Licensing Information and Professional Experience </h3>
+                            <span className=" fw-light text-muted" style={{ fontSize: ".8rem" }}></span>
                         </div>
                         <div className=" address-section-group d-flex flex-column">
 
@@ -187,6 +190,7 @@ const DoctorInfoForm = (props) => {
 
                                         name="country_of_issue"
                                         type="text"
+                                        placeholder="What country issued your medical license?"
                                         error={props.error.country_of_issue}
                                         currentSubmitCount={currentFormSubmitCount}
                                         onChange={(e) => {
@@ -216,6 +220,7 @@ const DoctorInfoForm = (props) => {
                                         name="year_of_issue"
                                         tabIndex={5}
                                         type="text"
+                                        placeholder="What year was your medical license issued?"
                                         error={props.error.year_of_issue}
                                         currentSubmitCount={currentFormSubmitCount}
                                         onChange={(e) => {
@@ -247,6 +252,7 @@ const DoctorInfoForm = (props) => {
 
                                         name="diabetes_management_experience"
                                         type="text"
+                                        placeholder="How many years of experience do you have managing Type 2 Diabetes?"
                                         error={props.error.diabetes_management_experience}
                                         currentSubmitCount={currentFormSubmitCount}
                                         onChange={(e) => {
@@ -277,6 +283,7 @@ const DoctorInfoForm = (props) => {
                                         name="treatement_of_approach"
 
                                         type="text"
+                                        placeholder="Describe your treatment approach in managing Type 2 Diabetes"
                                         tabIndex={7}
                                         error={props.error.county}
                                         currentSubmitCount={currentFormSubmitCount}
@@ -302,11 +309,11 @@ const DoctorInfoForm = (props) => {
                                 // style={{ width: "30%" }}
                                 >
                                     <TextField
-                                        label="Preffered contact hours for patient communication"
+                                        label="Preferred Communication Method with Patients"
                                         name="contact_hours"
                                         tabIndex={8}
                                         required={true}
-
+                                        placeholder="How do you prefer to communication? (e.g. Email, Phone, Messaging App)"
                                         type="text"
                                         error={props.error.contact_hours}
                                         currentSubmitCount={currentFormSubmitCount}
@@ -330,12 +337,12 @@ const DoctorInfoForm = (props) => {
                                 // style={{ width: "30%" }}
                                 >
                                     <TextField
-                                        label="Country"
-                                        name="country"
+                                        label="Emergency Consultations"
+                                        name="emergency_consulations"
                                         required={true}
                                         tabIndex={9}
                                         type="text"
-                                        error={props.error.country}
+                                        error={props.error.emergency_consulations}
                                         currentSubmitCount={currentFormSubmitCount}
                                         onChange={(e) => {
                                             handleChange(e);
@@ -367,13 +374,14 @@ const DoctorInfoForm = (props) => {
 
                             <div className="form-group" style={{ width: "30%" }}>
                                 <TextField
-                                    label="Mobile Number"
+                                    label="Telephone Number"
                                     required={true}
 
                                     name="mobile_number"
                                     type="text"
+                                    placeholder="What is your telephone number for professional contact?"
                                     tabIndex={10}
-                                    error={props.error.mobile_number}
+                                    error={props.error._number}
                                     currentSubmitCount={currentFormSubmitCount}
                                     onChange={(e) => {
                                         handleChange(e);
@@ -385,47 +393,7 @@ const DoctorInfoForm = (props) => {
                                     }}
                                 />
                             </div>
-                            <div className="form-group" style={{ width: "30%" }}>
-                                <TextField
-                                    label="Telephone Number"
-                                    name="tel_number"
-                                    type="text"
-                                    required={true}
-                                    tabIndex={11}
-                                    error={props.error.tel_number}
-                                    currentSubmitCount={currentFormSubmitCount}
-                                    onChange={(e) => {
-                                        handleChange(e);
-                                        // check the field error and reset error from the error object
-                                        if (props.error.tel_number) {
-                                            setErrors({});
-
-                                        }
-                                    }}
-                                />
-                            </div>
-                            <div className="form-group" style={{ width: "30%" }}>
-                                <TextField
-                                    label="Personal Email"
-                                    name="secondary_email"
-                                    type="text"
-                                    tabIndex={12}
-                                    error={props.error.secondary_email}
-                                    currentSubmitCount={currentFormSubmitCount}
-                                    onChange={(e) => {
-                                        handleChange(e);
-                                        // check the field error and reset error from the error object
-                                        if (props.error.secondary_email) {
-                                            setErrors({});
-
-                                        }
-                                    }}
-
-                                />
-                            </div>
-                        </div>
-                    </div> */}
-
+                    
                     {/* # sub form */}
                     <div className="d-flex w-100 flex-column gap-3 mt-4 justify-content-center">
 
