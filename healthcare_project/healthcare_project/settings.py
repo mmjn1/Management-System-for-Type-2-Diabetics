@@ -32,7 +32,7 @@ ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 # Allows interaction between the frontend and backend
 CORS_ALLOWED_ORIGINS = [ 
-    'http://localhost:3000',
+    'http://localhost:3000',# may
     'http://10.50.0.197:3000'
 ]
 

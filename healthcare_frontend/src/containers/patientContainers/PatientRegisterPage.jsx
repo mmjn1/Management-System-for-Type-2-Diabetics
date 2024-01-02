@@ -1,4 +1,4 @@
-import Layout from "../../components/Layout";
+//import Layout from "../../components/Layout";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, useLocation, unstable_usePrompt as usePrompt, useHistory } from "react-router-dom";
@@ -445,7 +445,7 @@ const PatientRegisterPage = () => {
     ];
 
     return (
-        <Layout title="Student Registration | Placement Assistance" content="Student Register page">
+        //<Layout title="Student Registration | Placement Assistance" content="Student Register page">
 
         <div className={
             "position-relative  "
