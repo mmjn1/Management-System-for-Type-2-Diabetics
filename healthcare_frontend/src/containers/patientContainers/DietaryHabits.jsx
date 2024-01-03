@@ -1,7 +1,7 @@
 import React from 'react';
 import Sidebar from '../../components/PatientSidebar';
 import Navbar from '../../components/PostLoginNavigation';
-import "../../assets/sass/PatientDashboard.scss";
+import "../../sass/PatientDashboard.scss";
 import { Link } from 'react-router-dom';
 
 const DietaryHabits = () => {

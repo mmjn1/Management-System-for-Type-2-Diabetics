@@ -1,5 +1,5 @@
 // import Layout from "components/Layout";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, useLocation, unstable_usePrompt as usePrompt, useHistory } from "react-router-dom";
 
@@ -44,10 +44,7 @@ const DoctorRegisterPage = () => {
             email: "",
             password: "",
             re_password: "",
-            first_name: "",
-            middle_name: "",
-            last_name: "",
-            mobile_number: "",
+            name: "",
            
 
             speciality: "",
@@ -84,11 +81,6 @@ const DoctorRegisterPage = () => {
                 break;
 
             case "first_name":
-            case "middle_name":
-            case "last_name":
-            case "contact_person_job_title":
-            case "contact_person_mobile_number":
-            case "contact_person_email":
                 stepWithError = 1;
                 break;
 
@@ -246,13 +238,28 @@ const DoctorRegisterPage = () => {
     // }, []);
 
 
+    // useEffect(() => {
+    //     const navbarElement = document.querySelector('.navbar'); // Replace with the actual classname of your navbar
+    //     const navbarComputedStyle = getComputedStyle(navbarElement);
+    //     const navbarHeight = parseInt(navbarComputedStyle.height, 10);
+    //     setNavbarHeight(navbarHeight);
+    //     console.log("navbarHeight", navbarHeight);
+    // }, [navbarHeight]);
+
+
     useEffect(() => {
-        const navbarElement = document.querySelector('.navbar'); // Replace with the actual classname of your navbar
-        const navbarComputedStyle = getComputedStyle(navbarElement);
-        const navbarHeight = parseInt(navbarComputedStyle.height, 10);
-        setNavbarHeight(navbarHeight);
-        console.log("navbarHeight", navbarHeight);
-    }, [navbarHeight]);
+        // Wait for the DOM to be fully loaded
+        window.addEventListener('load', () => {
+            const navbarElement = document.querySelector('.navbar'); // Make sure this matches the navbar's class
+            if (navbarElement) {
+                const navbarComputedStyle = getComputedStyle(navbarElement);
+                const navbarHeight = parseInt(navbarComputedStyle.height, 10);
+                setNavbarHeight(navbarHeight);
+            } else {
+                console.log("Navbar element not found");
+            }
+        });
+    }, []); // Removed navbarHeight from the dependency array
 
 
     const handleNextStep = (newData, final = false) => {
@@ -431,7 +438,7 @@ const DoctorRegisterPage = () => {
             setErrors={setErrors}
             errorInStep={currentStepWithErrors}
             setCurrentStepWithErrors={setCurrentStepWithErrors}
-            isEmployerRegister={isEmployerRegister}
+            isDoctorRegister={isDoctorRegister}
         />,
 
         // this is last step of the form which is showing to user

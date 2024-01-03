@@ -1,4 +1,4 @@
-import "../assets/sass/sidebar.scss";
+import "../sass/sidebar.scss";
 import DashboardIcon from '@mui/icons-material/DashboardOutlined';
 import MedicationIcon from '@mui/icons-material/MedicationOutlined';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonthOutlined';

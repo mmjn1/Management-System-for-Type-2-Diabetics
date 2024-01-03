@@ -16,9 +16,9 @@ import Profile from "../src/containers/patientContainers/Profile";
 import ProgressTracker from "../src/containers/patientContainers/ProgressTracker";
 import SurgeryInfo from "../src/containers/SurgeryInfo";
 
-import DoctorDashboardPage from "containers/doctorContainers/DoctorDashboardPage";
-import DoctorRegisterPage from "containers/doctorContainers/DoctorRegisterPage";
-import DoctorLoginPage from "containers/doctorContainers/DoctorLoginPage";
+import DoctorDashboardPage from "../src/containers/doctorContainers/DoctorDashboardPage";
+import DoctorRegisterPage from "../src/containers/doctorContainers/DoctorRegisterPage";
+import DoctorLoginPage from "../src/containers/doctorContainers/DoctorLoginPage";
 
 
 const App = () => {

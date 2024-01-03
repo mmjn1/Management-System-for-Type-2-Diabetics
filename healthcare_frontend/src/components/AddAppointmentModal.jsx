@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../assets/sass/modal.scss';
+import '../sass/modal.scss';
 
 const AddAppointmentModal = ({ isOpen, onRequestClose, selectedDate }) => {
   const [appointmentData, setAppointmentData] = useState({

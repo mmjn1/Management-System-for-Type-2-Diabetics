@@ -1,5 +1,5 @@
 import React from 'react'
-import "../../assets/sass/PatientDashboard.scss"
+import "../../sass/PatientDashboard.scss"
 import Sidebar from '../../components/PatientSidebar'
 import Navbar from '../../components/PostLoginNavigation'
 

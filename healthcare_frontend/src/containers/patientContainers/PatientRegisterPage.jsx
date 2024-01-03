@@ -6,8 +6,8 @@ import { useNavigate, useLocation, unstable_usePrompt as usePrompt, useHistory }
 import { selectIsAuthenticated, registerUserPatient } from "../../features/user";
 
 import AccountForm from "../../components/userRegisterForm/AccountForm";
-import ProfileForm from "../../components/userRegisterForm/DiabetesLifestyleForm";
-import DiabetesInfoForm from "../../components/userRegisterForm/MedicalHistoryForm";
+import DiabetesLifestyleForm from "../../components/userRegisterForm/DiabetesLifestyleForm";
+import MedicalHistoryForm from "../../components/userRegisterForm/MedicalHistoryForm";
 
 import { Image } from "@themesberg/react-bootstrap";
 
@@ -56,9 +56,7 @@ const PatientRegisterPage = () => {
             email: "",
             password: "",
             re_password: "",
-            first_name: "",
-            middle_name: "",
-            last_name: "",
+            name: "",
             mobile_number: "",
             type_of_diabetes: "",
             date_of_diagnoses: "",
@@ -69,7 +67,7 @@ const PatientRegisterPage = () => {
             physical_activity_level: "",
             smoking_habits: "",
             alcohol_consumption: "",
-            date_last_HbA1c_test_and_result: "",
+            insurance_information: "",
         };
     });
 

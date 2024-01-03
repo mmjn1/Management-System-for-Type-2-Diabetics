@@ -3,8 +3,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import { TextField } from "../formComponents/TextField";
 import * as Yup from "yup";
 
-const ProfileFormValidationSchema = Yup.object({
-    
+const DiabetesLifestyleFormValidationSchema = Yup.object({
 
     type_of_diabetes: Yup.string()
         .required("Type of diabetes is required")
@@ -15,6 +14,11 @@ const ProfileFormValidationSchema = Yup.object({
         .required("Date of diagnosis is required")
         .max(new Date(), "Date of diagnosis can't be in the future")
         .label("Date of Diagnosis"),
+
+    current_diabetes_medication: Yup.string()
+        .required("Current diabetes medication is required")
+        .label("Current Diabetes Medication"),
+        
 
     blood_sugar_level: Yup.number()
         .required("Blood sugar level is required")
@@ -46,7 +50,7 @@ const ProfileFormValidationSchema = Yup.object({
 
 
 
-const ProfileForm = (props) => {
+const DiabetesLifestyleForm = (props) => {
     const { error, isSubmitting, currentFormSubmitCount } = props;
     const [errors, setErrors] = useState(error || {});
 
@@ -60,7 +64,7 @@ const ProfileForm = (props) => {
 
     return (
         <Formik
-            validationSchema={ProfileFormValidationSchema}
+            validationSchema={DiabetesLifestyleFormValidationSchema}
             initialValues={props.data}
             onSubmit={handleSubmit}
             // validateOnChange={!props.isSubmitting}
@@ -135,11 +139,13 @@ const ProfileForm = (props) => {
                                     }}
                                 />
                             </div>
+
+
                             <div className="form-group col-md-4"
                             // style={{ width: "30%" }}
                             >
                                 <TextField
-                                    label="Medications"
+                                    label="Medications Details"
                                     required={true}
                                     tabIndex={3}
                                     name="current_diabetes_medication"
@@ -384,4 +390,4 @@ const ProfileForm = (props) => {
     );
 };
 
-export default ProfileForm;
+export default DiabetesLifestyleForm;

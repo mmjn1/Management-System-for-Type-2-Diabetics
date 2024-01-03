@@ -8,7 +8,7 @@ import { RadioGroup } from "../formComponents/RadioGroup";
 import * as Yup from "yup";
 
 
-const AdditionalInfoValidationSchema = Yup.object().shape({
+const MedicalHistoryValidationSchema = Yup.object().shape({
 
     medical_history: Yup.string()
         .required("Medical history is required")
@@ -21,7 +21,7 @@ const AdditionalInfoValidationSchema = Yup.object().shape({
 });
 
 
-const DiabetesInfoForm = (props) => {
+const MedicalHistoryForm = (props) => {
     const { error, isSubmitting, currentFormSubmitCount, loading } = props;
     const [errors, setErrors] = useState(error || {});
 
@@ -35,7 +35,7 @@ const DiabetesInfoForm = (props) => {
 
     return (
         <Formik
-            validationSchema={AdditionalInfoValidationSchema}
+            validationSchema={MedicalHistoryValidationSchema}
             initialValues={props.data}
             onSubmit={handleSubmit}
             // validateOnChange={!props.isSubmitting}
@@ -50,7 +50,7 @@ const DiabetesInfoForm = (props) => {
 
                     <div className="uni-section">
                         <div className="header lead">
-                            <h3 className="fs-5">Your University Details</h3>
+                            <h3 className="fs-5"> Medical Info</h3>
                         </div>
                         <div className="uni-section-group d-flex flex-column gap-1 justify-content-between">
                             <div className="form-group">
@@ -147,4 +147,4 @@ const DiabetesInfoForm = (props) => {
     );
 };
 
-export default DiabetesInfoForm;
+export default MedicalHistoryForm;

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Sidebar from '../../components/PatientSidebar';
 import Navbar from '../../components/PostLoginNavigation';
-import "../../assets/sass/PatientDashboard.scss";
+import "../../sass/PatientDashboard.scss";
 import moment from 'moment';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import AddAppointmentModal from '../../components/AddAppointmentModal'; // You might need to create this component

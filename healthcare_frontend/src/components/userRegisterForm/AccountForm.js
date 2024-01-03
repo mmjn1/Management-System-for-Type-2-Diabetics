@@ -220,6 +220,37 @@ const AccountForm = (props) => {
             />
           </div>
 
+          <div className="form-group col-md-4"
+                                // style={{ width: "30%" }}
+                                >
+                                    <TextField
+                                        label="Full Name"
+                                        name="name"
+                                        required={true}
+                                        tabIndex={5}
+                                        type="text"
+                                        placeholder="What is your full name"
+                                        error={props.error.name}
+                                        currentSubmitCount={currentFormSubmitCount}
+                                        onChange={(e) => {
+                                            handleChange(e);
+                                            // check the field error and reset error from the error object
+                                            if (props.error.name) {
+                                                props.setErrors({});
+                                                // delete formErrors from local storage
+                                                if (localStorage.getItem("formErrors")) {
+                                                    localStorage.removeItem("formErrors");
+                                                }
+                                                if (localStorage.getItem("currentStepWithErrors")) {
+                                                    localStorage.removeItem("currentStepWithErrors");
+                                                }
+                                            }
+                                        }}
+                                    />
+                                </div>
+
+          
+
           <div className="form-group mb-3">
             <div className="p-field d-flex flex-column">
               <label htmlFor="password" className="form-label ">
