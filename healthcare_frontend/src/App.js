@@ -1,11 +1,12 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 
 import store from "./store.js";
+import {KThemeProvider} from "./containers/KThemeProvider";
+import Main from "./MainR/MainRoute.jsx";
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
-import Hero from "components/WelcomePageComponents/Hero.jsx";
-import PatientRegisterPage from "../src/containers/patientContainers/PatientRegisterPage.jsx";
-import PatientLoginPage from "../src/containers/patientContainers/PatientLoginPage";
+
 import BloodSugarPage from "../src/containers/patientContainers/BloodSugarPage";
 import DietaryHabits from "../src/containers/patientContainers/DietaryHabits";
 import EducationalResources from "../src/containers/patientContainers/EducationalResources";
@@ -17,32 +18,31 @@ import ProgressTracker from "../src/containers/patientContainers/ProgressTracker
 import SurgeryInfo from "../src/containers/SurgeryInfo";
 
 import DoctorDashboardPage from "../src/containers/doctorContainers/DoctorDashboardPage";
-import DoctorRegisterPage from "../src/containers/doctorContainers/DoctorRegisterPage";
-import DoctorLoginPage from "../src/containers/doctorContainers/DoctorLoginPage";
 
 
 const App = () => {
   return (
-    <Routes>
-      <Route path="/patient/register" element={<PatientRegisterPage />} />
-      <Route path="/patient/login" element={<PatientLoginPage />} />
+    <KThemeProvider>
+        <Routes>
+          <Route path="/*" element={<Main />} />
       
-      <Route path="/" element={<Hero />} />
-      <Route path="/bloodsugar" element={<BloodSugarPage />} />
-      <Route path="/diet" element={<DietaryHabits />} />
-      <Route path="/resources" element={<EducationalResources />} />
-      <Route path="/appointments" element={<PatientAppointmentsPage />} />
-      <Route path="/patient/dashboard" element={<PatientDashboardPage />} />
-      <Route path="/prescriptions" element={<PatientPrescriptionsPage />} />
-      <Route path="/profile" element={<Profile />} />
-      <Route path="/progress" element={<ProgressTracker />} />
-      <Route path="/surgery" element={<SurgeryInfo />} />
+          <Route path="/bloodsugar" element={<BloodSugarPage />} />
+          <Route path="/diet" element={<DietaryHabits />} />
+          <Route path="/resources" element={<EducationalResources />} />
+          <Route path="/appointments" element={<PatientAppointmentsPage />} />
+          <Route path="/patient/dashboard" element={<PatientDashboardPage />} />
+          <Route path="/prescriptions" element={<PatientPrescriptionsPage />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/progress" element={<ProgressTracker />} />
+          <Route path="/surgery" element={<SurgeryInfo />} />
 
-      <Route path="/doctor/dashboard" element={<DoctorDashboardPage />} />
-      <Route path="/doctor/register" element={<DoctorRegisterPage />} />
-      <Route path="/doctor/login" element={<DoctorLoginPage />} />
+          <Route path="/doctor/dashboard" element={<DoctorDashboardPage />} />
+          {/* <Route path="/doctor/register" element={<DoctorRegisterPage />} /> */}
+          {/* <Route path="/doctor/login" element={<DoctorLoginPage />} /> */}
 
-    </Routes>
+        </Routes>
+    
+    </KThemeProvider>
   );
 };
 
