@@ -12,7 +12,7 @@ import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 import ListOutlinedIcon from '@mui/icons-material/ListOutlined';
 import HistoryOutlinedIcon from '@mui/icons-material/HistoryOutlined';
 import QueryStatsOutlinedIcon from '@mui/icons-material/QueryStatsOutlined';
-
+import MedicalInformationOutlinedIcon from '@mui/icons-material/MedicalInformationOutlined';
 
 const DoctorSidebar = () => {
     return (
@@ -25,7 +25,7 @@ const DoctorSidebar = () => {
                 <ul>
                         <li>
                         <DashboardIcon className="icon"/>
-                            <span> Doctor Dashboard </span>
+                            <span> Home </span>
                         </li>
 
                         <p className="title"> Patient Monitoring</p>
@@ -95,6 +95,11 @@ const DoctorSidebar = () => {
                         <li>
                             <AccountCircleOutlinedIcon className="icon"/>
                             <span> Profile </span>
+                        </li>
+
+                        <li>
+                            <MedicalInformationOutlinedIcon className="icon"/>
+                            <span> Professional Information </span>
                         </li>
 
                         <li>
