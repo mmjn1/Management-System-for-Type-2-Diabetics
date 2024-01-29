@@ -1,0 +1,28 @@
+.home {
+    display: flex;
+
+    .homeContainer {
+        flex: 6;
+
+        .widgetGrid {
+            display:flex;            
+        }
+
+        .widgetItemB, .widgetItemP, .widgetItemA {
+            background-color: white;
+            border-radius:20px;
+            padding: 10px;
+            margin: 15px;
+            height: 200px;
+            display: flex;
+
+            flex: 1;
+            -webkit-box-shadow: 2px 4px 10px 1px rgba(0, 0, 0, 0.47);
+            box-shadow: 2px 4px 10px 1px rgba(201, 201, 201, 0.47);
+        
+        }   
+    }
+}
+
+
+

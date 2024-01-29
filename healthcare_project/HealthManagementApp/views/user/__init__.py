@@ -1,0 +1,2 @@
+from .base_user_views import UserRegistrationView
+from .patient_view import PatientCreateView

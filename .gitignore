@@ -1,0 +1,93 @@
+# Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.py[cod]
+*$py.class
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+*.swp
+*.swo
+*~
+*.bak
+*.bak1
+*.bak2
+*.bak3
+*.rej
+*.orig
+*.patch
+*.diff
+*.tmp
+*.tmp.*
+log/
+logs/
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+__pycache__/
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Environment variables
+.env
+
+# Virtual Environment
+health_env
+
+# IDEs and editors
+/.vscode
+*.swp
+*.swo
+*.swn
+*.idea/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Jazzmin
+static/
+
+# Ignore minified CSS and source maps in the css directory
+healthcare_frontend/src/assets/glucocare/vendor/bootstrap/css/*.min.css
+healthcare_frontend/src/assets/glucocare/vendor/**/*.js.map
+healthcare_frontend/src/assets/glucocare/vendor/bootstrap/css/*.css.map
+
+*.min.css
+*.min.js
+*.css.map
+*.js.map
+
+# Bootstrap ignored (already in package.json)
+healthcare_frontend/src/assets/glucocare/vendor/bootstrap/
+
+
