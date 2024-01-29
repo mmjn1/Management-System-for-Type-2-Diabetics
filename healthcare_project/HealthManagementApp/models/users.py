@@ -33,13 +33,16 @@ class CustomUserManager(BaseUserManager):
         )
 
         user.is_staff = True
+        user.is_active = True
         user.is_superuser = True
         user.save(using=self._db)
 
         return user 
 
 class CustomUser(AbstractUser, PermissionsMixin):
-    name = models.CharField(max_length=100, blank=False, null=False,)
+    first_name= models.CharField(max_length=100, blank=False, null=False,)
+    middle_name = models.CharField(max_length=100, blank=True, null=True,)
+    last_name = models.CharField(max_length=100, blank=False, null=False,)
     email = models.EmailField(unique=True, max_length=100)
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
@@ -65,14 +68,14 @@ class CustomUser(AbstractUser, PermissionsMixin):
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['name']
+    REQUIRED_FIELDS = ['first_name', 'last_name']
 
 
     def __str__(self):
         return self.email
 
     def get_full_name(self):
-        return self.name
+        return self.first_name + " " + self.last_name
 
 
 class Doctor(models.Model):
@@ -88,7 +91,6 @@ class Doctor(models.Model):
     diabetes_management_experience = models.CharField(max_length=50, blank=True, null=True)
     treatement_approach = models.CharField(max_length=50, blank=True, null=True)
     contact_hours = models.CharField(max_length=50, blank=True, null=True)
-    communication_method_for_patient = models.CharField(max_length=50, blank=True, null=True)
     tel_number = models.CharField(max_length=50, blank=True, null=True)
     emergency_consultations = models.CharField(max_length=50, blank=True, null=True)
 
@@ -113,8 +115,6 @@ class Patient(models.Model):
     physical_activity_level = models.CharField(max_length=50, blank=True, null=True)
     smoking_habits = models.CharField(max_length=50, blank=True, null=True)
     alcohol_consumption = models.CharField(max_length=50, blank=True, null=True)
-
-    insurance_information = models.CharField(max_length=50, blank=True, null=True)
 
     def __str__(self):
         return f'Patient {self.user.name}: Type of Diabetes - {self.type_of_diabetes}, Date of Diagnosis - {self.date_of_diagnosis}'
