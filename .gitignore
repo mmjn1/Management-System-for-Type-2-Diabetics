@@ -78,11 +78,10 @@ Thumbs.db
 static/
 
 # Ignore minified CSS and source maps in the css directory
-healthcare_frontend/src/assets/glucocare/vendor/bootstrap/css/*.min.css
+#healthcare_frontend/src/assets/glucocare/vendor/bootstrap/css/*.min.css
 healthcare_frontend/src/assets/glucocare/vendor/**/*.js.map
 healthcare_frontend/src/assets/glucocare/vendor/bootstrap/css/*.css.map
-
-*.min.css
+#*.min.css
 *.min.js
 *.css.map
 *.js.map
