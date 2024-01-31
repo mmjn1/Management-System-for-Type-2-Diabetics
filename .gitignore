@@ -40,8 +40,7 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
-__pycache__/
-__pycache__/
+healthcare_project/healthcare_project/__pycache__/settings.cpython-38.pyc
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
@@ -78,15 +77,11 @@ Thumbs.db
 static/
 
 # Ignore minified CSS and source maps in the css directory
-#healthcare_frontend/src/assets/glucocare/vendor/bootstrap/css/*.min.css
 healthcare_frontend/src/assets/glucocare/vendor/**/*.js.map
 healthcare_frontend/src/assets/glucocare/vendor/bootstrap/css/*.css.map
-#*.min.css
 *.min.js
 *.css.map
 *.js.map
 
-# Bootstrap ignored (already in package.json)
-healthcare_frontend/src/assets/glucocare/vendor/bootstrap/
 
 
