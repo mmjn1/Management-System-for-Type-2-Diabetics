@@ -19,7 +19,11 @@ class Prescription(models.Model):
     refill_count = models.IntegerField(default=0)
     last_refilled_date = models.DateField(null=True, blank=True)
     refill_request_pending = models.BooleanField(default=False)
-    prescription_approved = models.BooleanField(default=True)
+    prescription_approved = models.BooleanField(default=False)
+
+    refill_requested = models.BooleanField(default=False)
+
+
 
     def __str__(self):
         return self.drug_name

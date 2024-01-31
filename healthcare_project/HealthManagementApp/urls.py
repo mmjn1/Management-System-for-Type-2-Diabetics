@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from rest_framework import routers, serializers, viewsets, generics, status
 from rest_framework_simplejwt.views import (
     TokenRefreshView as RefreshTokenView, TokenVerifyView as VerifyTokenView,)
+#from views.user.prescription_views import RefillRequestView, DoctorRefillRequestsView
 
 from djoser import views
 
@@ -68,9 +69,13 @@ urlpatterns = [
     # Verify JWT token for user
     path('auth/account-verify/', VerifyTokenView.as_view(), name='account_verify'),
 
-
     # get all endpoints from djoser package
     path('auth/', include('djoser.urls')),
+
+
+    #path('prescription/refill-request/', RefillRequestView.as_view(), name='refill_request'),
+    #path('prescription/doctor-refill-requests/', DoctorRefillRequestsView.as_view(), name='doctor_refill_requests'),
+
 ]
 
 urlpatterns += router.urls

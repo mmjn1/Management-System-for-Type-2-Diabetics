@@ -20,7 +20,7 @@ from .common_imports import (
 )
 
 from HealthManagementApp.serialisers import (
-    PatientRegisterSerialiser, # from .serializers import EmployerRegisterSerialiser
+    PatientRegisterSerialiser, 
 )
 
 from .base_user_views import (
