@@ -18,7 +18,7 @@ const phoneRegExp =
 const validationSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is required"),
   first_name: Yup.string().required("First name is required"),
-  middle_name: Yup.string(), // Assuming it's not required
+  middle_name: Yup.string(), 
   last_name: Yup.string().required("Last name is required"),
   password: Yup.string()
     .min(6, "Password must be at least 6 characters")
@@ -43,7 +43,7 @@ const validationSchema = Yup.object().shape({
     "Diabetes management experience is required"
   ),
   treatement_approach: Yup.string().required("Treatment approach is required"),
-  contact_hours: Yup.string() // Add regex pattern if needed
+  contact_hours: Yup.string() 
     .required("Contact hours are required"),
   tel_number: Yup.string()
     .matches(phoneRegExp, "Phone number is not valid")
