@@ -5,13 +5,12 @@ import logging
 from django.urls import path
 from django.contrib.auth import get_user_model
 from django.urls import path, include
-
+from HealthManagementApp.views.views import SupportInquiryView
 
 from rest_framework.response import Response
 from rest_framework import routers, serializers, viewsets, generics, status
 from rest_framework_simplejwt.views import (
     TokenRefreshView as RefreshTokenView, TokenVerifyView as VerifyTokenView,)
-#from views.user.prescription_views import RefillRequestView, DoctorRefillRequestsView
 
 from djoser import views
 
@@ -72,9 +71,7 @@ urlpatterns = [
     # get all endpoints from djoser package
     path('auth/', include('djoser.urls')),
 
-
-    #path('prescription/refill-request/', RefillRequestView.as_view(), name='refill_request'),
-    #path('prescription/doctor-refill-requests/', DoctorRefillRequestsView.as_view(), name='doctor_refill_requests'),
+    path('create-contact/', SupportInquiryView.as_view(), name='create_contact'),
 
 ]
 
