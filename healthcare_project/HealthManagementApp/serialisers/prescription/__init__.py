@@ -1,1 +1,0 @@
-from .prescription_serializer import PrescriptionSerializer
