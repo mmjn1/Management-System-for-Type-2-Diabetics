@@ -34,6 +34,18 @@ const MainMenu = () => {
                         <span> Services</span>
                     </HashLink>
                 </li>
+
+                <li className={activeItem === 'contact' ? 'home active' : 'home'} onClick={() => handleSetActive('contact')}>
+                    <HashLink 
+                       to="/#doctors" 
+                       scroll={el => el.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                       className='nav-link scrollto'
+                        style={{ fontSize: '16px' }}>  {/* Add this line */}
+
+                        <i></i>
+                        <span>  Doctors </span>
+                    </HashLink>
+                </li>
            
 
                 <li className={activeItem === 'about' ? 'home active' : 'home'} onClick={() => handleSetActive('about')}>
@@ -47,6 +59,7 @@ const MainMenu = () => {
                     </HashLink>
                 </li>
 
+        
                 <li className={activeItem === 'faq' ? 'home active' : 'home'} onClick={() => handleSetActive('faq')}>
                     <HashLink 
                        to="/#faq" 
@@ -69,7 +82,8 @@ const MainMenu = () => {
                         <i></i>
                         <span>  Contact </span>
                     </HashLink>
-                </li>               
+                </li>
+
             </ul>
             <i className="bi bi-list mobile-nav-toggle"></i>
         </nav>
