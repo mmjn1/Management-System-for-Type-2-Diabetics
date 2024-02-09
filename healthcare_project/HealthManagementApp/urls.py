@@ -5,7 +5,7 @@ import logging
 from django.urls import path
 from django.contrib.auth import get_user_model
 from django.urls import path, include
-from HealthManagementApp.views.views import SupportInquiryView
+from HealthManagementApp.views.views import SupportInquiryView, DoctorView
 
 from rest_framework.response import Response
 from rest_framework import routers, serializers, viewsets, generics, status
@@ -73,6 +73,7 @@ urlpatterns = [
 
     path('create-contact/', SupportInquiryView.as_view(), name='create_contact'),
 
+    path('api/doctors/', DoctorView.as_view(), name='doctors'),
 ]
 
 urlpatterns += router.urls

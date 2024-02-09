@@ -118,9 +118,8 @@ const LandingHome = () => {
               <h2>Services</h2>
               <p>
                 {" "}
-                GlucoCare offers a comprehensive suite of tools designed to
-                empower patients with type 2 diabetes to take control of their
-                health.
+                GlucoCare offers a comprehensive suite of tools designed to empower patients with type 2 diabetes to take control of their health by providing personalised monitoring, diet planning, and educational resources
+                that are easy to use and tailored to each individual's unique health profile.
               </p>
             </div>
 
@@ -220,10 +219,18 @@ const LandingHome = () => {
             <div className="section-title">
               <h2>Doctors</h2>
               <p>
-                Meet our Specialists: At the forefront of GlucoCare, our
-                dedicated team of medical professionals are committed to
-                providing exceptional care. Each specialist brings a wealth of
-                expertise.
+                Meet our Specialists: Our dedicated team of medical
+                professionals are committed to providing exceptional care. Each
+                specialist brings a wealth of expertise.
+              </p>
+              <br />
+              <p>
+                When you create your account, you will be prompted to select
+                your preferred doctor from a dropdown list of our specialists.
+                This list will help you identify which doctor can best address
+                your specific type of diabetes and health needs. Please review
+                this section carefully to make an informed choice, as your
+                chosen doctor will help manage your health journey.
               </p>
             </div>
 

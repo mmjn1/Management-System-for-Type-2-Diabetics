@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Calendar from "react-calendar";
 import * as Yup from "yup";
 import { Formik, Field } from "formik";
@@ -18,7 +18,6 @@ const stepsEnum = {
 const validationSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is required"),
   first_name: Yup.string().required("First name is required"),
-  middle_name: Yup.string(), // Assuming it's not required
   last_name: Yup.string().required("Last name is required"),
   password: Yup.string()
     .min(6, "Password must be at least 6 characters")
@@ -54,9 +53,7 @@ const validationSchema = Yup.object().shape({
   medication_adherence: Yup.string().required(
     "Medication adherence is required"
   ),
-
 });
-
 
 const PatientForm = () => {
   //step: 1
@@ -65,6 +62,9 @@ const PatientForm = () => {
   const [lastName, setLastName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [selectedDoctor, setSelectedDoctor] = useState("");
+  const [doctors, setDoctors] = useState([]);
+
   //step: 2
   const [typeOfDiabetes, setTypeOfDiabetes] = useState("");
   const [dateOfDiagnosis, setDateOfDiagnosis] = useState("");
@@ -88,7 +88,21 @@ const PatientForm = () => {
   const [step, setStep] = useState(1);
   const [error, setError] = useState("");
 
-  
+  // Fetch doctors when the component mounts
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const response = await fetch("/api/api/doctors");
+        const data = await response.json();
+        setDoctors(data);
+      } catch (error) {
+        console.error("Failed to load doctors:", error);
+      }
+    };
+
+    fetchDoctors();
+  }, []);
+
   const handleRegister = () => {
     // registration logic
     if (email && firstName && lastName && password && confirmPassword) {
@@ -148,7 +162,7 @@ const PatientForm = () => {
         <h2 className="card-title text-center mb-4">
           Registration - {stepsEnum[step]}
         </h2>
-      
+
         <form>
           {step === 1 && (
             <>
@@ -221,6 +235,37 @@ const PatientForm = () => {
                   placeholder="Re-enter your password"
                   required
                 />
+              </div>
+
+              {/* Dropdown selection for Doctors */}
+              <div className="mb-3">
+                <label htmlFor="doctor" className="form-label">
+                  Please select a doctor from the list below to handle your
+                  diabetes management. You can find more information about our
+                  specialists on our Doctors page.
+                </label>
+                <select
+                  className="form-control"
+                  id="doctor"
+                  value={selectedDoctor}
+                  onChange={(e) => setSelectedDoctor(e.target.value)} // Update state when an option is selected
+                  required
+                >
+                  <option value="">Select a Doctor</option>
+                  {Array.isArray(doctors) &&
+                    // Map over the doctors array and create an option for each doctor
+                    doctors.map((doctor, index) => (
+                      <option key={index} value={doctor.id}>
+                        Dr. {doctor.first_name}  <br />
+                        {doctor.last_name}
+                        
+
+                 
+
+
+                      </option>
+                    ))}
+                </select>
               </div>
             </>
           )}

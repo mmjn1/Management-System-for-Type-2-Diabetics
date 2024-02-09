@@ -1,6 +1,9 @@
 from HealthManagementApp.models import (
     Prescription, SupportInquiry
 )
+
+from HealthManagementApp.models.users import Doctor
+
 from rest_framework import serializers
 
 
@@ -18,3 +21,10 @@ class SupportInquirySerializer(serializers.ModelSerializer):
     class Meta:
         model = SupportInquiry
         fields = ['name', 'email', 'subject', 'message', 'submitted_at']
+
+class DoctorSerializer(serializers.ModelSerializer):
+    first_name = serializers.CharField(source='user.first_name')
+    last_name = serializers.CharField(source='user.last_name')
+    class Meta:
+        model = Doctor
+        fields = ['first_name', 'last_name']
