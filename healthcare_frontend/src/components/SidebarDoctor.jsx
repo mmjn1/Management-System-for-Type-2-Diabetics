@@ -1,130 +1,121 @@
-import "../sass/DoctorDashboard.scss";
+import "../assets/patientcss/sidebar.css";
+import { Link } from "react-router-dom";
 import DashboardIcon from '@mui/icons-material/DashboardOutlined';
-import MedicationIcon from '@mui/icons-material/MedicationOutlined';
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonthOutlined';
+import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
 import ChatIcon from '@mui/icons-material/ChatOutlined';
-import LocalLibraryIcon from '@mui/icons-material/LocalLibraryOutlined';
-import SettingsApplicationsOutlinedIcon from '@mui/icons-material/SettingsApplicationsOutlined';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
-import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
-import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 import ListOutlinedIcon from '@mui/icons-material/ListOutlined';
-import HistoryOutlinedIcon from '@mui/icons-material/HistoryOutlined';
-import QueryStatsOutlinedIcon from '@mui/icons-material/QueryStatsOutlined';
-import MedicalInformationOutlinedIcon from '@mui/icons-material/MedicalInformationOutlined';
-
-const DoctorSidebar = () => {
-    return (
-        <div className="sidebar">
-            <div className="top"> 
-                <span className="logo"> Doctor</span> 
-            </div>
-            <hr     />
-            <div className="centre"> 
-                <ul>
-                        <li>
-                        <DashboardIcon className="icon"/>
-                            <span> Home </span>
-                        </li>
-
-                        <p className="title"> Patient Monitoring</p>
+import Diversity3OutlinedIcon from '@mui/icons-material/Diversity3Outlined';
+import MedicationOutlinedIcon from '@mui/icons-material/MedicationOutlined';
 
 
-                        <li>
-                        <ListOutlinedIcon className="icon"/>
-                            <span> Patient List </span>
-                        </li>
+const SidebarDoctor = () =>{
+  return (
+    <div className="sidebar">
+      <div className="sidebarWrapper">
+        <div className="sidebarMenu">
+          <ul className="sidebarList">
+            <Link to="/doctor/dashboard" className="link">
+            <li className="sidebarListItem active">
+              <DashboardIcon className="sidebarIcon" />
+              Doctor Dashboard
+            </li>
+            </Link>
+          </ul>
+        </div>
 
-                        <li>
-                        <HistoryOutlinedIcon className="icon"/>
-                            <span> Patient History </span>
-                        </li>
+        <div className="sidebarMenu">
+          <h3 className="sidebarTitle"> Patient Monitoring</h3>
+          <ul className="sidebarList">
+            <Link to="/" className="link">
+              <li className="sidebarListItem">
+                <ListOutlinedIcon className="sidebarIcon" />
+                Patient Records
+              </li>
+            </Link>
+          </ul>
+        </div>
 
-                        <li>
-                        <QueryStatsOutlinedIcon className="icon"/>
-                            <span> Blood Sugar Trends </span>
-                        </li>
+        <div className="sidebarMenu">
+          <h3 className="sidebarTitle"> Appointments</h3>
+          <ul className="sidebarList">
 
-                
-                    <p className="title"> Scheduling and Appointments </p>
-                        <li>
-                            <CalendarMonthIcon className="icon"/>
-                            <span> Appointment Calendar </span>
-                        </li>
-                           
+            <Link to="/doctor/appointments" className="link">
+            <li className="sidebarListItem">
+              <CalendarMonthOutlinedIcon className="sidebarIcon" />
+              Appointment Calendar
+            </li>
+            </Link>
+          </ul>
+        </div>
 
-                    
-                    <p className="title"> Communication </p>
-                        <li>
-                        <ChatIcon className="icon"/>
-                            <span> Messages  </span>
-                        </li>
+        <div className="sidebarMenu">
+          <h3 className="sidebarTitle"> Communications</h3>
+          <ul className="sidebarList">
+            <li className="sidebarListItem">
+              <ChatIcon className="sidebarIcon" />
+              Messages
+            </li>
+          </ul>
+        </div>
 
-                        <li>
-                            <NotificationsOutlinedIcon className="icon"/>
-                            <span> Notifications </span>
-                        </li>
+        <div className="sidebarMenu">
+          <h3 className="sidebarTitle"> Care Management</h3>
+          <ul className="sidebarList">
+            <Link to="/" className="link">
+            <li className="sidebarListItem">
+              <Diversity3OutlinedIcon className="sidebarIcon" />
+              My Care Team
+            </li>
+            </Link>
 
-                    <p className="title"> Surgery & Care Team </p>
-                        <li>
-                            <MedicationIcon className="icon"/>
-                            <span> My Care Team </span>
-                        </li>
-
-                        <li>
-                            <LocalHospitalIcon className="icon"/>
-                            <span> Surgery Information </span>
-                        </li>
-
-
-
-                    <p className="title"> Medications & Resources </p>
-                    <li>
-                        <LocalLibraryIcon className="icon"/>
-                            <span> Medical Library </span>
-                        </li>
-
-                        <li>
-                            <MedicationIcon className="icon"/>
-                            <span> Prescriptions Management </span>
-                        </li>
-
-
-                    <p className="title"> Personal Account </p>
-                        <li>
-                            <AccountCircleOutlinedIcon className="icon"/>
-                            <span> Profile </span>
-                        </li>
-
-                        <li>
-                            <MedicalInformationOutlinedIcon className="icon"/>
-                            <span> Professional Information </span>
-                        </li>
-
-                        <li>
-                            <SettingsApplicationsOutlinedIcon className="icon"/>
-                            <span> Settings </span>
-                        </li>
-
-
-                    <p className="title"> System </p>
-                    <li>
-                        <LogoutOutlinedIcon className="icon"/>
-                        <span> Logout </span>
-                    </li>
-
-                </ul>
-            </div>
-            <div className="bottom">  
-                <div className="colorOption"> </div>
-                <div className="colorOption"> </div>
-            </div>
+            <Link to="/" className="link">
+            <li className="sidebarListItem">
+              <MedicationOutlinedIcon className="sidebarIcon" />
+              Surgery Information
+            </li>
+            </Link>
+          </ul>
 
         </div>
-    );
 
+        <div className="sidebarMenu">
+          <h3 className="sidebarTitle"> Medications</h3>
+          <ul className="sidebarList">
+            <li className="sidebarListItem">
+              <MedicationOutlinedIcon className="sidebarIcon" />
+              Prescriptions Management
+            </li>
+          </ul>
+        </div>
 
-};
+        <div className="sidebarMenu">
+          <h3 className="sidebarTitle"> Personal Account </h3>
+          <ul className="sidebarList">
+            <Link to="/doctor/profile" className="link">
+            <li className="sidebarListItem">
+              <AccountCircleOutlinedIcon className="sidebarIcon" />
+              Profile
+            </li>
+            </Link>
+          </ul>
+        </div>
 
-export default DoctorSidebar;
+        <div className="sidebarMenu">
+          <h3 className="sidebarTitle"> System </h3>
+          <ul className="sidebarList">
+            <Link to="/" className="link">
+            <li className="sidebarListItem">
+              <LogoutOutlinedIcon className="sidebarIcon" />
+              Logout
+            </li>
+            </Link>
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default SidebarDoctor;

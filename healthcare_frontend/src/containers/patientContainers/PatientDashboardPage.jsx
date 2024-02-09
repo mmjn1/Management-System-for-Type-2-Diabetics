@@ -1,39 +1,16 @@
 import React from 'react'
-import "../../sass/PatientDashboard.scss"
 import Sidebar from '../../components/PatientSidebar'
 import Navbar from '../../components/PostLoginNavigation'
-
-
-import BloodSugarWidget from '../../components/Patientwidgets/BloodSugarWidget'
-import PrescriptionsWidget from '../../components/Patientwidgets/PrescriptionsWidget'
-import AppointmentsWidget from '../../components/Patientwidgets/AppointmentsWidget'
+import "../../assets/patientcss/dashboard.css";
 
 const PatientDashboardPage = () => {
   return (
-    <div className="home">
-        <Sidebar />
-        <div className="homeContainer">
-          <Navbar />
-          {/* Grid container for widgets */}
-
-            <div className="widgetGrid">
-              {/* Each widget gets a "widgetItem" class for individual styling */}
-              <div className="widgetItemB">
-                <BloodSugarWidget />
-              </div>
-
-              <div className="widgetItemP"> 
-                <PrescriptionsWidget />
-              </div>
-
-              <div className="widgetItemA">
-                <AppointmentsWidget />
-              </div>
-          
-        </div>
-
-
-        </div>
+    <div>
+      <Navbar/>
+      <div className="containers">
+        <Sidebar/>
+      </div>
+        
     </div>
 
   )

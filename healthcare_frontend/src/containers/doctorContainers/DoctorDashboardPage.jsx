@@ -1,15 +1,13 @@
 import React from 'react'
-import '../../sass/DoctorDashboard.scss'
+import "../../assets/patientcss/dashboard.css";
 import Navbar from '../../components/PostLoginNavigation'
 import DoctorSidebar from '../../components/SidebarDoctor'
 
 const DoctorDashboardPage = () => {
   return (
-    <div className="home">
-        <DoctorSidebar />
-        <div className="homeContainer">
-          <Navbar />
-        </div>
+    <div>
+      <div className="containers">
+      </div>        
     </div>
 
   )
