@@ -110,7 +110,8 @@ class Patient(models.Model):
     type_of_diabetes = models.CharField(max_length=50, blank=True, null=True)
     date_of_diagnosis = models.DateField(blank=True, null=True)
     blood_sugar_level = models.IntegerField(blank=True, null=True)
-    target_blood_sugar_level = models.IntegerField(blank=True, null=True)    
+    target_blood_sugar_level = models.IntegerField(blank=True, null=True)
+    family_medical_history = models.TextField(blank=True, null=True)    
     medical_history = models.TextField(blank=True, null=True)    
 
     physical_activity_level = models.CharField(max_length=50, blank=True, null=True)

@@ -23,3 +23,4 @@ The serializer_class is set to DoctorSerializer, which will handle the conversio
 class DoctorView(generics.ListAPIView):
     queryset = Doctor.objects.all()
     serializer_class = DoctorSerializer
+
