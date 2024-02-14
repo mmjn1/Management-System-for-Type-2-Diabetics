@@ -4,8 +4,6 @@ import {Form} from "react-bootstrap";
 import {Formik} from "formik";
 import {useDispatch, useSelector} from "react-redux";
 
-import logo from '../src/assets/glucocare/img/logo.png'
-import side from '../src/assets/glucocare/img/login-visual-4.svg'
 import './assets/glucocare/css/ForgetPage/forgetPassword.css'
 import './assets/glucocare/css/ForgetPage/file2.css'
 
@@ -44,10 +42,7 @@ const ForgetPassword = () => {
                     <div className="login login-4 wizard d-flex flex-column flex-lg-row flex-column-fluid">
                         <div
                             className="login-container order-2 order-lg-1 d-flex flex-center flex-row-fluid px-7 pt-lg-0 pb-lg-0 pt-4 pb-6 bg-white">
-                            <div className="login-content d-flex flex-column pt-lg-0 pt-12">
-                                <a href="/" className="login-logo pb-xl-20 pb-15">
-                                    <img src={logo} className="max-h-100px" alt=""/>
-                                </a>
+                            <div className="login-content d-flex flex-column pt-lg-0 pt-12">                             
                                 {send ? (<div className="login-form">
 
                                     <div className="pb-5 pb-lg-2">
