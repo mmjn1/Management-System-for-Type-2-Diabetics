@@ -3,7 +3,7 @@ import Layout from '../layout/Layout'
 import LoginContainer from '../containers/public/auth/Login'
 import RegisterContainer from '../containers/public/registration/Register'
 import HomeContainer from "../containers/protected/Home/index";
-import ForgetPassword from "../ForgetPassword";
+import ForgetPassword from "../FogetPassword";
 import SetPassword from "../SetPassword";
 
 import LandingHomeContainer from "../containers/public/landing/LandingPage";
