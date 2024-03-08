@@ -2,22 +2,26 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-
+import "react-big-calendar/lib/css/react-big-calendar.css";
+import { Toaster } from "react-hot-toast";
+import axios from "axios";
 import { Provider } from 'react-redux';
 import { store } from "./store";
+
+axios.defaults.baseURL = "http://127.0.0.1:8000/";
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <Provider store={store}>
+      <Toaster />
       <BrowserRouter>
         <Routes>
           <Route path="/*" element={<App />} >
-            </Route>
-          
+          </Route>
+
         </Routes>
       </BrowserRouter>
     </Provider>
