@@ -1,20 +1,14 @@
 import React, { useEffect, useState } from "react";
-import "./assets/glucocare/css/ForgetPage/forgetPassword.css";
-import "./assets/glucocare/css/ForgetPage/file2.css";
-
+import './assets/glucocare/css/ForgetPage/forgetPassword.css'
+import './assets/glucocare/css/ForgetPage/file2.css'
 import * as yup from "yup";
 import { Form } from "react-bootstrap";
 import { Formik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-
-import logo from "../src/assets/glucocare/img/logo.png";
-import side from "../src/assets/glucocare/img/login-visual-4.svg";
-import { ForgetPasswordConfirm } from "./features/api/forgetPassword_confirmslice";
-
-import { useNavigate } from "react-router-dom";
+import { ForgetPasswordConfirm } from "./features/api/forgetPassword_confirm";
+import { useNavigate } from 'react-router-dom';
 import FooterPage from "./components/Footer/FooterPage";
-
 
 const SetPassword = () => {
     const navigate = useNavigate();
@@ -70,11 +64,7 @@ const SetPassword = () => {
                 <div className="login login-4 wizard d-flex flex-column flex-lg-row flex-column-fluid">
                     <div
                         className="login-container order-2 order-lg-1 d-flex flex-center flex-row-fluid px-7 pt-lg-0 pb-lg-0 pt-4 pb-6 bg-white">
-                        <div className="login-content d-flex flex-column pt-lg-0 pt-12">
-                            <a href="/" className="login-logo pb-xl-20 pb-15">
-                                <img src={logo} className="max-h-100px" alt=""/>
-                            </a>
-
+                        <div className="login-content d-flex flex-column pt-lg-0 pt-12">                    
                             {reset ? (<div className="login-form">
                                     <div className="pb-5 pb-lg-2">
                                         <h3 className="font-weight-bolder text-dark font-size-h2 font-size-h1-lg text-center">Password
@@ -154,15 +144,7 @@ const SetPassword = () => {
                             </div>)}
                         </div>
                     </div>
-                    <div className="login-aside order-1 order-lg-2 bgi-no-repeat bgi-position-x-right">
-                        <div className="login-conteiner bgi-no-repeat bgi-position-x-right bgi-position-y-bottom"
-                             style={{backgroundImage: `url(${side})`}}>
-                            <h3 className="pt-lg-40 pl-lg-20 pb-lg-0 pl-10 py-20 m-0 d-flex justify-content-lg-start font-weight-boldest display5 display1-lg text-white">We
-                                Got
-                                <br/>A Surprise
-                                <br/>For You</h3>
-                        </div>
-                    </div>
+                
                 </div>
             </div>
         </div>
