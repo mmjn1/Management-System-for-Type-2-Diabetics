@@ -33,7 +33,7 @@ export const ForgetPasswordSlice = createSlice({
       })
       .addCase(ForgetPasswordfunction.rejected, (state, action) => {
         state.status = "failed";
-        toast.error("Oops! Something went wrong", {
+        toast.error("Failed to send reset email. Please check your email address or try again later.", {
           id: TID,
         });
         state.error = action.error.message;

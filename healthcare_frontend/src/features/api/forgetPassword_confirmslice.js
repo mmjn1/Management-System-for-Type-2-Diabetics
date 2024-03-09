@@ -28,7 +28,7 @@ export const ForgetPasswordConfirmSlice = createSlice({
             })
             .addCase(ForgetPasswordConfirm.rejected, (state, action) => {
                 state.status = "failed";
-                toast.error("Oops! Something went wrong", {
+                toast.error("Password reset failed. Please check your information and try again.", {
                     id: TID,
                 });
                 state.error = action.error.message;
