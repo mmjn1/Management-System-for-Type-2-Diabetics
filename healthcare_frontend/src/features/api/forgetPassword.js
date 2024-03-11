@@ -2,6 +2,23 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import toast from "react-hot-toast";
 
+/**
+ * This redux slice and asynchronous thunk for handling forgotten password functionality.
+ * 
+ * The `ForgetPasswordfunction` is an asynchronous thunk that sends a POST request to the
+ * "auth/users/reset_password/" endpoint with user data for resetting a forgotten password.
+ * It utilizes Axios for HTTP requests.
+ * 
+ * `ForgetPasswordSlice` is a Redux slice that contains the state related to the forgotten password process.
+ * It includes the initial state, reducer actions, and handles different states (loading, succeeded, failed)
+ * of the asynchronous request through extraReducers.
+ * 
+ * Toast notifications from 'react-hot-toast' are used to provide feedback during the request lifecycle:
+ * - Displays a loading toast when the request is pending.
+ * - Displays a success toast when the request is fulfilled.
+ * - Displays an error toast when the request is rejected.
+ */
+
 export const ForgetPasswordfunction = createAsyncThunk(
   "tasks/forgetpasswordslice",
   async (data) => {
