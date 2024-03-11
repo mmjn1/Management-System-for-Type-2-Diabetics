@@ -21,7 +21,7 @@ import toast from "react-hot-toast";
  * This reducer handles actions dispatched with the `registerUserPatient` async thunk and updates the state accordingly.
  */
 export const registerUserPatient = createAsyncThunk("tasks/registerPatientSlice", async (data) => {
-    const response = await axios.post("api/createPatient/", data);
+    const response = await axios.post("/api/createPatient/", data);
     return response.data;
 },);
 const TID = toast();
@@ -36,12 +36,12 @@ export const registerPatientSlice = createSlice({
                 state.status = "loading";
             })
             .addCase(registerUserPatient.fulfilled, (state, action) => {
-                toast.success('Check your email and activate account', {id: TID})
+                toast.success('Success! Please check your inbox for an activation email to complete your registration', {id: TID})
                 state.status = "succeeded";
                 state.data = action.payload;
             })
             .addCase(registerUserPatient.rejected, (state, action) => {
-                toast.error("Oops! Something went wrong", {
+                toast.error("This email is already in use. Please try a different one or log in to your existing account.", {
                     id: TID,
                 });
                 state.status = "failed";

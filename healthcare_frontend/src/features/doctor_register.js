@@ -21,7 +21,7 @@ import toast from "react-hot-toast";
  */
 
 export const registerDoctor = createAsyncThunk("tasks/registerslice", async (data) => {
-    const response = await axios.post("api/createDoctor/", data);
+    const response = await axios.post("/api/createDoctor/", data);
     return response.data;
 },);
 const TID = toast();
@@ -38,12 +38,12 @@ export const registerDoctorSlice = createSlice({
             })
             .addCase(registerDoctor.fulfilled, (state, action) => {
                 state.status = "succeeded";
-                toast.success('Check your email and activate account', {id: TID})
+                toast.success('Success! Please check your inbox for an activation email to complete your registration', {id: TID})
                 state.status = "succeeded";
                 state.data = action.payload;
             })
             .addCase(registerDoctor.rejected, (state, action) => {
-                toast.error("Oops! Something went wrong", {
+                toast.error("This email is already in use. Please try a different one or log in to your existing account.", {
                     id: TID,
                 });
                 state.status = "failed";
