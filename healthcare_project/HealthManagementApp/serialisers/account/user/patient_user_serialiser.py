@@ -17,38 +17,6 @@ from HealthManagementApp.models import (
 
 from .base_user_serialiser import UserSerializer
 
-# class AssignDoctor(serializers.ModelSerializer):
-#     """
-#     AssignDoctor: A serializer class that converts a Patient model instance into Python data types and vice versa.
-#     """
-
-#     class Meta:
-#         """
-#         Meta class: A class that contains the metadata of the AssignDoctor class.
-#         NOTE: fields is defined in the Patient model.
-#         """
-#         model = Patient
-#         # Show only the following fields in the API response and accept only the following fields in the request data.
-#         fields = ['user', 'doctors']
-
-#     def validate(self, data):
-#         """
-#         validate: A method that validates the data passed in.
-#         """
-#         print("serializer is breaking")
-
-
-#         return data
-
-#     def update(self, user, **validated_data):
-#         """
-#         create: A method that creates a new Student instance and returns it.
-#         """
-
-#         print("logging user: ", user)
-
-#         try:
-#             print("patient is being created")
 
 
 class PatientSerialiser(serializers.ModelSerializer):
@@ -76,10 +44,7 @@ class PatientSerialiser(serializers.ModelSerializer):
         return data
 
     def create(self, user, **validated_data):
-        """
-        create: A method that creates a new Student instance and returns it.
-        """
-
+        
         print("logging user: ", user)
 
         try:
@@ -100,7 +65,7 @@ class PatientRegisterSerialiser(UserCreatePasswordRetypeSerializer):
     """
     Patient Register Serialiser: A serialiser class that converts a PatientRegisterSerialiser model instance into Python data types and vice versa.
     NOTE: This class inherits from the UserCreatePasswordRetypeSerializer (Djoser 2.1.0) class.
-    It's a combination of the UserCreatePasswordRetypeSerializer  (Djoser 2.1.0 ), ProfileSerializer and StudentSerializer.
+    It's a combination of the UserCreatePasswordRetypeSerializer  (Djoser 2.1.0 ), ProfileSerializer .
     """
     patient = PatientSerialiser()
 

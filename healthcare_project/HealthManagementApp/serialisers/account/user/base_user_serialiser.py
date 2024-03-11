@@ -24,6 +24,8 @@ class UserSerializer(UserCreatePasswordRetypeSerializer):
         """
         Meta class: A class that contains the metadata of the UserSerializer class.
         The serializer only includes the fields for username, email, password, and re_password.
+        !!! NOTE: The re_password field is not included in the User model. It is only used for validation.
+                 - Djoser 2.1.0 has special serializer for this purpose (UserCreatePasswordRetypeSerializer)
         """
         model = CustomUser
         fields = [
@@ -64,7 +66,8 @@ class UserSerializer(UserCreatePasswordRetypeSerializer):
 
         except Exception as e:
             raise Exception(e)
-        
+
+
 class old_UserSerializer(serializers.HyperlinkedModelSerializer):
     """
     User Serializer

@@ -18,9 +18,9 @@ from HealthManagementApp.serialisers.auth import (
 
 class AdminTokenObtainPairView(TokenViewBase):
     """
-    Takes a set of student credentials and returns an access and refresh JSON web
+    Takes a set of credentials and returns an access and refresh JSON web
     token pair to prove the authentication of those credentials.
-    Returns HTTP 406 when student account is inactive and HTTP 401 when login credentials are invalid.
+    Returns HTTP 406 when patient account is inactive and HTTP 401 when login credentials are invalid.
     """
     permission_classes = [AllowAny]
 
