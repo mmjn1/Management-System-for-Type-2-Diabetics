@@ -2,7 +2,7 @@ import React from "react";
 import Footer from "../../../components/Footer/FooterPage";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { HashLink } from "react-router-hash-link";
-import { useSubmitInquiryMutation } from "../../../features/api/authslice";
+import { useSubmitInquiryMutation } from "../../../features/api/contactSlice";
 import * as Yup from "yup";
 import { Formik } from "formik";
 

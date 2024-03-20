@@ -1,13 +1,13 @@
-import React, {useState, Fragment} from "react";
+import React, { useState, Fragment } from "react";
 import * as Yup from "yup";
-import {Form} from "react-bootstrap";
-import {Formik, Field} from "formik";
-import {useDispatch, useSelector} from "react-redux";
+import { Form } from "react-bootstrap";
+import { Formik, Field } from "formik";
+import { useDispatch, useSelector } from "react-redux";
 
 import "bootstrap/dist/css/bootstrap.min.css";
-import {post} from "../../../utils/axios";
+import { post } from "../../../utils/axios";
 
-import {registerDoctor} from "../../../features/doctor_register";
+import { registerDoctor } from "../../../features/doctor/doctor_register";
 
 const stepsEnum = {
     1: "Basic Information", 2: "Professional Credentials and Experience", 3: "Practice Details and Preferences",
@@ -18,8 +18,10 @@ const phoneRegExp = /^\+?([0-9]{2,3})?\)?[-. ]?([0-9]{2,3})[-. ]?([0-9]{3})[-. ]
 
 const validationSchema1 = Yup.object().shape({
     email: Yup.string().email("Invalid email").required("Email is required"),
-    first_name: Yup.string().required("First name is required"), // middle_name: Yup.string(),
-    last_name: Yup.string().required("Last name is required"),
+    first_name: Yup.string()
+        .required("First name is required"),
+    last_name: Yup.string()
+        .required("Last name is required"),
     password: Yup.string()
         .min(6, "Password must be at least 6 characters")
         .required("Password is required"),
@@ -34,13 +36,15 @@ const validationSchema2 = Yup.object().shape({
         .positive("Years of experience must be a positive number")
         .integer("Years of experience must be an integer")
         .required("Years of experience is required"),
-    medical_licence_number: Yup.string().required("Medical license number is required"),
-    country_of_issue: Yup.string().required("Country of issue is required"),
+    medical_licence_number: Yup.string()
+        .required("Medical license number is required"),
+    //country_of_issue: Yup.string().required("Country of issue is required"),
     year_of_issue: Yup.number()
         .min(currentYear - 100, `Year of issue cannot be more than 100 years ago`)
         .max(currentYear, `Year of issue cannot be in the future`)
         .required("Year of issue is required"),
-    diabetes_management_experience: Yup.string().required("Diabetes management experience is required"),
+    diabetes_management_experience: Yup.string()
+        .required("Diabetes management experience is required"),
 });
 
 const validationSchema3 = Yup.object().shape({
@@ -68,14 +72,14 @@ const DoctorForm = () => {
     const [speciality, setSpeciality] = useState("");
     const [yearsOfExperience, setYearsOfExperience] = useState("");
     const [medicalLicenceNumber, setMedicalLicenceNumber] = useState("");
-    const [countryOfIssue, setCountryOfIssue] = useState("");
+    //const [countryOfIssue, setCountryOfIssue] = useState("");
     const [yearOfIssue, setYearOfIssue] = useState("");
     const [diabetesManagementExperience, setDiabetesManagementExperience] = useState("");
 
     const [step, setStep] = useState(1);
 
     const handleRegister = (values) => {
-        const {treatment_approach, contact_hours, telephone_number, emergency_consultations} = values;
+        const { treatment_approach, contact_hours, telephone_number, emergency_consultations } = values;
 
         const data = {
             email: email,
@@ -87,7 +91,7 @@ const DoctorForm = () => {
             speciality: speciality,
             years_of_experience: Number(yearsOfExperience),
             medical_license_number: medicalLicenceNumber,
-            country_of_issue: countryOfIssue,
+            //country_of_issue: countryOfIssue,
             year_of_issue: yearOfIssue,
             diabetes_management_experience: diabetesManagementExperience,
             treatment_approach: treatment_approach,
@@ -100,7 +104,7 @@ const DoctorForm = () => {
 
     const handleNext = (values) => {
         if (step === 1) {
-            const {email, first_name, MiddleName, last_name, password, confirmPassword} = values;
+            const { email, first_name, MiddleName, last_name, password, confirmPassword } = values;
             setEmail(email);
             setFirstName(first_name);
             setMiddleName(MiddleName);
@@ -113,14 +117,14 @@ const DoctorForm = () => {
                 speciality,
                 years_of_experience,
                 medical_licence_number,
-                country_of_issue,
+                //country_of_issue,
                 year_of_issue,
                 diabetes_management_experience
             } = values;
             setSpeciality(speciality);
             setYearsOfExperience(years_of_experience);
             setMedicalLicenceNumber(medical_licence_number);
-            setCountryOfIssue(country_of_issue);
+            //setCountryOfIssue(country_of_issue);
             setYearOfIssue(year_of_issue);
             setDiabetesManagementExperience(diabetes_management_experience);
             setStep((prev) => prev + 1);
@@ -152,18 +156,17 @@ const DoctorForm = () => {
                 }}
             >
                 {({
-                      handleSubmit, handleChange, handleBlur, values, touched, isValid, errors,
-                  }) => (<Fragment>
+                    handleSubmit, handleChange, handleBlur, values, touched, isValid, errors,
+                }) => (<Fragment>
                     <Form noValidate onSubmit={handleSubmit}>
                         {step === 1 && (<>
                             <div className="mb-3">
                                 <label htmlFor="email" className="form-label">
-                                    Email:
+                                    What is your email address?
                                 </label>
                                 <Form.Control
                                     type="email"
                                     className="form-control"
-                                    placeholder="What is your email address?"
                                     id="email-101"
                                     name="email"
                                     value={values.email}
@@ -177,7 +180,7 @@ const DoctorForm = () => {
                             </div>
                             <div className="mb-3">
                                 <label htmlFor="firstName" className="form-label">
-                                    First Name:
+                                    What is your first name?
                                 </label>
                                 <Form.Control
                                     type="text"
@@ -186,7 +189,6 @@ const DoctorForm = () => {
                                     value={values.first_name}
                                     onChange={handleChange}
                                     isInvalid={!!errors.first_name}
-                                    placeholder="What is your first name?"
                                     required
                                 />
                                 <Form.Control.Feedback type="invalid">
@@ -195,8 +197,8 @@ const DoctorForm = () => {
 
                             </div>
                             <div className="mb-3">
-                                <label htmlFor="<MiddleName>" className="form-label">
-                                    Middle Name:
+                                <label htmlFor="MiddleName" className="form-label">
+                                    What is your middle name?
                                 </label>
                                 <Form.Control
                                     type="text"
@@ -206,7 +208,6 @@ const DoctorForm = () => {
                                     value={values.MiddleName}
                                     onChange={handleChange}
                                     isInvalid={!!errors.MiddleName}
-                                    placeholder="What is your middle name?"
                                     required
                                 />
                                 <Form.Control.Feedback type="invalid">
@@ -215,7 +216,7 @@ const DoctorForm = () => {
                             </div>
                             <div className="mb-3">
                                 <label htmlFor="lastName" className="form-label">
-                                    Last Name:
+                                    What is your last name?
                                 </label>
                                 <Form.Control
                                     type="text"
@@ -224,7 +225,6 @@ const DoctorForm = () => {
                                     value={values.last_name}
                                     onChange={handleChange}
                                     isInvalid={!!errors.last_name}
-                                    placeholder="What is your last name?"
                                     required
                                 />
                                 <Form.Control.Feedback type="invalid">
@@ -233,7 +233,7 @@ const DoctorForm = () => {
                             </div>
                             <div className="mb-3">
                                 <label htmlFor="password" className="form-label">
-                                    Password:
+                                    Please enter a password.
                                 </label>
                                 <Form.Control
                                     type="password"
@@ -243,7 +243,6 @@ const DoctorForm = () => {
                                     value={values.password}
                                     onChange={handleChange}
                                     isInvalid={!!errors.password}
-                                    placeholder="Please enter a password."
                                     required
                                 />
                                 <Form.Control.Feedback type="invalid">
@@ -252,7 +251,7 @@ const DoctorForm = () => {
                             </div>
                             <div className="mb-3">
                                 <label htmlFor="confirmPassword" className="form-label">
-                                    Confirm Password:
+                                    Please confirm your password.
                                 </label>
                                 <Form.Control
                                     type="password"
@@ -262,7 +261,6 @@ const DoctorForm = () => {
                                     value={values.confirmPassword}
                                     onChange={handleChange}
                                     isInvalid={!!errors.confirmPassword}
-                                    placeholder="Please confirm your password."
                                     required
                                 />
                                 <Form.Control.Feedback type="invalid">
@@ -292,24 +290,23 @@ const DoctorForm = () => {
                     speciality: '',
                     years_of_experience: '',
                     medical_licence_number: '',
-                    country_of_issue: '',
+                    //country_of_issue: '',
                     year_of_issue: '',
                     diabetes_management_experience: '',
                 }}
             >
                 {({
-                      handleSubmit, handleChange, handleBlur, values, touched, isValid, errors,
-                  }) => (<Fragment>
+                    handleSubmit, handleChange, handleBlur, values, touched, isValid, errors,
+                }) => (<Fragment>
                     <Form noValidate onSubmit={handleSubmit}>
                         {step === 2 && (<>
                             <div className="mb-3">
                                 <label htmlFor="speciality" className="form-label">
-                                    Speciality:
+                                    What area of diabetes do you specialise in?
                                 </label>
                                 <Form.Control
                                     type="text"
                                     className="form-control"
-                                    placeholder="What is your medical speciality?"
                                     id="speciality"
                                     value={values.speciality}
                                     onChange={handleChange}
@@ -321,8 +318,8 @@ const DoctorForm = () => {
                                 </Form.Control.Feedback>
                             </div>
                             <div className="mb-3">
-                                <label htmlFor="years_ofExperience" className="form-label">
-                                    Years of Experience:
+                                <label htmlFor="years_of_experience" className="form-label">
+                                    How many years have you been practicing medicine?
                                 </label>
                                 <Form.Control
                                     type="number"
@@ -331,7 +328,6 @@ const DoctorForm = () => {
                                     value={values.years_of_experience}
                                     onChange={handleChange}
                                     isInvalid={!!errors.years_of_experience}
-                                    placeholder="How many years you have been practicing medicine?"
                                     required
                                 />
                                 <Form.Control.Feedback type="invalid">
@@ -340,10 +336,10 @@ const DoctorForm = () => {
                             </div>
                             <div className="mb-3">
                                 <label
-                                    htmlFor="medicalLicenceNumber"
+                                    htmlFor="medical_licence_number"
                                     className="form-label"
                                 >
-                                    Medical Licence Number:
+                                    Please enter your GMC-issued medical licence number.
                                 </label>
                                 <Form.Control
                                     type="text"
@@ -353,16 +349,15 @@ const DoctorForm = () => {
                                     value={values.medical_licence_number}
                                     onChange={handleChange}
                                     isInvalid={!!errors.medical_licence_number}
-                                    placeholder="Please provide your medical licence number"
                                     required
                                 />
                                 <Form.Control.Feedback type="invalid">
                                     {errors.medical_licence_number}
                                 </Form.Control.Feedback>
                             </div>
-                            <div className="mb-3">
+                            {/* <div className="mb-3">
                                 <label htmlFor="country_of_issue" className="form-label">
-                                    Country of Issue:
+                                    In which country was your medical licence issued?
                                 </label>
                                 <Form.Control
                                     type="text"
@@ -371,16 +366,15 @@ const DoctorForm = () => {
                                     value={values.country_of_issue}
                                     onChange={handleChange}
                                     isInvalid={!!errors.country_of_issue}
-                                    placeholder="In which country was your medical licence issued?"
                                     required
                                 />
                                 <Form.Control.Feedback type="invalid">
                                     {errors.country_of_issue}
                                 </Form.Control.Feedback>
-                            </div>
+                            </div> */}
                             <div className="mb-3">
                                 <label htmlFor="year_of_issue" className="form-label">
-                                    Year of Issue:
+                                    What year was your medical licence issued?
                                 </label>
                                 <Form.Control
                                     type="text"
@@ -389,7 +383,6 @@ const DoctorForm = () => {
                                     value={values.year_of_issue}
                                     onChange={handleChange}
                                     isInvalid={!!errors.year_of_issue}
-                                    placeholder="What year was your medical licence issued?"
                                     required
                                 />
                                 <Form.Control.Feedback type="invalid">
@@ -398,17 +391,17 @@ const DoctorForm = () => {
                             </div>
                             <div className="mb-3">
                                 <label htmlFor="diabetes_management_experience" className="form-label">
-                                    Diabetes Management Experience:
+                                    Can you describe your experience in managing diabetes?
                                 </label>
                                 <Form.Control
+                                    as="textarea"
                                     type="text"
                                     className="form-control"
-                                    id="diabetesm_management_experience"
+                                    id="diabetes_management_experience"
                                     name='diabetes_management_experience'
                                     value={values.diabetes_management_experience}
                                     onChange={handleChange}
                                     isInvalid={!!errors.diabetes_management_experience}
-                                    placeholder="Can you describe your experience in managing diabetes?"
                                     required
                                 />
                                 <Form.Control.Feedback type="invalid">
@@ -442,16 +435,17 @@ const DoctorForm = () => {
                 }}
             >
                 {({
-                      handleSubmit, handleChange, handleBlur, values, touched, isValid, errors,
-                  }) => (<Fragment>
+                    handleSubmit, handleChange, handleBlur, values, touched, isValid, errors,
+                }) => (<Fragment>
                     <Form noValidate onSubmit={handleSubmit}>
 
                         {step === 3 && (<>
                             <div className="mb-3">
                                 <label htmlFor="treatment_approach" className="form-label">
-                                    Treatment Approach:
+                                    What is your preferred treatment approach for type 2 diabetes?
                                 </label>
                                 <Form.Control
+                                    as="textarea"
                                     type="text"
                                     className="form-control"
                                     id="treatment_approach"
@@ -459,7 +453,6 @@ const DoctorForm = () => {
                                     value={values.treatment_approach}
                                     onChange={handleChange}
                                     isInvalid={!!errors.treatment_approach}
-                                    placeholder="What is your preferred treatment approach for type 2 diabetes?"
                                     required
                                 />
                                 <Form.Control.Feedback type="invalid">
@@ -469,7 +462,7 @@ const DoctorForm = () => {
 
                             <div className="mb-3">
                                 <label htmlFor="contact_hours" className="form-label">
-                                    Contact Hours:
+                                    What are your available contact hours for patient consultation?
                                 </label>
                                 <Form.Control
                                     type="text"
@@ -478,7 +471,6 @@ const DoctorForm = () => {
                                     name='contact_hours'
                                     value={values.contact_hours}
                                     onChange={handleChange}
-                                    placeholder="What are your available contact hours for patient consultation?"
                                     isInvalid={!!errors.contact_hours}
                                     required
                                 />
@@ -489,7 +481,7 @@ const DoctorForm = () => {
 
                             <div className="mb-3">
                                 <label htmlFor="telephone_number" className="form-label">
-                                    Telephone Number:
+                                    What is your contact telephone number?
                                 </label>
                                 <Form.Control
                                     type="text"
@@ -498,7 +490,6 @@ const DoctorForm = () => {
                                     name='telephone_number'
                                     value={values.telephone_number}
                                     onChange={handleChange}
-                                    placeholder="What is your contact telephone number?"
                                     isInvalid={!!errors.telephone_number}
                                     required
                                 />
@@ -509,19 +500,18 @@ const DoctorForm = () => {
                             </div>
                             <div className="mb-3">
                                 <label
-                                    htmlFor="emergencyConsultations"
+                                    htmlFor="emergency_consultations"
                                     className="form-label"
                                 >
-                                    Emergency Consultations:
+                                    Are you available for emergency consultations? If yes, please describe the protocol.
                                 </label>
                                 <Form.Control
                                     type="text"
                                     className="form-control"
-                                    id="emergencyConsultations"
+                                    id="emergency_consultations"
                                     value={values.emergency_consultations}
                                     onChange={handleChange}
                                     name='emergency_consultations'
-                                    placeholder="Are you available for emergency consultations? If yes, please describe the protocol."
                                     isInvalid={!!errors.emergency_consultations}
                                     required
                                 />

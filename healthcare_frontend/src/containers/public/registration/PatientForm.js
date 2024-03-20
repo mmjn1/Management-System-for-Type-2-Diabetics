@@ -10,8 +10,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import { post } from "../../../utils/axios";
-import { registerUserPatient } from "../../../features/patient_register";
-import { fetchDoctor } from "../../../features/FetchDoctor";
+import { registerUserPatient } from "../../../features/patient/patient_register";
+import { fetchDoctor } from "../../../features/doctor/FetchDoctor";
 
 const stepsEnum = {
   1: "Account Creation", 2: "Medical Background", 3: "Lifestyle and Emergency Details",
@@ -190,7 +190,6 @@ const PatientForm = () => {
               <Form.Control
                 type="email"
                 className="form-control"
-                placeholder="example@domain.com"
                 id="email23"
                 name="email"
                 value={values.email}
@@ -211,7 +210,6 @@ const PatientForm = () => {
                 className="form-control"
                 id="first_name22"
                 name="first_name"
-                placeholder="What is your first name?"
                 value={values.first_name}
                 onChange={handleChange}
                 isInvalid={!!errors.first_name}
@@ -230,7 +228,6 @@ const PatientForm = () => {
                 className="form-control"
                 id="MiddleName01"
                 name="MiddleName"
-                placeholder="What is your middle name?"
                 value={values.MiddleName}
                 onChange={handleChange}
                 isInvalid={!!errors.MiddleName}
@@ -248,7 +245,6 @@ const PatientForm = () => {
                 type="text"
                 className="form-control"
                 id="last_name63"
-                placeholder="What is your last name?"
                 name="last_name"
                 value={values.last_name}
                 onChange={handleChange}
@@ -267,7 +263,7 @@ const PatientForm = () => {
                 type="password"
                 className="form-control"
                 id="password96"
-                placeholder="Please eneter a password"
+                placeholder="Please enter a password"
                 name="password"
                 value={values.password}
                 onChange={handleChange}
@@ -280,13 +276,12 @@ const PatientForm = () => {
             </div>
             <div className="mb-3">
               <label htmlFor="confirmPassword" className="form-label">
-                Please confirm your password.
+                Please re-enter your password.
               </label>
               <Form.Control
                 type="password"
                 className="form-control"
                 id="confirmPassword101"
-                placeholder="Please re-enter a password"
                 name="confirmPassword"
                 value={values.confirmPassword}
                 onChange={handleChange}
@@ -357,12 +352,11 @@ const PatientForm = () => {
           {step === 2 && (<>
             <div className="mb-3">
               <label htmlFor="typeOfDiabetes" className="form-label">
-                Which type of diabetes have you been diagnosed with?
+                Which type of diabetes have you been diagnosed with? (e.g., Type 1, Type 2, Gestational)
               </label>
               <Form.Control
                 type="text"
                 className="form-control"
-                placeholder="Enter your type of diabetes (e.g., Type 1, Type 2, Gestational)"
                 id="type_of_diabetes"
                 name="type_of_diabetes"
                 value={values.type_of_diabetes}
@@ -398,11 +392,11 @@ const PatientForm = () => {
                 htmlFor="currentDiabetesMedication"
                 className="form-label"
               >
-                What medications are you currently taking for your diabetes?
+                What medications are you currently taking for your diabetes? (e.g., Metformin, Insulin)
               </label>
               <Form.Control
+                as="textarea"
                 type="text"
-                placeholder="List your current diabetes medications (e.g., Metformin, Insulin)"
                 className="form-control"
                 name="current_diabetes_medication"
                 value={values.current_diabetes_medication}
@@ -416,14 +410,13 @@ const PatientForm = () => {
             </div>
             <div className="mb-3">
               <label htmlFor="bloodSugarLevel" className="form-label">
-                What is your most recent blood sugar level reading?
+                What is your most recent blood sugar level reading? (mg/dL)
               </label>
               <Form.Control
                 type="text"
                 className="form-control"
                 id="blood_sugar_level"
                 name="blood_sugar_level"
-                placeholder="List your current diabetes medications (e.g., Metformin, Insulin)"
                 value={values.blood_sugar_level}
                 onChange={handleChange}
                 isInvalid={!!errors.blood_sugar_level}
@@ -436,7 +429,7 @@ const PatientForm = () => {
             <div className="mb-3">
               <label htmlFor="targetBloodSugarLevel" className="form-label">
                 What is your target blood sugar level as advised by your
-                healthcare provider?
+                healthcare provider? (mg/dL)
               </label>
               <Form.Control
                 type="text"
@@ -445,7 +438,6 @@ const PatientForm = () => {
                 name="target_blood_sugar_level"
                 value={values.target_blood_sugar_level}
                 onChange={handleChange}
-                placeholder="Enter your target blood sugar level (e.g., 100 mg/dL)"
                 isInvalid={!!errors.target_blood_sugar_level}
                 required
               />
@@ -456,16 +448,16 @@ const PatientForm = () => {
             <div className="mb-3">
               <label htmlFor="medicalHistory" className="form-label">
                 Please provide any additional medical history we should be
-                aware of
+                aware of (e.g., heart disease, high blood pressure)
               </label>
               <Form.Control
+                as="textarea"
                 type="text"
                 className="form-control"
                 id="medicalHistory"
                 name="medical_history"
                 value={values.medical_history}
                 onChange={handleChange}
-                placeholder="Detail any relevant medical history (e.g., heart disease, high blood pressure)"
                 isInvalid={!!errors.medical_history}
                 required
               />
@@ -475,14 +467,14 @@ const PatientForm = () => {
             </div>
             <div className="mb-3">
               <label htmlFor="family_medical_history" className="form-label">
-                Has anyone in your family been diagnosed with diabetes?{" "}
+                Has anyone in your family been diagnosed with diabetes? (e.g., mother with Type 2 diabetes) {" "}
               </label>
               <Form.Control
+                as="textarea"
                 type="text"
                 className="form-control"
                 id="family_medical_history"
                 name="family_medical_history"
-                placeholder="Describe any family history of diabetes (e.g., mother with Type 2 diabetes)"
                 value={values.family_medical_history}
                 onChange={handleChange}
                 isInvalid={!!errors.family_medical_history}
@@ -494,16 +486,17 @@ const PatientForm = () => {
             </div>
             <div className="mb-3">
               <label htmlFor="current_health_concerns" className="form-label">
-                What are your current healthcare concerns?
+                What are your current healthcare concerns? (e.g., frequent urination, thirst)
               </label>
               <Form.Control
+                as="textarea"
                 type="text"
                 className="form-control"
                 id="current_health_concerns"
                 name="current_health_concerns"
                 value={values.current_health_concerns}
                 onChange={handleChange}
-                placeholder="List any current health concerns or symptoms (e.g., frequent urination, thirst)"
+                placeholder="List any current health concerns or symptoms"
                 isInvalid={!!errors.current_health_concerns}
                 required
               />
@@ -545,12 +538,12 @@ const PatientForm = () => {
           {step === 3 && (<>
             <div className="mb-3">
               <label htmlFor="dietary_habits" className="form-label">
-                Can you describe your typical daily diet?
+                Can you describe your typical daily diet throughout the day?
               </label>
               <Form.Control
+                as="textarea"
                 type="text"
                 className="form-control"
-                placeholder="Describe your typical meals and snacks throughout the day"
                 id="dietary_habits"
                 name="dietary_habits"
                 value={values.dietary_habits}
@@ -564,12 +557,12 @@ const PatientForm = () => {
             </div>
             <div className="mb-3">
               <label htmlFor="physical_activity_level" className="form-label">
-                How would you describe your level of physical activity?
+                How would you describe your level of physical activity? (e.g., sedentary, light, moderate, vigorous)
               </label>
               <Form.Control
+                as="textarea"
                 type="text"
                 className="form-control"
-                placeholder="Detail your weekly physical activity (e.g., sedentary, light, moderate, vigorous)"
                 id="physical_activity_level"
                 name="physical_activity_level"
                 value={values.physical_activity_level}
@@ -583,12 +576,11 @@ const PatientForm = () => {
             </div>
             <div className="mb-3">
               <label htmlFor="smoking_habits" className="form-label">
-                Do you smoke? If yes, how frequently?
+                Do you smoke? If yes, how frequently? (e.g., non-smoker, occasional, daily)
               </label>
               <Form.Control
                 type="text"
                 className="form-control"
-                placeholder="Specify your smoking frequency and amount (e.g., non-smoker, occasional, daily)"
                 id="smoking_habits"
                 name="smoking_habits"
                 value={values.smoking_habits}
@@ -602,11 +594,10 @@ const PatientForm = () => {
             </div>
             <div className="mb-3">
               <label htmlFor="alcohol_consumption" className="form-label">
-                Do you consume alcohol? If yes, how often and how much?
+                Do you consume alcohol? If yes, how often and how much? (e.g., never, socially, daily, units per week)
               </label>
               <Form.Control
                 type="text"
-                placeholder="Detail your alcohol consumption habits (e.g., never, socially, daily, units per week)"
                 className="form-control"
                 id="alcohol_consumption"
                 name="alcohol_consumption"
@@ -624,11 +615,10 @@ const PatientForm = () => {
                 htmlFor="emergency_contact_information"
                 className="form-label"
               >
-                What is your emergency contact information?
+                What is your emergency contact information? (e.g., name, relation, phone number)
               </label>
               <Form.Control
                 type="text"
-                placeholder="Provide name, relation, and phone number of your emergency contact"
                 className="form-control"
                 id="emergency_contact_information"
                 name="emergency_contact_information"
@@ -643,14 +633,14 @@ const PatientForm = () => {
             </div>
             <div className="mb-3">
               <label htmlFor="medicationAdherence" className="form-label">
-                What is your medication adherence?
+                What is your medication adherence? (e.g., always, often, sometimes, never)
               </label>
               <Form.Control
+                as="textarea"
                 type="text"
                 className="form-control"
                 id="medication_adherence"
                 name="medication_adherence"
-                placeholder="Describe how well you follow your medication schedule (e.g., always, often, sometimes, never)"
                 value={values.medication_adherence}
                 onChange={handleChange}
                 isInvalid={!!errors.medication_adherence}
