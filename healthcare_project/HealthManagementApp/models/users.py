@@ -100,7 +100,7 @@ class Doctor(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True, related_name="doctor_user")
     speciality = models.CharField(max_length=50, blank=True, null=True)
     years_of_experience = models.CharField(max_length=50, blank=True, null=True)
-    # medical_license = models.OneToOneField(MedicalLicense, on_delete=models.CASCADE, null=True, blank=True, related_name="licensed_doctor")
+    medical_license = models.OneToOneField(MedicalLicense, on_delete=models.CASCADE, null=True, blank=True, related_name="licensed_doctor")
     year_of_issue = models.CharField(max_length=50, blank=True, null=True)
     diabetes_management_experience = models.TextField(blank=True, null=True)
     treatment_approach = models.TextField(blank=True, null=True)    
