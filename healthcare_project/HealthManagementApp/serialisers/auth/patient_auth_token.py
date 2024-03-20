@@ -23,9 +23,7 @@ class PatientAuthTokenSerializer(CustomTokenObtainPairSerializer):
         data = super().validate(attrs)
         user = self.user
 
-        # To understand the role values, check the "healthcare_project/HealthManagementApp/models/roles.py" file
         if user.role != '1':
-            # print('user.role != employer')
             raise exceptions.AuthenticationFailed(
                 _('Unathorized user'),
                 'unauthorized_user'

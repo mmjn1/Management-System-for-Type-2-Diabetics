@@ -30,9 +30,7 @@ class AdminAuthTokenSerializer(CustomTokenObtainPairSerializer):
 
         print('user role is type: ', user.role, type(user.role))
 
-        # To understand the role values, check the "healthcare_project/HealthManagementApp/models/roles.py" file
         if user.role != '3':
-            # print('user.role != employer')
             raise exceptions.AuthenticationFailed(
                 _('Unathorized user'),
                 'unauthorized_user'
