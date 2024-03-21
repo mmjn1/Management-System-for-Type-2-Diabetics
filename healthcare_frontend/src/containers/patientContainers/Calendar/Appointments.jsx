@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
 import { Calendar as BigCalendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
@@ -6,8 +6,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addAppointment, updateAppointment, deleteAppointment } from '../../../features/appointments/appointmentsSlice';
 import "../../../assets/patientcss/button.css";
 import AppointmentModal from './AppointmentModal';
- 
-
 
 const localizer = momentLocalizer(moment);
 
@@ -71,8 +69,8 @@ const formatAppointmentForCalendar = async (appointment) => {
   return {
     id: appointment.id,
     title: title,
-    start: startIsoString, 
-    end: endIsoString, 
+    start: startIsoString,
+    end: endIsoString,
     reason_for_appointment: appointment.reason_for_appointment,
   };
 };
@@ -92,7 +90,6 @@ const Appointments = (props) => {
     setShowModal(true);
   };
 
-  console.log('Appointments:', appointments);
 
   const handleUpdateAppointment = async (updatedAppointment) => {
     const formattedAppointment = await formatAppointmentForCalendar(updatedAppointment);
@@ -104,7 +101,7 @@ const Appointments = (props) => {
   };
 
   const handleDeleteAppointment = async (appointmentId) => {
-    dispatch(deleteAppointment(appointmentId));
+    dispatch(deleteAppointment(appointmentId)); 
     setShowModal(false);
   };
 
@@ -124,6 +121,7 @@ const Appointments = (props) => {
     setSelectedAppointment(null);
   };
 
+
   return (
     <>
       <div style={{ position: 'relative', height: '700px' }}>
@@ -138,9 +136,6 @@ const Appointments = (props) => {
           <Button className="scheduleAppointmentButton" onClick={handleAddClick}>
             Schedule New Appointment
           </Button>
-          <Button className="updateAvailabilityButton" onClick={() => { }}>
-            Manage Availability
-          </Button>
         </div>
       </div>
       <AppointmentModal
@@ -150,7 +145,9 @@ const Appointments = (props) => {
         onAppointmentUpdated={handleUpdateAppointment}
         onDeleteAppointment={handleDeleteAppointment}
         selectedAppointment={selectedAppointment}
+        events={appointments}
         formatAppointmentForCalendar={formatAppointmentForCalendar}
+
       />
     </>
   );

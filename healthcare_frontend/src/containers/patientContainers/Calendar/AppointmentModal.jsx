@@ -33,9 +33,10 @@ const AppointmentModal = ({ showModal, handleClose, onAppointmentCreated, onAppo
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
   const [timeSlots, setTimeSlots] = useState([]);
+  const [patientInfo, setPatientInfo] = useState({ id: '', name: '' });
 
   const { data: availableTimeSlots, isFetching } = useGetDoctorAvailabilityQuery({ doctorId: selectedDoctorId, date: selectedDate }, {
-    skip: !selectedDoctorId || !selectedDate, // Skip the query if no doctor or date is selected
+    skip: !selectedDoctorId || !selectedDate, // Skips the query if no doctor or date is selected
   });
 
 
@@ -43,16 +44,35 @@ const AppointmentModal = ({ showModal, handleClose, onAppointmentCreated, onAppo
   const isEditing = selectedAppointment !== null;
 
   const handleModalClose = () => {
-    // Reset the selected time slot when closing the modal
     setSelectedTimeSlot(null);
-    // Reset the selected doctor ID and date to clear time slots
     setSelectedDoctorId('');
     setSelectedDate(null);
-    // Call the handleClose prop to actually close the modal
     handleClose();
   };
 
   useEffect(() => {
+
+    if (showModal) {
+      const fetchPatientInfo = async () => {
+        try {
+          const response = await fetch('/api/current-patient/', {
+            headers: {
+              'Authorization': `Token ${localStorage.getItem('token')}`,
+              'Content-Type': 'application/json',
+            },
+          });
+          if (!response.ok) {
+            throw new Error('Failed to fetch patient details');
+          }
+          const data = await response.json();
+          setPatientInfo({ id: data.id, name: `${data.first_name} ${data.last_name}` });
+        } catch (error) {
+          console.error('Error fetching patient details:', error);
+        }
+      };
+
+      fetchPatientInfo();
+    }
     fetch("/api/api/doctors/")
       .then((response) => {
         if (!response.ok) {
@@ -71,9 +91,8 @@ const AppointmentModal = ({ showModal, handleClose, onAppointmentCreated, onAppo
       .then((response) => response.json())
       .then((data) => setAppointmentTypes(data));
 
-    if (showModal && selectedDoctorId) {
+    if (showModal && selectedDoctorId && selectedDate) {
       const handleMessage = (data) => {
-        // Your handling code here
       };
 
       availabilityWebSocketService.connectToDoctorAvailabilityUpdates(selectedDoctorId, handleMessage);
@@ -82,7 +101,8 @@ const AppointmentModal = ({ showModal, handleClose, onAppointmentCreated, onAppo
     return () => {
       availabilityWebSocketService.disconnectFromDoctorAvailabilityUpdates();
     };
-  }, [showModal, selectedDoctorId]);
+  }, [showModal, selectedDoctorId, selectedDate]);
+
 
   useEffect(() => {
     if (isSuccess) {
@@ -95,7 +115,7 @@ const AppointmentModal = ({ showModal, handleClose, onAppointmentCreated, onAppo
   const formInitialValues = isEditing && selectedAppointment ? {
 
     appointment_type: selectedAppointment.title.split(' with ')[0] || "",
-    // Extract the doctor's name from the title and find the corresponding doctor ID
+    // Extracts the doctor's name from the title and find the corresponding doctor ID
     doctor: (() => {
       const doctorName = selectedAppointment.title.split(' with ')[1]?.split('\n')[0];
       if (doctorName) {
@@ -119,11 +139,14 @@ const AppointmentModal = ({ showModal, handleClose, onAppointmentCreated, onAppo
     timeSlot: "",
   };
 
-  console.log('Form initial values:', selectedAppointment)
-
   const handleDelete = async () => {
-
     if (window.confirm("Are you sure you want to delete this appointment?")) {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Authentication token not found. Please log in again.');
+        return;
+      }
+  
       try {
         const response = await fetch(`/api/appointments/${selectedAppointment.id}/`, {
           method: 'DELETE',
@@ -132,21 +155,23 @@ const AppointmentModal = ({ showModal, handleClose, onAppointmentCreated, onAppo
             'Authorization': `Token ${token}`,
           },
         });
-
-        if (response.ok) {
-          // Successfully deleted appointment
-          alert('Appointment deleted successfully.');
-          onDeleteAppointment(selectedAppointment.id); // Call the callback function passed from parent to update the list
-          handleClose();
-        } else {
-          throw new Error('Failed to delete the appointment.');
+  
+        if (!response.ok) {
+          const errorDetails = await response.json();
+          throw new Error(`Failed to delete the appointment: ${errorDetails.detail}`);
         }
+  
+        // Successfully deleted appointment
+        alert('Appointment deleted successfully.');
+        onDeleteAppointment(selectedAppointment.id); 
+        handleClose(); // Close the modal
       } catch (error) {
         console.error('Error:', error);
-        alert('Failed to delete the appointment.');
+        alert(`Failed to delete the appointment: ${error.message}`);
       }
     }
   };
+
 
 
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
@@ -159,26 +184,23 @@ const AppointmentModal = ({ showModal, handleClose, onAppointmentCreated, onAppo
     //   return; // Stop execution if no matching slot is found
     // }
 
-
-
-    // Adjust data to fit your backend's expectations
     const submissionData = {
+      patient: patientInfo.id,
       doctor: values.doctor,
       appointment_date: values.appointment_date,
       reason_for_appointment: values.reason_for_appointment,
       appointment_type: values.appointment_type,
-      time_slot: values.timeSlot, // Ensure this is correctly mapping to your form's timeSlot value
+      time_slot: values.timeSlot,
     };
-    console.log('Form values:', values);
 
+    console.log('Form values:', values);
     console.log('Submitting appointment:', submissionData);
 
     try {
       const response = await submitAppointment(submissionData).unwrap();
       console.log('Submitted appointment to the doctor:', response);
       const newAppointment = await formatAppointmentForCalendar(response);
-      onAppointmentCreated(newAppointment); // Pass the new appointment data to the parent component
-      alert("Appointment submitted successfully.");
+      onAppointmentCreated(newAppointment); // Passes the new appointment data to the parent component
       handleClose();
     } catch (error) {
       console.error("Failed to submit appointment:", error);
@@ -187,21 +209,6 @@ const AppointmentModal = ({ showModal, handleClose, onAppointmentCreated, onAppo
       setSubmitting(false);
       resetForm();
     }
-
-
-
-    // try {
-    //   await submitAppointment(submissionData).unwrap(); // If RTK Query is used
-    //   alert('Appointment submitted successfully.');
-    //   onAppointmentCreated && onAppointmentCreated();
-    //   resetForm();
-    // } catch (error) {
-    //   console.error('Failed to submit appointment:', error);
-    //   alert('Failed to submit the appointment.');
-    // } finally {
-    //   setSubmitting(false); // End submitting process
-    //   handleClose(); // Close the modal
-    // }
   };
 
   return (
@@ -220,8 +227,16 @@ const AppointmentModal = ({ showModal, handleClose, onAppointmentCreated, onAppo
           <Form>
             <Modal.Body>
               <div className="form-group">
-                <label htmlFor="doctor">Doctor</label>
+                <label htmlFor="patientName">Patient Name</label>
+                <input
+                  type="text"
+                  id="patientName"
+                  className="form-control"
+                  value={patientInfo.name}
+                  readOnly
+                /> <br />
 
+                <label htmlFor="doctor">Doctor</label>
                 <Field
                   as="select"
                   name="doctor"
@@ -229,12 +244,9 @@ const AppointmentModal = ({ showModal, handleClose, onAppointmentCreated, onAppo
                     }`}
 
                   onChange={(e) => {
-
-                    console.log("Raw selected option value:", e.target.value);
                     ;
                     const value = e.target.selectedIndex;
                     const doctorId = (value);
-                    console.log("Selected doctor ID:", doctorId);
                     setSelectedDoctorId(e.target.value);
                     setFieldValue("doctor", e.target.value, true);
                   }}
@@ -244,8 +256,8 @@ const AppointmentModal = ({ showModal, handleClose, onAppointmentCreated, onAppo
                     <option key={doctor.id} value={doctor.id}>
                       Dr. {doctor.first_name} {doctor.last_name}
                     </option>
-
                   ))}
+
                 </Field>
                 <ErrorMessage
                   name="doctor"
@@ -281,7 +293,7 @@ const AppointmentModal = ({ showModal, handleClose, onAppointmentCreated, onAppo
                   variant="outline-primary"
                   className={`m-1 ${selectedTimeSlot === slot.id ? 'selected-time-slot' : ''}`}
                   onClick={() => {
-                    setFieldValue("timeSlot", (slot.id)); // Ensuring the ID is set as a string
+                    setFieldValue("timeSlot", (slot.id));
                     console.log("Selected time slot:", slot);
                     setSelectedTimeSlot(slot.id); // This updates the local state, which might be used for UI purposes
                   }}
@@ -335,11 +347,6 @@ const AppointmentModal = ({ showModal, handleClose, onAppointmentCreated, onAppo
                 />
               </div>
 
-              {showSuccessMessage && (
-                <div className="alert alert-success" role="alert">
-                  Appointment submitted successfully!
-                </div>
-              )}
 
             </Modal.Body>
             <Modal.Footer>
