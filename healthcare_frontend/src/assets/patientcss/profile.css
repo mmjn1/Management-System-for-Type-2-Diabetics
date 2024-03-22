@@ -58,23 +58,40 @@
 }
 
 .profileInputLabel {
-    display: block; /* Makes the label display on a new line */
+    display: block; 
     margin-bottom: 5px; 
 }
 
 .profileInput {
-    display: block; /* Ensures the input takes a new line */
-    width: 75%; /* Adjust width as needed */
+    display: block; 
+    width: 75%; 
 }
 
 .profileTextarea {
-    width: 95%; /* Takes the full width of the parent container */
-    height: 100px; /* Adjust the height as needed */
-    padding: 10px; /* Optional: for internal spacing */
-    border: 1px solid #ccc; /* Optional: for border styling */
-    border-radius: 4px; /* Optional: for rounded corners */
-    resize: vertical; /* Allows vertical resize only */
+    width: 95%; 
+    height: 100px; 
+    padding: 10px; 
+    border: 1px solid #ccc; 
+    border-radius: 4px; 
+    resize: vertical; 
 }
 
 
 
+.updateProfileButton {
+    background-color: #007bff; /* Adjust the color to match your site's theme */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+
+.custom-modal-width .modal-dialog {
+    max-width: 95%; /* Or any other width */
+}
