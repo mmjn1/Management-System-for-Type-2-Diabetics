@@ -1,13 +1,25 @@
-from rest_framework.views import APIView
-from django.contrib.auth import get_user_model
 from rest_framework import generics, permissions
+from rest_framework.response import Response
 
-# Sotp Imports
-from sotp.models import UserSOTP
-from sotp.services import GenerateSOTP
+from HealthManagementApp.models import Doctor, Patient
+from HealthManagementApp.serialisers import UserSerializersData
+from HealthManagementApp.serialisers.Doctor import DoctorSerializerDetail
+from HealthManagementApp.serialisers.Patient import PatientSerializerDetails
 
-from HealthManagementApp.serialisers.serializers import loginSerializer
 
-otp = GenerateSOTP()
+class UserDetails(generics.GenericAPIView):
+    def get(self, request):
+        user = self.request.user
+        user_data = UserSerializersData(user, context=self.get_serializer_context()).data
 
-User = get_user_model()
+        if user.type == 'Doctor':
+            doctor = Doctor.objects.get(user=user)
+            information = DoctorSerializerDetail(doctor, context=self.get_serializer_context()).data
+        elif user.type == 'Patient':
+            patient = Patient.objects.get(user=user)
+            information = PatientSerializerDetails(patient, context=self.get_serializer_context()).data
+        else:
+            information = {}
+        return Response({"user": user_data,
+                         "information": information
+                         })

@@ -1,1 +1,1 @@
-from HealthManagementApp.APIs import (DoctorCreate, DoctorData, PatientData, PatientCreate)
+from HealthManagementApp.APIs.apis import (DoctorCreate, DoctorData, PatientData, PatientCreate)
