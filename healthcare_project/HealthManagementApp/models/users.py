@@ -109,7 +109,7 @@ class Doctor(models.Model):
     emergency_consultations = models.CharField(max_length=50, blank=True, null=True)
 
     def __str__(self):
-        return f'Doctor {self.user.first_name}: Specialty - {self.speciality}, Years of Experience - {self.years_of_experience}'
+        return f'Dr. {self.user.first_name} {self.user.last_name}'
 
 
 class Patient(models.Model):
@@ -129,6 +129,6 @@ class Patient(models.Model):
     alcohol_consumption = models.CharField(max_length=50, blank=True, null=True)
     
     def __str__(self):
-        return f'Patient {self.user.first_name}: Type of Diabetes - {self.type_of_diabetes}, Date of Diagnosis - {self.date_of_diagnosis}'
+        return f'{self.user.first_name} {self.user.last_name}'
 
     
