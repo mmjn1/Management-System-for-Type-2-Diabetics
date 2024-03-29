@@ -374,9 +374,11 @@ const PatientForm = () => {
               </label>
               <Calendar
                 onChange={(e, event) => {
+                  const formattedDate = e.toISOString().substring(0, 10); // Convert to YYYY-MM-DD format
+
                   handleChange({
                     ...event, target: {
-                      name: "date_of_diagnosis", value: e
+                      name: "date_of_diagnosis", value: formattedDate
                     }
                   });
                 }}

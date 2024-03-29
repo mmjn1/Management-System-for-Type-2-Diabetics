@@ -6,6 +6,11 @@ from HealthManagementApp.serialisers import UserSerializersData
 from HealthManagementApp.serialisers.Doctor import DoctorSerializerDetail
 from HealthManagementApp.serialisers.Patient import PatientSerializerDetails
 
+"""
+Defines an API endpoint for retrieving user details based on the user type (Doctor or Patient).
+Returns user data and additional information specific to the user type.
+"""
+
 
 class UserDetails(generics.GenericAPIView):
     def get(self, request):

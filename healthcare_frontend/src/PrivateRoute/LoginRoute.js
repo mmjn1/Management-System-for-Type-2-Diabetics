@@ -5,12 +5,12 @@ import { userDetails } from "../features/api/Userdetails";
 
 /**
  * PrivateRouteLogin is used for general redirection based on user's role and authentication status.
- * It 
+ *
  * It uses Redux to manage global state for user details and authentication status.
  * 
  * It dispatches an action to fetch user details. It then checks if a user token exists in local storage
- * to determine if the user is authenticated. Depending on the user's type (Doctor or Patient), it redirects to the respective
- * dashboard. If the user is not authenticated, it redirects to the login page.
+ * to determine if the user is authenticated. Depending on the user's type (Doctor or Patient), it redirects to the respective dashboard. 
+ * If the user is not authenticated, it redirects to the login page.
  * 
  */
 
