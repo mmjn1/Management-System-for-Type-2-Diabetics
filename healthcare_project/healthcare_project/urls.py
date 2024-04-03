@@ -14,22 +14,31 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
+
+from HealthManagementApp.APIs.apis import loginAPI
+from HealthManagementApp.api import UserDetails
+from django.conf.urls.static import static
+from django.conf import settings
+
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('HealthManagementApp.urls')),
-]
-
-
-# API Documentation using drf_spectacular
-urlpatterns += [
-
+    path('chat/', include('chat.urls')),
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
-    # Optional UI:
     path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
-    
-    
+    path('login_new/', loginAPI.as_view(), name='custom-login'),
+    path('getDetails/', UserDetails.as_view(), name='User-Details'),
+
+    re_path(r'^auth/', include('djoser.urls')),
+    re_path(r'^auth/', include('djoser.urls.jwt')),
+    re_path(r'^auth/', include('djoser.urls.authtoken')),
 ]
+
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
