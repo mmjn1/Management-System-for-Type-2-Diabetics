@@ -36,7 +36,7 @@ const AppointmentModal = ({ showModal, handleClose, onAppointmentCreated, onAppo
   const [patientInfo, setPatientInfo] = useState({ id: '', name: '' });
 
   const { data: availableTimeSlots, isFetching } = useGetDoctorAvailabilityQuery({ doctorId: selectedDoctorId, date: selectedDate }, {
-    skip: !selectedDoctorId || !selectedDate, // Skips the query if no doctor or date is selected
+    skip: !selectedDoctorId || !selectedDate, 
   });
 
 
@@ -146,7 +146,7 @@ const AppointmentModal = ({ showModal, handleClose, onAppointmentCreated, onAppo
         alert('Authentication token not found. Please log in again.');
         return;
       }
-  
+
       try {
         const response = await fetch(`/api/appointments/${selectedAppointment.id}/`, {
           method: 'DELETE',
@@ -155,16 +155,23 @@ const AppointmentModal = ({ showModal, handleClose, onAppointmentCreated, onAppo
             'Authorization': `Token ${token}`,
           },
         });
-  
+
         if (!response.ok) {
           const errorDetails = await response.json();
           throw new Error(`Failed to delete the appointment: ${errorDetails.detail}`);
         }
-  
+
         // Successfully deleted appointment
         alert('Appointment deleted successfully.');
-        onDeleteAppointment(selectedAppointment.id); 
-        handleClose(); // Close the modal
+        onDeleteAppointment(selectedAppointment.id);
+        handleClose();
+
+        // Send a WebSocket message to notify the doctor
+        availabilityWebSocketService.sendMessage({
+          type: 'appointment_deleted',
+          appointment_id: selectedAppointment.id,
+        });
+
       } catch (error) {
         console.error('Error:', error);
         alert(`Failed to delete the appointment: ${error.message}`);

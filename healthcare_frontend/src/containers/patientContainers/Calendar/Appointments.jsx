@@ -62,6 +62,7 @@ const formatAppointmentForCalendar = async (appointment) => {
   const doctorName = await doctorDetails();
 
   const title = `${appointment.appointment_type} with Dr. ${doctorName}\n${startTime.format("hh:mm A")}-${endTime.format("hh:mm A")} at ${timeSlotDetails.location}`;
+  
   // Convert start and end times to ISO strings
   const startIsoString = new Date(appointment.appointment_date + 'T' + timeSlotDetails.start_time).toISOString();
   const endIsoString = new Date(appointment.appointment_date + 'T' + timeSlotDetails.end_time).toISOString();
