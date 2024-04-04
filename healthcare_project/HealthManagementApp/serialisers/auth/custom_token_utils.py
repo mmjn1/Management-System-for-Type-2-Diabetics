@@ -20,8 +20,6 @@ class InActiveUser(AuthenticationFailed):
     # default_code = 'no_active_account'
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer, TokenObtainSerializer):
-
-    # Overiding validate function in the TokenObtainSerializer  
     def validate(self, attrs):
         authenticate_kwargs = {
             self.username_field: attrs[self.username_field],
@@ -31,10 +29,6 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer, TokenObtainSeri
             authenticate_kwargs['request'] = self.context['request']
         except KeyError:
             pass
-
-        # print(f"\nthis is the user of authenticate_kwargs {authenticate_kwargs['email']}\n")
-
-
         '''
         Checking if the user exists by getting the email(username field) from authentication_kwargs.
         If the user exists we check if the user account is active.

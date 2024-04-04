@@ -1,0 +1,16 @@
+{% load i18n %}
+
+{% block subject %}
+    {% blocktrans %}You have one message from {{ sender_name }}{% endblocktrans %}
+{% endblock subject %}
+
+{% block html_body %}
+    <p>Message: <b>{{ message }}</b></p>
+
+    <hr>
+    You can reply to this message via {{ site_name }} chat system
+    <p>{% trans "Thanks for using our site!" %}</p>
+
+    <p>{% blocktrans %}The {{ site_name }} team{% endblocktrans %}</p>
+
+{% endblock html_body %}
