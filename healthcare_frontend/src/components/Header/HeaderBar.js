@@ -1,19 +1,24 @@
 import React from "react";
 import "../../assets/glucocare/vendor/fontawesome-free/css/all.min.css";
 import "../../assets/glucocare/vendor/animate.css/animate.min.css";
-import "../../assets/glucocare/vendor/bootstrap/css/bootstrap.min.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 import "../../assets/glucocare/vendor/bootstrap-icons/bootstrap-icons.css";
 import "../../assets/glucocare/vendor/boxicons/css/boxicons.min.css";
 import "../../assets/glucocare/vendor/glightbox/css/glightbox.min.css";
 import "../../assets/glucocare/vendor/remixicon/remixicon.css";
 import "../../assets/glucocare/vendor/swiper/swiper-bundle.min.css";
 import "../../assets/glucocare/css/style.css";
-
+import { logout } from "../../features/api/userslice";
 import MainMenu from "./MainMenu";
+import { useDispatch, useSelector } from "react-redux";
 
 const Header = () => {
-  // const token = useAuth();
-  const token = 0;
+  const authStatus = useSelector((state) => state.user);
+  const isLoggedIn = useSelector((state) => state.user.token) !== null;
+  const dispatch = useDispatch();
+  const logoutfun = () => {
+    dispatch(logout())
+  };
 
   return (
     <div>
@@ -34,11 +39,20 @@ const Header = () => {
             <a href="/">GlucoCare</a>
           </h1>
           <MainMenu />
-          <a href="/auth/login" className="appointment-btn scrollto">
-            <span className="d-none d-md-inline" style={{ fontSize: "16px" }}>
-              Login
-            </span>
-          </a>
+          {isLoggedIn ? (
+            <button onClick={logoutfun} style={{ border: 'none' }} className="appointment-btn scrollto">
+              <span className="d-none d-md-inline" style={{ fontSize: "16px" }}>
+                Logout
+              </span>
+            </button>
+          ) : (
+            <a href="/auth/login" style={{ border: 'none' }} className="appointment-btn scrollto">
+              <span className="d-none d-md-inline" style={{ fontSize: "16px" }}>
+                Login
+              </span>
+            </a>
+          )}
+
         </div>
       </header>
     </div>
