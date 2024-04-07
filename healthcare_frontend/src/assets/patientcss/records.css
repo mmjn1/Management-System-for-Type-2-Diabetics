@@ -1,0 +1,134 @@
+.userList {
+  flex: 4;
+}
+
+.userListUser {
+  display: flex;
+  align-items: center;
+}
+
+.userListImg {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 10px;
+}
+
+.userListEdit {
+  border: none;
+  border-radius: 10px;
+  padding: 5px 10px;
+  background-color: #3bb077;
+  color: white;
+  cursor: pointer;
+  margin-right: 20px;
+}
+
+.userListDelete {
+  color: red;
+  cursor: pointer;
+}
+
+
+
+.patient-details-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: calc(100% - 40px);
+  max-width: 1000px;
+}
+
+.patient-details-section {
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.patient-details-section h2 {
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  color: #333;
+  border-bottom: 3px solid #eee;
+}
+
+.patient-details-section table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+.patient-details-section table th,
+.patient-details-section table td {
+  text-align: left;
+  padding: 15px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.patient-details-section table th {
+  background-color: #fafafa;
+  color: #555;
+}
+
+.patient-details-section table td {
+  background-color: #ffffff;
+}
+
+.patient-details-section table tr:nth-child(even) {
+  background-color: #f8f8f8;
+}
+/* .patient-lifestyle-table,
+.patient-medical-history-table,
+.patient-health-status-table {
+} */
+
+.table-responsive {
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+  margin-top: 10px;
+}
+
+
+.form-control {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.form-control:focus {
+  border-color: #3bb077;
+  box-shadow: 0 0 8px rgba(59, 176, 119, 0.2);
+  
+}
+
+.create-form-button {
+  margin: 20px 0; 
+  text-align: right; 
+}
+
+.create-form-button button {
+  padding: 10px 20px; 
+  background-color: #4CAF50; 
+  color: white; 
+  border: none; 
+  border-radius: 5px; 
+  cursor: pointer; 
+}
+
+.create-form-button button:hover {
+  background-color: #45a049; 
+}

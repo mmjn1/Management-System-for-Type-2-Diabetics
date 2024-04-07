@@ -54,7 +54,10 @@ export const logout = createAsyncThunk(
           },
         },
       );
-      localStorage.removeItem("token"); // Clear the token
+      localStorage.removeItem("token");
+      localStorage.removeItem("id");
+      localStorage.removeItem("type");
+
     } catch (error) {
       if (!error.response) {
         throw error;
@@ -125,7 +128,15 @@ const authSlice = createSlice({
         state.status = "loading";
       })
       .addCase(logout.fulfilled, (state) => {
-        localStorage.clear();
+
+        // Clear the user's session upon successful logout
+        localStorage.removeItem("token");
+        localStorage.removeItem("id");
+        localStorage.removeItem("type");
+
+        // localStorage.clear();
+
+        // Update state with user information upon successful logout
         state.status = "idle";
         state.token = null;
         state.id = null;

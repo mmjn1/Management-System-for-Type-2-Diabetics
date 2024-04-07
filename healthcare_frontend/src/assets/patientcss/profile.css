@@ -79,7 +79,7 @@
 
 
 .updateProfileButton {
-    background-color: #007bff; /* Adjust the color to match your site's theme */
+    background-color: #007bff; 
     color: white;
     border: none;
     border-radius: 5px;
@@ -93,5 +93,6 @@
 }
 
 .custom-modal-width .modal-dialog {
-    max-width: 95%; /* Or any other width */
+    max-width: 95%; 
 }
+
