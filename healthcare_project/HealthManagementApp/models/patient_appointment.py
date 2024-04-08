@@ -6,6 +6,7 @@ from HealthManagementApp.models.doctor_availability import TimeSlot
 
 
 class PatientAppointment(models.Model):
+    patient = models.ForeignKey(Patient, related_name='appointments', on_delete=models.CASCADE, null=True)
     doctor = models.ForeignKey(Doctor, related_name='patient_appointments', on_delete=models.CASCADE)
     appointment_date = models.DateField()
     time_slot = models.ForeignKey(TimeSlot, on_delete=models.CASCADE, null=True)  

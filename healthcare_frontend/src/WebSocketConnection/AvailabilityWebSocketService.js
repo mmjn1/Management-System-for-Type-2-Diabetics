@@ -44,7 +44,7 @@ class AvailabilityWebSocketService {
             }, 2000 * this.reconnectAttempts); // Exponential back-off
         } else {
             console.log('Max reconnect attempts reached. Giving up.');
-            // Optionally, update the UI or notify the user that real-time updates are unavailable
+            
         }
     }
 
@@ -52,6 +52,14 @@ class AvailabilityWebSocketService {
         if (this.availabilityUpdatesWs) {
             this.reconnectAttempts = 0; // Reset reconnect attempts
             this.availabilityUpdatesWs.close();
+        }
+    }
+
+    sendMessage(message) {
+        if (this.availabilityUpdatesWs && this.availabilityUpdatesWs.readyState === WebSocket.OPEN) {
+            this.availabilityUpdatesWs.send(JSON.stringify(message));
+        } else {
+            console.error('WebSocket is not connected.');
         }
     }
 }

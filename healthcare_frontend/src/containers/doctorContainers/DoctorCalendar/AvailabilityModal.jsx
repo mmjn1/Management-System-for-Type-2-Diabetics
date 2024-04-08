@@ -4,7 +4,7 @@ import { Formik, FieldArray, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { BsPlus, BsFillTrashFill } from 'react-icons/bs';
 import moment from "moment";
-import { useUpdateAvailabilityMutation, useCreateAvailabilityMutation } from '../../../features/availabilitySlice';
+import { useUpdateAvailabilityMutation, useCreateAvailabilityMutation } from '../../../features/appointments/availabilitySlice';
 
 const daysOfWeek = [
   { name: 'Monday', value: 'Monday' },
@@ -53,8 +53,11 @@ const AvailabilityModal = ({ showModal, handleClose }) => {
   const [availability, setAvailability] = useState([]);
   const [submissionError, setSubmissionError] = useState('');
   const [submissionSuccess, setSubmissionSuccess] = useState(false);
-  const [updateAvailability, { isLoading }] = useUpdateAvailabilityMutation();
-  const [createAvailability] = useCreateAvailabilityMutation();
+  const [updateAvailability, { isLoading: isUpdating }] = useUpdateAvailabilityMutation();
+  const [createAvailability, { isLoading: isCreating }] = useCreateAvailabilityMutation();
+  const isLoading = isUpdating || isCreating;
+  const [selectedDoctorId, setSelectedDoctorId] = useState('');
+
   const [locations, setLocations] = useState([]);
   const [existingAvailability, setExistingAvailability] = useState([]);
 
@@ -148,6 +151,13 @@ const AvailabilityModal = ({ showModal, handleClose }) => {
   const formatTimeForBackend = (time) => moment(time, 'H:mm').format('HH:mm:ss');
 
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
+    try {
+      await updateAvailability({ doctorId: selectedDoctorId, ...values }).unwrap();
+      // Handle success here (e.g., show a success message, reset the form)
+    } catch (error) {
+      // Handle error here (e.g., show an error message)
+    }
+    
     console.log("Submitting availability data:", values);
     setSubmissionError(''); // Clear any previous error messages
 
@@ -156,45 +166,45 @@ const AvailabilityModal = ({ showModal, handleClose }) => {
 
     // Structure the data for submission
     const availabilityData = values.days
-    .filter(day => day.selected)
-    .map(day => {
-      const existingDayData = existingAvailability.find(avail => avail.day_of_week === day.day);
-      return {
-        id: existingDayData ? existingDayData.id : undefined,
-        doctor: doctorId,
-        day_of_week: day.day,
-        is_working: day.selected,
-        time_slots: day.slots.map(slot => {
-          // Include the ID for existing slots, if available
-          const existingSlot = existingDayData ? existingDayData.time_slots.find(ts => 
-            moment(ts.start_time, 'HH:mm:ss').format('HH:mm') === slot.start_time &&
-            moment(ts.end_time, 'HH:mm:ss').format('HH:mm') === slot.end_time &&
-            ts.location === slot.location
-          ) : undefined;
+      .filter(day => day.selected)
+      .map(day => {
+        const existingDayData = existingAvailability.find(avail => avail.day_of_week === day.day);
+        return {
+          id: existingDayData ? existingDayData.id : undefined,
+          doctor: doctorId,
+          day_of_week: day.day,
+          is_working: day.selected,
+          time_slots: day.slots.map(slot => {
+            // Include the ID for existing slots, if available
+            const existingSlot = existingDayData ? existingDayData.time_slots.find(ts => 
+              moment(ts.start_time, 'HH:mm:ss').format('HH:mm') === slot.start_time &&
+              moment(ts.end_time, 'HH:mm:ss').format('HH:mm') === slot.end_time &&
+              ts.location === slot.location
+            ) : undefined;
 
-          return {
-            id: existingSlot ? existingSlot.id : undefined, // Include the ID if the slot already exists
-            start_time: formatTimeForBackend(slot.start_time),
-            end_time: formatTimeForBackend(slot.end_time),
-            location: slot.location,
-          };
-        }),
-      };
-    });
+            return {
+              id: existingSlot ? existingSlot.id : undefined, // Include the ID if the slot already exists
+              start_time: formatTimeForBackend(slot.start_time),
+              end_time: formatTimeForBackend(slot.end_time),
+              location: slot.location,
+            };
+          }),
+        };
+      });
 
-      try {
-        // Process each availability entry
-        for (const day of availabilityData) {
-          console.log("Submitting availability data for day:", day);
-    
-          if (day.id) {
-            // If an ID is present, update the existing availability
-            await updateAvailability({ id: day.id, ...day }).unwrap();
-          } else {
-            // If no ID is present, create a new availability
-            await createAvailability(day).unwrap();
-          }
+    try {
+      // Process each availability entry
+      for (const day of availabilityData) {
+        console.log("Submitting availability data for day:", day);
+
+        if (day.id) {
+          // If an ID is present, update the existing availability
+          await updateAvailability({ id: day.id, ...day }).unwrap();
+        } else {
+          // If no ID is present, create a new availability
+          await createAvailability(day).unwrap();
         }
+      }
 
       setSubmissionSuccess(true);
       setSubmissionError(''); // Clear any submission error
