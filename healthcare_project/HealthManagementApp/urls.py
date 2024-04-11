@@ -34,7 +34,7 @@ from HealthManagementApp.views.views import(SupportInquiryView,
                                             update_doctor_account_info,
                                             update_professionalInfo,
                                             update_PracticeInfo,
-                                            educational_info,
+                                            get_dietary_advice,
                                         )
 from rest_framework.response import Response
 from rest_framework import routers, serializers, viewsets, generics, status
@@ -111,7 +111,7 @@ urlpatterns = [
     path('account-information/', update_doctor_account_info, name='update_doctor_account_info'),
     path('professional-info/', update_professionalInfo, name='update_professionalInfo'),
     path('practice-details/', update_PracticeInfo, name='update_PracticeInfo'),
-    path('educational-info/', educational_info, name='educational_info'),
+    path('dietary-advice/', get_dietary_advice, name='get_dietary_advice'),
 
 ]
 

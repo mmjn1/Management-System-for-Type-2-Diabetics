@@ -72,7 +72,6 @@ class DoctorCreate(APIView):
             user = User.objects.create_user(**user_data)
             user.is_active = False
             user.type = 'Doctor'  
-
             user.save()
             
             doctor_data = {
@@ -277,3 +276,5 @@ class loginAPI(generics.GenericAPIView):
             return Response(
                 {"message": error_message}, status=status.HTTP_403_FORBIDDEN
             )
+
+
