@@ -19,7 +19,6 @@ from HealthManagementApp.Utils.utils import account_activation_token
 from django.shortcuts import redirect
 from HealthManagementApp.models.users import Doctor, Patient
 from HealthManagementApp.models import WeeklyAvailability, TimeSlot
-from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from HealthManagementApp.models import DoctorAppointment, PatientAppointment
@@ -28,32 +27,132 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import get_user_model
-import os
 from rest_framework import status
-from rest_framework import serializers  
 import datetime
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from rest_framework.views import APIView
-from HealthManagementApp.models import Form, Section, Field, FieldChoice
+from HealthManagementApp.models import Form, Field
 from rest_framework.generics import ListAPIView
-import requests
-from decouple import config
-from django.http import JsonResponse
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-import openai
+from django.http import HttpResponseNotAllowed
+from django.http import HttpResponse
 from HealthManagementApp.models import UserMealEntry
 import json
-
-
+import os
 
 login_url = os.environ.get('FRONT_END_URL_LOGIN')
-
 User = get_user_model()
 
+from openai import OpenAI
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-"""
+@csrf_exempt
+def get_dietary_advice(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            user_input = data.get("user_input")
+
+            response = client.chat.completions.create(
+                model="ft:gpt-3.5-turbo-0125:personal:dietary-advice-bot:9CUENrwC",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "This chatbot provides dietary advice for people with type 2 diabetes."
+                    },
+                    {
+                        "role": "user",
+                        "content": user_input
+                    }
+                ],
+                max_tokens=150,
+                temperature=0.7,
+                frequency_penalty=0,
+                presence_penalty=0,
+            )
+            advice = response.choices[0].message.content
+
+            entry = UserMealEntry.objects.create(
+                user_input=user_input,
+                ai_advice=advice
+            )
+            return JsonResponse({
+                'id': entry.id,  
+                'advice': advice
+            }, status=201)  
+        
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    else:
+        return JsonResponse({'error': 'Invalid request'}, status=400)
+
+@csrf_exempt
+@api_view(['PATCH'])
+def update_dietary_advice(request, entry_id):
+    if request.method == "PATCH":
+        try:
+            data = json.loads(request.body)
+            user_input = data.get("user_input")
+
+            entry = UserMealEntry.objects.get(pk=entry_id)
+
+            entry.user_input = user_input
+
+            response = client.chat.completions.create(
+                model="ft:gpt-3.5-turbo-0125:personal:dietary-advice-bot:9CUENrwC",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "This chatbot provides dietary advice for people with type 2 diabetes."
+                    },
+                    {
+                        "role": "user",
+                        "content": user_input
+                    }
+                ],
+                max_tokens=150,
+                temperature=0.7,
+                frequency_penalty=0,
+                presence_penalty=0,
+            )
+            advice = response.choices[0].message.content
+
+            entry.ai_advice = advice
+            entry.save()
+
+            return JsonResponse({
+                'id': entry.id,
+                'advice': advice
+            }, status=200)
+
+        except UserMealEntry.DoesNotExist:
+            return JsonResponse({'error': 'UserMealEntry not found'}, status=404)
+    else:
+        return HttpResponseNotAllowed(['PATCH'])
+
+@api_view(['DELETE'])
+def delete_dietary_advice(request, entry_id):
+    if request.method == "DELETE":
+        try:
+            # Find the existing UserMealEntry instance
+            entry = UserMealEntry.objects.get(pk=entry_id)
+            
+            # Delete the entry
+            entry.delete()
+
+            # Return a success response
+            return JsonResponse({'message': 'Entry deleted successfully'}, status=200)
+
+        except UserMealEntry.DoesNotExist:
+            return JsonResponse({'error': 'UserMealEntry not found'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    else:
+        return HttpResponseNotAllowed(['DELETE'])
+
+"""PP
 SupportInquiryView handles the creation of new SupportInquiry instances.
 Defined the queryset as all instances of SupportInquiry.
 The serializer_class is set to SupportInquirySerializer, 
@@ -598,54 +697,7 @@ def update_PracticeInfo(request):
         return JsonResponse(serializer.data, status=status.HTTP_200_OK)
     else:
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 
-
-openai.api_key = os.getenv("OPENAI_API_KEY")
-
-
-@csrf_exempt
-def get_dietary_advice(request):
-    if request.method == "POST":
-        data = json.loads(request.body)
-        user_input = data.get("user_input")
-
-        # Initialize the OpenAI client
-        client = openai.ChatCompletion()
-
-        # Define the conversation context
-        messages = [
-            {
-                "role": "system",
-                "content": "This chatbot provides dietary advice for people with type 2 diabetes."
-            },
-            {
-                "role": "user",
-                "content": user_input
-            }
-        ]
-
-        try:
-            # Call the OpenAI API with the conversation context
-            response = client.create(
-                model="ft-gpt-3.5-turbo-0125:personal:dietary-advice-bot:9CUENrwC",
-                messages=messages,
-                max_tokens=256,
-                temperature=1,
-                top_p=1,
-                frequency_penalty=0,
-                presence_penalty=0
-            )
-            advice = response.choices[0].message['content'] if response.choices else ""
-        except Exception as e:  # Catch any exception from the openai call
-            return JsonResponse({'error': str(e)}, status=500)
-
-        # Save the user input and AI advice to the database
-        entry = UserMealEntry.objects.create(
-            user_input=user_input,
-            ai_advice=advice
-        )
-
-        # Return the advice to the front end
-        return JsonResponse({'advice': advice})
-
-    return JsonResponse({'error': 'Invalid request'}, status=400)
+def health_check(request):
+    return HttpResponse("OK", status=200)

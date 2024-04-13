@@ -5,6 +5,8 @@ from django.core.serializers import serialize
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import default_storage
+from django.http import HttpResponse
+
 
 
 @require_http_methods(["GET"])
@@ -57,3 +59,6 @@ def upload_attachment(request):
     return JsonResponse({'status': 'No file uploaded'}, status=400)
 
 
+
+def health_check(request):
+    return HttpResponse("OK", status=200)
