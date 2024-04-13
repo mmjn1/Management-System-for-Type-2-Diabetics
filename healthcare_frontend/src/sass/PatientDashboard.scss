@@ -5,12 +5,12 @@
         flex: 6;
 
         .widgetGrid {
-            display:flex;            
+            display: flex;
         }
 
-        .widgetItemP{
+        .widgetItemP {
             background-color: white;
-            border-radius:20px;
+            border-radius: 20px;
             padding: 10px;
             margin: 15px;
             height: 200px;
@@ -19,11 +19,11 @@
             flex: 1;
             -webkit-box-shadow: 2px 4px 10px 1px rgba(0, 0, 0, 0.47);
             box-shadow: 2px 4px 10px 1px rgba(201, 201, 201, 0.47);
-        } 
+        }
 
         .widgetItemA {
             background-color: white;
-            border-radius:20px;
+            border-radius: 20px;
             padding: 10px;
             margin: 15px;
             height: 200px;
@@ -31,13 +31,13 @@
 
             flex: 1;
             -webkit-box-shadow: 2px 4px 10px 1px rgba(0, 0, 0, 0.47);
-            box-shadow: 2px 4px 10px 1px rgba(201, 201, 201, 0.47);
+            box-shadow: 2px 4px 5px -2px rgba(201, 201, 201, 0.47);
 
         }
 
         .widgetItemB {
             background-color: white;
-            border-radius:20px;
+            border-radius: 20px;
             padding: 10px;
             margin: 15px;
             height: 200px;
@@ -48,10 +48,25 @@
             box-shadow: 2px 4px 10px 1px rgba(201, 201, 201, 0.47);
 
         }
-        
-        
+
+
     }
 }
 
+.dietary-habits-layout {
+    display: flex;
+    min-height: 100vh;
+    /* Full height of the viewport */
+}
 
+.sidebar {
+    width: 300px;
+    
+}
+
+.main-content {
+    flex-grow: 1;
+    padding: 16px;
+    overflow: auto;
+}
 

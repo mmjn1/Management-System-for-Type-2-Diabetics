@@ -10,6 +10,7 @@ import HomeOutlined from "@mui/icons-material/HomeOutlined";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../features/api/userslice";
 import { useEffect } from "react";
+import DifferenceOutlinedIcon from '@mui/icons-material/DifferenceOutlined';
 import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
 import LocalLibraryOutlinedIcon from '@mui/icons-material/LocalLibraryOutlined';
 
@@ -53,13 +54,19 @@ const SidebarDoctor = () => {
         <div className="sidebarMenu">
           <h3 className="sidebarTitle"> Patient Monitoring</h3>
           <ul className="sidebarList">
-            <Link to="/" className="link">
-              <li className="sidebarListItem">
-                <AssignmentOutlinedIcon className="sidebarIcon" />
+            <Link to="/doctor/patient-records" className="link">
+            <li className={`sidebarListItem ${location.pathname === "/doctor/patient-records" ? "active" : ""}`}>
+                <DifferenceOutlinedIcon className="sidebarIcon" />
                 Patient Records
               </li>
             </Link>
 
+            <Link to="/doctor/custom-forms" className="link">
+            <li className={`sidebarListItem ${location.pathname === "/doctor/custom-forms" ? "active" : ""}`}>
+                <AssignmentOutlinedIcon className="sidebarIcon" />
+               Custom Forms
+              </li>
+            </Link>
             <Link to="/doctor/appointments" className="link">
               <li className={`sidebarListItem ${location.pathname === "/doctor/appointments" ? "active" : ""}`}>
                 <CalendarMonthOutlinedIcon className="sidebarIcon" />

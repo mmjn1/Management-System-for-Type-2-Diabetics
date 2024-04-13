@@ -9,7 +9,6 @@ import DiningOutlinedIcon from '@mui/icons-material/DiningOutlined';
 import LibraryBooksOutlinedIcon from '@mui/icons-material/LibraryBooksOutlined';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import PaymentsOutlinedIcon from '@mui/icons-material/PaymentsOutlined';
-import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../features/api/userslice";
@@ -89,8 +88,8 @@ const PatientSidebar = () => {
               </li>
             </Link>
 
-            <Link to="/" className="link">
-              <li className={`sidebarListItem ${location.pathname === "/" ? "active" : ""}`}>
+            <Link to="/myrecords" className="link">
+              <li className={`sidebarListItem ${location.pathname === "/myrecords" ? "active" : ""}`}>
                 <LibraryBooksOutlinedIcon className="sidebarIcon" />
                 My Records
               </li>
@@ -103,10 +102,12 @@ const PatientSidebar = () => {
               </li>
             </Link>
 
-            <li className="sidebarListItem">
-              <LocalLibraryOutlinedIcon className="sidebarIcon" />
-              Educational Resources
-            </li>
+            <Link to="/resources" className="link">
+              <li className={`sidebarListItem ${location.pathname === "/resources" ? "active" : ""}`}>
+                <LocalLibraryOutlinedIcon className="sidebarIcon" />
+                NHS Type 2 Diabetes Guide
+              </li>
+            </Link>
 
           </ul>
         </div>
