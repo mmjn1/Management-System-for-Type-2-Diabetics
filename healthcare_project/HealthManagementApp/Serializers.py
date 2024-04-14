@@ -7,6 +7,12 @@ from djoser.serializers import TokenCreateSerializer as DjoserTokenCreateSeriali
 
 User = get_user_model()
 
+"""
+Defines serializers for user authentication and token creation in Django REST framework.
+Includes a custom serializer for token creation that adds additional user information to the token response.
+The `CustomTokenCreateSerializer` class extends `DjoserTokenCreateSerializer` to include user's first name, last name, and type of user in the token response.
+"""
+
 
 class loginSerializer(serializers.Serializer):
     email = serializers.EmailField()
@@ -21,11 +27,10 @@ class loginSerializer(serializers.Serializer):
 
 class CustomTokenCreateSerializer(DjoserTokenCreateSerializer):
     def to_representation(self, instance):
-        print('called me')
         ret = super().to_representation(instance)
         user = self.context['request'].user
         ret['first_name'] = user.first_name
         ret['last_name'] = user.last_name
-        ret['type_of_user'] = getattr(user, 'type_of_user', 'default_value')  # Safely get the attribute
+        ret['type_of_user'] = getattr(user, 'type_of_user', 'default_value')  
         print(ret)
         return ret

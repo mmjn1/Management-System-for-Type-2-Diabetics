@@ -24,14 +24,11 @@ class CustomUserManager(BaseUserManager):
             first_name=first_name,
             middle_name=middle_name,
             last_name=last_name,
-            
         )
-
         user.set_password(password)
         user.save()
 
         return user
-
    
     def create_superuser(self, first_name, last_name, email, middle_name=None, password=None):
         user = self.create_user (
@@ -53,8 +50,6 @@ TYPE = [
     ('Doctor', 'Doctor'),
     ('Patient', 'Patient'),
 ]
-
-
 class CustomUser(AbstractUser, PermissionsMixin):
     first_name = models.CharField(max_length=100, blank=False, null=False, )
     middle_name = models.CharField(max_length=100, blank=True, null=True)
@@ -63,8 +58,6 @@ class CustomUser(AbstractUser, PermissionsMixin):
     type = models.CharField(max_length=50, choices=TYPE, null=True, blank=True)
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
-
-
     patient = models.OneToOneField('HealthManagementApp.Patient', on_delete=models.CASCADE, blank=True, null=True, related_name='patient_user')
     doctor = models.OneToOneField('HealthManagementApp.Doctor', on_delete=models.CASCADE, blank=True, null=True, related_name='doctor_user')
 
@@ -73,21 +66,16 @@ class CustomUser(AbstractUser, PermissionsMixin):
         DOCTOR = 'doctor','Doctor'
         ADMIN = 'admin','Admin'
 
-
     # Identifying the user role based on this (by default it will be patient if no role assigned)
     role = models.CharField(
         max_length=50,
         choices=Role.choices,
         default=Role.PATIENT
     )
-
     username = None
-
     objects = CustomUserManager()
-
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name']
-
 
     def __str__(self):
         return self.email
