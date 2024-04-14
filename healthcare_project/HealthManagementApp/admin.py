@@ -11,7 +11,7 @@ from .models import(Patient, Doctor,
                     MedicalLicense,
                     WeeklyAvailability,
                     TimeSlot, Form, Section, Field, FieldChoice,
-                    FieldResponse, FormResponse, 
+                    FieldResponse, FormResponse, UserMealEntry
                     )
 from django.utils.translation import gettext_lazy as _
 
@@ -177,6 +177,19 @@ class FieldChoiceAdmin(admin.ModelAdmin):
     list_display = ('choice_text', 'field')
     search_fields = ('choice_text', 'field__label')
     list_filter = ('field',)
+
+
+class UserMealEntryAdmin(admin.ModelAdmin):
+    list_display = ('user_input', 'patient', 'ai_advice', 'created_at')  # Fields to display in the list view
+    search_fields = ('user_input', 'patient__name', 'ai_advice')  # Fields to search in the admin
+    list_filter = ('created_at', 'patient')  # Filters to apply in the sidebar
+    date_hierarchy = 'created_at'  # Navigate through dates
+    ordering = ('-created_at',)  # Order by created_at descending by default
+
+    # If you want to customize the form for adding/editing
+    # fields = ('user_input', 'patient', 'ai_advice')
+
+admin.site.register(UserMealEntry, UserMealEntryAdmin)
 
 
 admin.site.register(CustomUser, CustomUserAdmin)

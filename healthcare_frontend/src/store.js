@@ -34,7 +34,7 @@ const rootReducer = combineReducers({
   [doctorAvailabilityApi.reducerPath]: doctorAvailabilityApi.reducer,
   [patientAppointmentCreation.reducerPath]: patientAppointmentCreation.reducer,
   [timeslotApi.reducerPath]: timeslotApi.reducer,
-  [updateDoctorProfile.reducerPath]: updateDoctorProfile.reducer, // Update this line to match the new reducerPath
+  [updateDoctorProfile.reducerPath]: updateDoctorProfile.reducer, 
   
   user: userReducer,
   registerDoctor: registerDoctor,

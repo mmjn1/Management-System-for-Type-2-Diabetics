@@ -1,18 +1,19 @@
 import React from 'react';
-import Sidebar from '../../components/PatientSidebar';
-import Navbar from '../../components/PostLoginNavigation';
-import "../../sass/PatientDashboard.scss";
-import { Link } from 'react-router-dom';
 
 const EducationalResources = () => {
-    return (   
+    return (
         <div className="home">
-            <Sidebar />
             <div className="homeContainer">
-                <Navbar />
                 <div className="content">
-                    Track your progress here
-
+                    <div style={{ width: '100%' }}> 
+                        <iframe 
+                            title="NHS.UK Health A to Z widget" 
+                            src="https://developer.api.nhs.uk/widgets/condition/?condition=/conditions/type-2-diabetes/&uid=125097d0-e17c-11ee-96db-59612fb32c36"                          
+                            width="380%" 
+                            height="900px" 
+                            style={{ border: '1px solid #ccc' }}>
+                        </iframe>
+                    </div>
                 </div>
             </div>
         </div>
