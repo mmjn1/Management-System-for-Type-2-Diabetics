@@ -8,7 +8,6 @@ import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
 import DiningOutlinedIcon from '@mui/icons-material/DiningOutlined';
 import LibraryBooksOutlinedIcon from '@mui/icons-material/LibraryBooksOutlined';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
-import PaymentsOutlinedIcon from '@mui/icons-material/PaymentsOutlined';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../features/api/userslice";
@@ -123,12 +122,12 @@ const PatientSidebar = () => {
               </li>
             </Link>
 
-            <Link to="/payments" className="link">
+            {/* <Link to="/payments" className="link">
               <li className={`sidebarListItem ${location.pathname === "/payments" ? "active" : ""}`}>
                 <PaymentsOutlinedIcon className="sidebarIcon" />
                 Payments
               </li>
-            </Link>
+            </Link> */}
 
 
           </ul>

@@ -12,7 +12,6 @@ import PatientAppointmentsPage from "../src/containers/patientContainers/Calenda
 import PatientDashboardPage from "../src/containers/patientContainers/PatientDashboardPage";
 import PatientPrescriptionsPage from "../src/containers/patientContainers/PatientPrescriptionsPage";
 import Profile from "../src/containers/patientContainers/Profile";
-import Payments from "../src/containers/patientContainers/Payments";
 import DoctorDashboardPage from "../src/containers/doctorContainers/DoctorDashboardPage";
 import DoctorProfile from "../src/containers/doctorContainers/DoctorProfile";
 import DoctorLayout from "./layout/DoctorLayout";
@@ -44,10 +43,8 @@ const App = () => {
         <Route path="/patient/appointments" element={<DashboardLayout> <PatientAppointmentsPage /> </DashboardLayout>} />
         <Route path="/prescriptions" element={<DashboardLayout> <PatientPrescriptionsPage /> </DashboardLayout>} />
         <Route path="/patient/profile" element={<DashboardLayout> <Profile /> </DashboardLayout>} />
-        <Route path="/payments" element={<DashboardLayout> <Payments /> </DashboardLayout>} />
         <Route path="/myrecords" element={<DashboardLayout> <MyRecords /> </DashboardLayout>} />
         
-
         <Route path="/doctor/appointments" element={<DoctorLayout> <DoctorAppointmentsPage /> </DoctorLayout>} />
         <Route path="/doctor/dashboard" element={<DoctorLayout> <DoctorDashboardPage /> </DoctorLayout>} />
         <Route path="/doctor/profile" element={<DoctorLayout> <DoctorProfile /> </DoctorLayout>} />
