@@ -1,4 +1,4 @@
-# A web-based application for managing chronic patients' health
+# A web-based application for managing the health of chronic patients
 
 ## Overview
 
@@ -32,54 +32,69 @@ Navigate to the backend directory:
 
 Create a virtual environment and activate it:
 
-- macOS/Linux:
+For macOS/Linux:
+
     python3 -m venv venv
     source venv/bin/activate
 
-- Windows:
+For Windows:
+
     python -m venv venv
     .\venv\Scripts\activate 
 
 Install the required Python packages for Django:
+
     cd healthcare_project/HealthApp
     pip install -r requirements.txt
     cd ..
 
-Create a superuser to access the admin panel (optional):
+Create a superuser to access the admin panel:
+
     python manage.py createsuperuser
-    This will ask for your Email, First Name, Last Name, Password, and Confirm Password. 
+
+This will ask for your Email, First Name, Last Name, Password, and Confirm Password. 
 
 Apply migrations to create the database schema:
+
     python manage.py migrate
 
 Run the Django development server:
+
     python manage.py runserver
-    Your Django development server will be running at http://127.0.0.1:8000/
-    You can access the admin panel by writing - http://127.0.0.1:8000/admin in the search bar and enter your email and password
+
+Your Django development server will be running at http://127.0.0.1:8000/
+
+You can access the admin panel by adding - http://127.0.0.1:8000/admin in the search bar and then enter your email and password
 
 
 **Setting Up WebSocket Connections with Daphne**
 For real-time chat functionality, the project uses Django Channels with Daphne as the ASGI server. 
 
 Create another window in your terminal by clicking the plus button and navigate to the healthcare_project directory by:
+
     cd mmjn1/healthcare_project
 
-To set up and run Daphne: 
+To set up and run Daphne:
+
     daphne -b 0.0.0.0 -p 8000 healthcare_project.asgi:application
 
 **Setting up the Frontend (React)**
 Create another window on your terminal by clicking the + icon
 
 Navigate to the frontend directory:
+
     cd mmjn1/healthcare_frontend
 
 Install the required Node.js packages:
+
     npm install
 
 Build the React application:
+
     npm run build
 
 Start the React development server:
+
     npm start
 
 
