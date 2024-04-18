@@ -84,6 +84,8 @@ MIDDLEWARE = [
 CSP_DEFAULT_SRC = ("'self'", "'unsafe-inline'", "cdn.jsdelivr.net")
 CSP_IMG_SRC = ("'self'", "data:", "'unsafe-inline'", "cdn.jsdelivr.net")
 CSP_STYLE_SRC = ("'self'", "'unsafe-inline'", "cdn.jsdelivr.net")
+CSP_FRAME_SRC = ("'self'", "www.nhs.uk")
+
 
 ROOT_URLCONF = 'healthcare_project.urls'
 
@@ -119,6 +121,14 @@ DATABASES = {
         'PORT': os.getenv('DB_PORT'),
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db1.sqlite3',
+#     }
+# }
+
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
@@ -306,7 +316,14 @@ JAZZMIN_SETTINGS = {
     "HealthManagementApp.prescription",
     "HealthManagementApp.supportinquiry",
     "HealthManagementApp.doctor", 
-    "HealthManagementApp.MedicalLicense",  
+    "HealthManagementApp.MedicalLicense",
+    "HealthManagementApp.WeeklyAvailability",
+    "HealthManagementApp.TimeSlot",
+    "HealthManagementApp.Section",
+    "HealthManagementApp.Field",
+    "HealthManagementApp.FieldChoice",
+    "HealthManagementApp.Form",
+
     "books.author",
     "books.book",
   ],
@@ -337,7 +354,7 @@ JAZZMIN_SETTINGS = {
         "HealthManagementApp.patient": "fas fa-user-injured",
         "HealthManagementApp.PatientAppointment": "fas fa-calendar-alt",
         "HealthManagementApp.doctor_appointment": "fas fa-calendar-alt",
-        "HealthManagementApp.prescription": "fas fa-pills",
+        # "HealthManagementApp.prescription": "fas fa-pills",
         "HealthManagementApp.supportinquiry": "fas fa-question-circle",
         "chat.message": "fas fa-envelope",
         "HealthManagementApp.MedicalLicense": "fas fa-id-card",

@@ -16,24 +16,29 @@ import toast from "react-hot-toast";
  * On success, it stores the user's information and token in localStorage and returns the user data.
  * On failure, it captures and returns the error data.
  */
+
 export const login = createAsyncThunk(
-  "auth/login",
+  'auth/login',
   async (data, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`login_new/`, data);
-      const { user, token, information } = response.data;
-      localStorage.setItem("id", user.id);
-      localStorage.setItem("type", user.type);
-      localStorage.setItem("token", token);
-      return response.data;
+      const response = await axios.post(`login_new/`, data)
+      const { user, token, information, patient_id, doctor_id } = response.data
+      localStorage.setItem('id', user.id)
+      localStorage.setItem('type', user.type)
+      localStorage.setItem('token', token)
+      localStorage.setItem('patient_id', patient_id)
+      localStorage.setItem('doctor_id', doctor_id)
+      return response.data
     } catch (error) {
       if (!error.response) {
-        throw error;
+        throw error
       }
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response.data)
     }
   },
-);
+)
+
+
 /**
  * Asynchronous thunk for user logout.
  * It sends a request to the logout endpoint and clears the user's session from localStorage.
@@ -66,6 +71,7 @@ export const logout = createAsyncThunk(
     }
   },
 );
+
 /**
  * authSlice manages the state of authentication in the application.
  * It includes the user's token, status of authentication requests (idle, loading, succeeded, failed),

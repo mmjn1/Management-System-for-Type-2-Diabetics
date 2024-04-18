@@ -22,14 +22,16 @@ class EmailThreading(threading.Thread):
             message = message.strip()
         user_sender = User.objects.get(id=sender_id)
         user_recipient = User.objects.get(id=receiver_id)
-        subject, from_email, to = f'{user_recipient.first_name} sent you a message ', EMAIL_HOST_USER, user_recipient.email
+
+
+        subject, from_email, to = f'{user_recipient.first_name} send you a message ', EMAIL_HOST_USER, user_recipient.email
         data_format = {
             'message': message,
             'sender_name': user_sender.first_name,
             'receiver_name': user_recipient.first_name,
             'site_name': site_name,
         }
-        htmly = get_template('MessageEmail.html')
+        htmly = get_template('MessageEmail.HTML')
         html_content = htmly.render(data_format)
         msg = EmailMultiAlternatives(
             subject, html_content, from_email, [to])
