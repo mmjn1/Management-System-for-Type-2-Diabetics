@@ -18,6 +18,7 @@ from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from HealthManagementApp.models.users import CustomUser
+from HealthManagementApp.models.prescription import *
 
 
 User = get_user_model()
@@ -402,6 +403,89 @@ class UserMealEntrySerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-    
+
+class MedicineSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Medicine
+        fields = '__all__'
+
+
+class DrugsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Drugs
+        fields = '__all__'
+
+
+class SymptomsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Symptoms
+        fields = '__all__'
+
+
+class TestsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tests
+        fields = '__all__'
+
+
+class VitalsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vitals
+        fields = '__all__'
+
+
+class DiagnosesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Diagnoses
+        fields = '__all__'
+
+
+class HistoriesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Histories
+        fields = '__all__'
+
+
+class AdvicesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Advices
+        fields = '__all__'
+
+
+class FollowUpsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FollowUps
+        fields = '__all__'
+
+
+class SaltSerializer(serializers.ModelSerializer):
+    medicines = MedicineSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Salt
+        fields = '__all__'
+
+
+class DrugSerializerdetail(serializers.ModelSerializer):
+    class Meta:
+        model = Drugs
+        fields = '__all__'
+        depth = 2
+
+
+class PrescriptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Prescription
+        fields = '__all__'
+
+
+class PrescriptionDetailSerializer(serializers.ModelSerializer):
+    Drug = DrugSerializerdetail(many=True)
+    patient = NewPatientSerializer()
+
+    class Meta:
+        model = Prescription
+        fields = '__all__'
+        depth = 1
 
 

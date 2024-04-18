@@ -2,48 +2,11 @@ import logging
 
 from django.urls import path, include 
 from django.contrib.auth import get_user_model
-from HealthManagementApp.views.views import(SupportInquiryView, 
-                                            DoctorView, 
-                                            PatientView, 
-                                            VerificationView, 
-                                            activate_account,
-                                            list_locations,
-                                            doctor_appointment_types_view,
-                                            patient_appointment_types_view,
-                                            get_patients_for_doctor,
-                                            update_patient_account_info,
-                                            update_patient_healthinfo,
-                                            update_patient_lifestylemed_info,
-                                            create_weekly_availability,                                                                                 
-                                            update_weekly_availability,
-                                            get_weekly_availability,
-                                            get_doctor_availability,
-                                            create_patient_appointment,
-                                            TimeSlotView,
-                                            DoctorDetailView,
-                                            delete_appointment,
-                                            CurrentPatientDetailView,
-                                            PatientListView,
-                                            PatientDetailView,
-                                            FormList,
-                                            FormDetails,
-                                            submit_form_response,
-                                            PatientListView,
-                                            get_patient_forms,
-                                            update_form_response,
-                                            update_doctor_account_info,
-                                            update_professionalInfo,
-                                            update_PracticeInfo,
-                                            get_dietary_advice,
-                                            update_dietary_advice,
-                                            delete_dietary_advice,
-                                            health_check,
-                                        )
+from HealthManagementApp.views.views import *
 from rest_framework.response import Response
 from rest_framework import routers, serializers, viewsets, generics, status
 from rest_framework_simplejwt.views import (
     TokenRefreshView as RefreshTokenView, TokenVerifyView as VerifyTokenView,)
-
 
 from .views import (
     PatientCreateView,
@@ -51,7 +14,7 @@ from .views import (
     AdminTokenObtainPairView,
 )
 
-from HealthManagementApp.APIs.apis import DoctorCreate, PatientCreate
+from HealthManagementApp.APIs.apis import *
 
 
 logger = logging.getLogger(__name__)
@@ -119,6 +82,42 @@ urlpatterns = [
     path('update-entry/<int:entry_id>/', update_dietary_advice, name='update_meal_entry'),
     path('delete-entry/<int:entry_id>/', delete_dietary_advice, name='delete_dietary_advice'),
     path('container-health/', health_check, name='health-check'),
+
+    path('Prescription/', PrescriptionCreate.as_view(), name='Create Prescription'),
+    path('Prescription/<int:pk>/', PrescriptionData.as_view(), name='Update Prescription'),
+    path('Prescriptions/doctor/<int:doctor_id>/', PrescriptionDoctor.as_view()),
+    path('Prescriptions/patient/<int:patient_id>/', PrescriptionPatient.as_view()),
+    path('Prescriptions/email/', send_prescription),
+
+    path('Medicine/', MedicineCreate.as_view(), name='Create Medicine'),
+    path('Medicine/<int:pk>/', MedicineData.as_view(), name='Update Medicine'),
+
+    path('Drugs/', DrugsCreate.as_view(), name='Create Drugs'),
+    path('Drugs/<int:pk>/', DrugsData.as_view(), name='Update Drugs'),
+
+    path('Symptoms/', SymptomsCreate.as_view(), name='Create Symptoms'),
+    path('Symptoms/<int:pk>/', SymptomsData.as_view(), name='Update Symptoms'),
+
+    path('Tests/', TestsCreate.as_view(), name='Create Tests'),
+    path('Tests/<int:pk>/', TestsData.as_view(), name='Update Tests'),
+
+    path('Vitals/', VitalsCreate.as_view(), name='Create Vitals'),
+    path('Vitals/<int:pk>/', VitalsData.as_view(), name='update Vitals'),
+
+    path('Diagnoses/', DiagnosesCreate.as_view(), name='Create Diagnoses'),
+    path('Diagnoses/<int:pk>/', DiagnosesData.as_view(), name='Update Diagnoses'),
+
+    path('Histories/', HistoriesCreate.as_view(), name='Create Histories'),
+    path('Histories/<int:pk>/', HistoriesData.as_view(), name='Update Histories'),
+
+    path('Advices/', AdvicesCreate.as_view(), name='Create Advices'),
+    path('Advices/<int:pk>/', AdvicesData.as_view(), name='Update Advices'),
+
+    path('FollowUps/', FollowUpsCreate.as_view(), name='Create FollowUps'),
+    path('FollowUps/<int:pk>/', FollowUpsData.as_view(), name='Update FollowUps'),
+
+    path('salts/', SaltList.as_view(), name='salt-list'),
+    path('salts/<str:salt_name>/', SaltDetail.as_view(), name='salt-detail'),
 
 ]
 
