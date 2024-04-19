@@ -6,3 +6,19 @@
     text-decoration: none;
     color: inherit;
 }
+  
+  .containers h1 {
+    margin-bottom: 0.5rem; 
+    font-size: 2.5rem; 
+    color: #333; 
+    font-weight: 600; 
+  }
+  
+  .containers p {
+    margin-top: 0; 
+    font-size: 1.1rem;
+    color: #555; 
+    max-width: 600px; 
+    line-height: 1.6; 
+  }
+  

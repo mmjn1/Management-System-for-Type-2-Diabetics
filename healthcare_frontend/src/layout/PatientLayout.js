@@ -7,7 +7,9 @@ const Layout = ({ children }) => (
   <>
     <Navbar />
     <div className="containers">
-      <Sidebar />
+      <div style={{ width: '300px' }}>
+        <Sidebar />
+      </div>
       {children}
     </div>
   </>
