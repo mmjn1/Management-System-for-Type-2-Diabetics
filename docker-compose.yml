@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:5.7
+    volumes:
+      - mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "3306:3306"
+
+  healthmanagementapp:
+    build:
+      context: .  
+      dockerfile: healthcare_project/HealthManagementApp/Dockerfile
+    volumes:
+      - .:/app  
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      DATABASE_HOST: db
+      DATABASE_NAME: ${DB_NAME}
+      DATABASE_USER: ${DB_USER}
+      DATABASE_PASSWORD: ${DB_PASSWORD}
+      DATABASE_PORT: ${DB_PORT}
+      SECRET_KEY: ${SECRET_KEY}
+      DEBUG: ${DEBUG}
+      EMAIL_USER: ${EMAIL_USER}
+      EMAIL_PASSWORD: ${EMAIL_PASSWORD}
+      SITE_NAME: ${SITE_NAME}
+
+  chat:
+    build:
+      context: .  
+      dockerfile: healthcare_project/chat/Dockerfile
+    volumes:
+      - .:/app 
+      - chat_static_data:/app/healthcare_project/static
+      - chat_media_data:/app/healthcare_project/media
+    ports:
+      - "8001:8000"  # Different port to avoid conflict with healthmanagementapp
+    depends_on:
+      - db
+    environment:
+      DATABASE_HOST: db
+      DATABASE_NAME: ${DB_NAME}
+      DATABASE_USER: ${DB_USER}
+      DATABASE_PASSWORD: ${DB_PASSWORD}
+      DATABASE_PORT: ${DB_PORT}
+      SECRET_KEY: ${SECRET_KEY}
+      DEBUG: ${DEBUG}
+
+  frontend:
+    build:
+      context: .
+      dockerfile: healthcare_frontend/Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      REACT_APP_BACKEND_URL: http://healthmanagementapp:8000  # Points to the Django backend service
+
+  nginx:
+    build: 
+      context: ./healthcare_frontend/nginx
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    volumes:
+      - chat_static_data:/usr/share/nginx/static:ro
+      - chat_media_data:/usr/share/nginx/media:ro
+    depends_on:
+      - healthmanagementapp
+      - chat
+      - frontend
+
+volumes:
+  mysql_data:
+  chat_static_data:
+  chat_media_data:
