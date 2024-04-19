@@ -25,6 +25,12 @@ import CustomForms from "./containers/doctorContainers/DynamicForms/CustomForms"
 import FormDetail from "./containers/doctorContainers/DynamicForms/FormDetail";
 import CreateForm from "./containers/doctorContainers/DynamicForms/CreateForm";
 import MyRecords from "../src/containers/patientContainers/MyRecords";
+import Prescription from '../src/containers/doctorContainers/Prescription';
+import PrescriptionManagement from '../src/containers/doctorContainers/PrescriptionManagement';
+import PatientPrescription from '../src/containers/patientContainers/PatientPrescription';
+import { useDispatch, useSelector } from 'react-redux';
+
+
 
 
 const App = () => {
@@ -33,7 +39,6 @@ const App = () => {
       <Routes>
         <Route path="/*" element={<Main />} />
         <Route path="/chat" element={<Chat />} />
-
         <Route path="/patient/dashboard" element={<PatientDashboardPage />} />
 
         <Route path="/patient/bloodsugar" element={<DashboardLayout> <BloodSugarPage /></DashboardLayout>} />
@@ -44,19 +49,21 @@ const App = () => {
         <Route path="/prescriptions" element={<DashboardLayout> <PatientPrescriptionsPage /> </DashboardLayout>} />
         <Route path="/patient/profile" element={<DashboardLayout> <Profile /> </DashboardLayout>} />
         <Route path="/myrecords" element={<DashboardLayout> <MyRecords /> </DashboardLayout>} />
-        
+        <Route path="/patient/prescription" element={<DashboardLayout> <PatientPrescription /> </DashboardLayout>} />
+
         <Route path="/doctor/appointments" element={<DoctorLayout> <DoctorAppointmentsPage /> </DoctorLayout>} />
         <Route path="/doctor/dashboard" element={<DoctorLayout> <DoctorDashboardPage /> </DoctorLayout>} />
         <Route path="/doctor/profile" element={<DoctorLayout> <DoctorProfile /> </DoctorLayout>} />
         <Route path="/doctor/chat" element={<DoctorLayout> {" "} <DoctorChat />{" "} </DoctorLayout>} />
         <Route path="/doctor/patient-records" element={<DoctorLayout> <PatientRecords /> </DoctorLayout>} />
         <Route path="/doctor/patient-details" element={<DoctorLayout> <PatientDetailsPage /> </DoctorLayout>} />
-
         <Route path="/doctor/custom-forms" element={<DoctorLayout> <CustomForms /> </DoctorLayout>} />
         <Route path="/forms/create" element={<DoctorLayout> <CreateForm /> </DoctorLayout>} />
         <Route path="/forms/:formId/edit" element={<DoctorLayout> <CreateForm /> </DoctorLayout>} />
         <Route path="/forms/:formId/details" element={<DoctorLayout> <FormDetail /> </DoctorLayout>} />
 
+        <Route path='/doctor/prescription' element={<DoctorLayout> {' '} <Prescription />{' '} </DoctorLayout>} />
+        <Route path='/doctor/prescription-management' element={<DoctorLayout> {' '} <PrescriptionManagement />{' '} </DoctorLayout>} />
 
       </Routes>
     </KThemeProvider>

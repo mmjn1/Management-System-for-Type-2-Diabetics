@@ -17,9 +17,24 @@ import { persistStore, persistReducer } from "redux-persist";
 import { doctorApi } from './features/appointments/availabilitySlice';
 import { updateProfile } from './features/patient/updateProfile';
 import { doctorAvailabilityApi } from './features/appointments/doctorAvailabilitySlice';
-import { timeslotApi } from './features/timeslotAPI';
+import { timeslotApi } from './features/doctor/timeslotAPI';
 import patientRecordsReducer from "./features/api/patient_records";
 import { updateDoctorProfile } from './features/doctor/updateDoctorProfile';
+import PrescriptionSlice from './features/prescription/PrescriptionSlice';
+import MedicineSlice from './features/prescription/MedicineSlice';
+import DrugsSlice from './features/prescription/DrugsSlice';
+import SymptomsSlice from './features/prescription/SymptomsSlice';
+import TestsSlice from './features/prescription/TestsSlice';
+import VitalsSlice from './features/prescription/VitalsSlice';
+import AdvicesSlice from './features/prescription/AdvicesSlice';
+import DiagnosesSlice from './features/prescription/DiagnosesSlice';
+import FollowUpsSlice from './features/prescription/FollowUpsSlice';
+import HistoriesSlice from './features/prescription/HistoriesSlice';
+import SaltSlice from './features/prescription/SaltSlice';
+import EmailSlice from './features/prescription/EmailSlice';
+// import paymentSlice from './features/prescription/PaymentSlice';
+import PackageSlice from './features/prescription/PackageSlice';
+// import MembershipSlice from './features/prescription/MembershipSlice';
 
 const persistConfig = {
   key: 'root',
@@ -34,8 +49,8 @@ const rootReducer = combineReducers({
   [doctorAvailabilityApi.reducerPath]: doctorAvailabilityApi.reducer,
   [patientAppointmentCreation.reducerPath]: patientAppointmentCreation.reducer,
   [timeslotApi.reducerPath]: timeslotApi.reducer,
-  [updateDoctorProfile.reducerPath]: updateDoctorProfile.reducer, 
-  
+  [updateDoctorProfile.reducerPath]: updateDoctorProfile.reducer,
+
   user: userReducer,
   registerDoctor: registerDoctor,
   registerUserPatient: registerUserPatient,
@@ -46,14 +61,27 @@ const rootReducer = combineReducers({
   appointments: appointmentsReducer,
   chat: chatReducer,
   PatientSlice: fetchPatient,
-  patientRecords: patientRecordsReducer, 
+  patientRecords: patientRecordsReducer,
+  Prescription: PrescriptionSlice,
+  Medicine: MedicineSlice,
+  Drugs: DrugsSlice,
+  Symptoms: SymptomsSlice,
+  Tests: TestsSlice,
+  Vitals: VitalsSlice,
+  Advices: AdvicesSlice,
+  Diagnoses: DiagnosesSlice,
+  FollowUps: FollowUpsSlice,
+  Histories: HistoriesSlice,
+  Salts: SaltSlice,
+  EmailSlice: EmailSlice,
+  PackageSlice: PackageSlice,
 
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
-  reducer: persistedReducer, 
+  reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {

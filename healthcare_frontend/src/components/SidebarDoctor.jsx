@@ -30,7 +30,7 @@ const SidebarDoctor = () => {
     dispatch(logout());
   };
   return (
-    <div className="sidebar">
+    <div className="sidebar"> {/* Adjust the width as needed */}
       <div className="sidebarWrapper">
         <div className="sidebarMenu">
           <h3 className="sidebarTitle"> Dashboard Overview </h3>
@@ -55,16 +55,16 @@ const SidebarDoctor = () => {
           <h3 className="sidebarTitle"> Patient Monitoring</h3>
           <ul className="sidebarList">
             <Link to="/doctor/patient-records" className="link">
-            <li className={`sidebarListItem ${location.pathname === "/doctor/patient-records" ? "active" : ""}`}>
+              <li className={`sidebarListItem ${location.pathname === "/doctor/patient-records" ? "active" : ""}`}>
                 <DifferenceOutlinedIcon className="sidebarIcon" />
                 Patient Records
               </li>
             </Link>
 
             <Link to="/doctor/custom-forms" className="link">
-            <li className={`sidebarListItem ${location.pathname === "/doctor/custom-forms" ? "active" : ""}`}>
+              <li className={`sidebarListItem ${location.pathname === "/doctor/custom-forms" ? "active" : ""}`}>
                 <AssignmentOutlinedIcon className="sidebarIcon" />
-               Custom Forms
+                Custom Forms
               </li>
             </Link>
             <Link to="/doctor/appointments" className="link">
@@ -91,17 +91,37 @@ const SidebarDoctor = () => {
 
         <div className="sidebarMenu">
           <h3 className="sidebarTitle"> Medical Management </h3>
-          <ul className="sidebarList">
-            <li className="sidebarListItem">
-              <MedicationOutlinedIcon className="sidebarIcon" />
-              Prescription Requests
-            </li>
-
-            <li className="sidebarListItem">
-              <LocalLibraryOutlinedIcon className="sidebarIcon" />
-              Medication Library
-            </li>
-
+          <ul className='sidebarList'>
+            <Link to='/doctor/prescription' className='link'>
+              <li
+                className={`sidebarListItem ${location.pathname === '/doctor/prescription' ? 'active' : ''}`}
+              >
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  xmlnsXlink='http://www.w3.org/1999/xlink'
+                  aria-hidden='true'
+                  role='img'
+                  className='MuiBox-root css-1t9pz9x iconify iconify--mdi'
+                  width='2em'
+                  height='2em'
+                  viewBox='0 0 24 24'
+                >
+                  <path
+                    fill='currentColor'
+                    d='M4 4v10h2v-4h2l5.41 5.41L9.83 19l1.41 1.41l3.59-3.58l3.58 3.58L19.82 19l-3.58-3.59l3.58-3.58l-1.41-1.42L14.83 14l-4-4H11a3 3 0 0 0 3-3a3 3 0 0 0-3-3zm2 2h5a1 1 0 0 1 1 1a1 1 0 0 1-1 1H6z'
+                  />
+                </svg>
+                Medications & Refills
+              </li>
+            </Link>
+            <Link to='/doctor/prescription-management' className='link'>
+              <li
+                className={`sidebarListItem ${location.pathname === '/doctor/prescription-management' ? 'active' : ''}`}
+              >
+                <MedicationOutlinedIcon className='sidebarIcon' />
+                Prescriptions Management
+              </li>
+            </Link>
           </ul>
         </div>
 

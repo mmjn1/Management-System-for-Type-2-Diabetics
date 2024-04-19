@@ -28,13 +28,13 @@ const DoctorChat = () => {
   const [selectedFileName, setSelectedFileName] = useState("");
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [currentImageBase64, setCurrentImageBase64] = useState("");
-  const [zoomLevel, setZoomLevel] = useState(1); 
+  const [zoomLevel, setZoomLevel] = useState(1);
 
 
   useEffect(() => {
     const filterDoctors = () => {
       if (searchTerm.trim() === "") {
-        setFilteredPatients(patients); 
+        setFilteredPatients(patients);
         return;
       }
 
@@ -164,10 +164,10 @@ const DoctorChat = () => {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          overflow: 'scroll', 
+          overflow: 'scroll',
         }}>
           <div style={{
-            position: 'relative', 
+            position: 'relative',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center'
@@ -176,21 +176,21 @@ const DoctorChat = () => {
               src={currentImageBase64}
               alt="Enlarged"
               style={{
-                transform: `scale(${zoomLevel})`, 
-                transformOrigin: 'center center', 
-                maxWidth: '100%', 
+                transform: `scale(${zoomLevel})`,
+                transformOrigin: 'center center',
+                maxWidth: '100%',
                 maxHeight: '100%',
                 objectFit: 'contain',
               }}
             />
             <div style={{
-              position: 'absolute', 
-              top: '10px', 
-              right: '10px', 
+              position: 'absolute',
+              top: '10px',
+              right: '10px',
               display: 'flex',
-              flexDirection: 'column', 
+              flexDirection: 'column',
             }}>
-          
+
             </div>
           </div>
         </div>
@@ -497,3 +497,4 @@ const DoctorChat = () => {
 };
 
 export default DoctorChat;
+
