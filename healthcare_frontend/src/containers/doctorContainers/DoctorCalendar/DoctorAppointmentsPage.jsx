@@ -136,9 +136,9 @@ function DoctorAppointmentsPage(props) {
           {...props}
           localizer={localizer}
           events={appointments}
-          style={{ height: '100%', width: '195%' }}
+          style={{ height: '100%', width: '200%' }}
         />
-        <div style={{ position: 'absolute', bottom: 0, right: 0, marginBottom: '10px', marginRight: '-550px' }}>
+        <div style={{ position: 'absolute', bottom: 0, right: 0, marginBottom: '10px', marginRight: '-560px' }}>
           <Button className="scheduleAppointmentButton" onClick={handleAddClick}>
             Schedule New Appointment
           </Button>
