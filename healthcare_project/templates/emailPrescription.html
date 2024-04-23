@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prescription Email</title>
+    <style>
+        .container {
+            width: 80%;
+            margin: 0 auto;
+        }
+
+        body {
+            color: #919CAE;
+        }
+
+        body, h2, p, li, ol {
+            color: #738297
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div style="font-family:Arial, sans-serif;">
+        <p><b>Prescribed by:</b> Dr. {{ doctor_fname }} {{ doctor_lname }}</p>
+        <p><b>ID:</b> {{ patient_id }} <b>Name:</b> {{ first_name }} {{ last_name }} <b>Mobile:</b> {{ Mobile }}
+            <b>gender:</b> {{ gender }} <b>Date:</b> {{ date }}</p>
+
+        <div style="display:flex;">
+            <div style="width:50%;">
+                <h2 style="margin-bottom:5px;">Symptoms</h2>
+                <ol style="padding-left:20px;">
+                    {% for symptom in symptoms_data %}
+                        <li>{{ symptom }}</li>
+                    {% endfor %}
+                </ol>
+
+                <h2 style="margin-bottom:5px;">Tests</h2>
+                <ol style="padding-left:20px;">
+                    {% for test in test_data %}
+                        <li>{{ test }}</li>
+                    {% endfor %}
+                </ol>
+
+                <h2 style="margin-bottom:5px;">Vitals</h2>
+                <ol style="padding-left:20px;">
+                    {% for vital in vitals %}
+                        <li>{{ vital.name }}: {{ vital.reading }} ({{ vital.date }})</li>
+                    {% endfor %}
+                </ol>
+
+
+                <h2 style="margin-bottom:5px;">Diagnoses</h2>
+                <ol style="padding-left:20px;">
+                    {% for diagnoses in diagnoses_data %}
+                        <li>{{ diagnoses }}</li>
+                    {% endfor %}
+                </ol>
+
+
+                <h2 style="margin-bottom:5px;">Histories</h2>
+                <ol style="padding-left:20px;">
+                    {% for history in history_data %}
+                        <li>{{ history }}</li>
+                    {% endfor %}
+                </ol>
+
+            </div>
+
+            <div style="width:50%;">
+
+                <h2 style="margin-bottom:5px;">Medications</h2>
+                <ol style="padding-left:20px;">
+                    {% for drug in drugs_data %}
+                        <li>
+                            {{ drug.Medical_name.name }} ({{ drug.Medical_name.salt.name }})<br/>
+                            Dosage: {{ drug.dosage_display }}, {{ drug.frequency }} / {{ drug.Time_of_day }}
+                        </li>
+                    {% endfor %}
+                </ol>
+
+
+                <h2 style="margin-bottom:5px;">Advices</h2>
+                <ol style="padding-left:20px;">
+                    {% for item in advice_data %}
+                        <li>{{ item }}</li>
+                    {% endfor %}
+                </ol>
+
+
+                <h2 style="margin-bottom:5px;">Follow-up</h2>
+                <ol style="padding-left:20px;">
+                    {% for item in followup_data %}
+                        <li>{{ item }}</li>
+                    {% endfor %}
+                </ol>
+
+
+            </div>
+        </div>
+
+        <hr/>
+        <p style="text-align:center;"><b>CONFIDENTIAL: IMPORTANT</b> <br>This electronic prescription is confidential
+            and
+            intended only for the recipient named above. If received in error, delete immediately. Unauthorized
+            retention or
+            disclosure is prohibited. Any harm from not deleting is the recipient's responsibility.</p>
+    </div>
+
+</div>
+</body>
+</html>
