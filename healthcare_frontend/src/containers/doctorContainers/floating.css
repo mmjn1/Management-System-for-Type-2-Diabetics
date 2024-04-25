@@ -1,0 +1,324 @@
+.floating-button {
+    display: inline-flex;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    justify-content: center;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    outline: 0px;
+    border: 0px;
+    margin: 0px;
+    cursor: pointer;
+    user-select: none;
+    vertical-align: middle;
+    appearance: none;
+    text-decoration: none;
+    font-weight: 700;
+    line-height: 1.71429;
+    font-size: 0.875rem;
+    text-transform: capitalize;
+    font-family: "Public Sans", sans-serif;
+    min-height: 36px;
+    transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, border-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    border-radius: 50%;
+    padding: 0px;
+    min-width: 0px;
+    width: 56px;
+    height: 56px;
+    z-index: 1050;
+    box-shadow: rgba(145, 158, 171, 0.2) 0px 3px 5px -1px, rgba(145, 158, 171, 0.14) 0px 6px 10px 0px, rgba(145, 158, 171, 0.12) 0px 1px 18px 0px;
+    color: rgb(255, 255, 255);
+    background-color: rgb(32, 101, 209);
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+}
+
+.icon_RX {
+    width: 20px;
+    height: 20px
+}
+
+.floating-button:hover {
+    background-color: rgb(9, 35, 91);
+}
+
+.floating-button.inactive {
+    background-color: gray;
+    cursor: default;
+    /* Prevents hover effect on inactive button */
+}
+
+.MuiBox-root.inactive {
+    /* Style for SVG when inactive */
+    fill: lightgray;
+}
+
+.patient-data {
+    color: #637381 !important;
+}
+
+.black-patient-outer {
+    min-width: 0px;
+    box-sizing: border-box;
+}
+
+.black-patient-inner {
+    display: block;
+    background-color: rgba(33, 43, 54, 0.11);
+    height: auto;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    transform-origin: 0px 55%;
+    transform: scale(1, 0.6);
+    border-radius: 6px / 10px;
+}
+
+
+.my-plus-button:hover {
+    cursor: pointer;
+    /* Change cursor to hand */
+}
+
+.my-plus-button:hover svg path {
+    /* Target the SVG's path */
+    fill: gray;
+    /* Change the fill color */
+}
+
+.binary-input-container {
+    display: flex;
+    /* Arrange inputs horizontally */
+    gap: 5px;
+    /* Add spacing between inputs */
+
+}
+
+.binary-input {
+    width: 30px;
+    /* Set the desired width */
+    height: 30px;
+    /* Set height equal to width for square shape */
+    border: none;
+    text-align: center;
+}
+
+.wrapper {
+    display: flex;
+    /* Use flexbox for easy arrangement */
+    align-items: center;
+    /* Align items vertically to the center */
+}
+
+.form-control {
+    margin-right: 10px;
+}
+
+
+
+.dropdown-toggle::after {
+    display: none !important;
+    /* Hide the arrow */
+}
+
+.css-gwx6oe {
+    display: block;
+    background-color: rgba(33, 43, 54, 0.11);
+    height: auto;
+    margin-top: 0px;
+    transform-origin: 0px 55%;
+    transform: scale(1, 0.6);
+    border-radius: 6px / 10px;
+    margin-bottom: 8px;
+}
+
+.css-5kwfos {
+    display: block;
+    background-color: rgba(33, 43, 54, 0.11);
+    height: 1.2em;
+    border-radius: 6px;
+    margin-bottom: 16px;
+}
+
+.css-kmutc5 {
+    display: flex;
+    flex-direction: row;
+    -webkit-box-align: center;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.css-1ja6z00 {
+    display: block;
+    background-color: rgba(33, 43, 54, 0.11);
+    height: 1.2em;
+    margin-right: 8px;
+    margin-bottom: 8px;
+}
+
+.css-2igmjn {
+    display: block;
+    background-color: rgba(33, 43, 54, 0.11);
+    height: 1.2em;
+    border-radius: 6px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+}
+
+
+.cursor-pointer:hover {
+    cursor: pointer;
+}
+
+
+#wrapper {
+    padding-right: 0;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+#wrapper.toggled {
+    padding-right: 250px;
+}
+
+#sidebar-wrapper {
+    z-index: 1000;
+    position: fixed;
+    right: 250px;
+    width: 0;
+    height: 100%;
+    margin-right: -250px;
+    overflow-y: auto;
+    background: #ffffff;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+#wrapper.toggled #sidebar-wrapper {
+    width: 300px;
+}
+
+#page-content-wrapper {
+    width: 100%;
+    position: absolute;
+    padding: 15px;
+}
+
+#wrapper.toggled #page-content-wrapper {
+    position: absolute;
+    margin-left: -250px;
+}
+
+/* Sidebar Styles */
+
+.sidebar-nav {
+    position: absolute;
+    top: 0;
+    width: 300px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.sidebar-nav li {
+    text-indent: 20px;
+    line-height: 40px;
+}
+
+.sidebar-nav li a {
+    display: block;
+    text-decoration: none;
+    color: #999999;
+}
+
+.sidebar-nav li a:hover {
+    text-decoration: none;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.sidebar-nav li a:active,
+.sidebar-nav li a:focus {
+    text-decoration: none;
+}
+
+.sidebar-nav>.sidebar-brand {
+    height: 65px;
+    font-size: 18px;
+    line-height: 60px;
+}
+
+.sidebar-nav>.sidebar-brand a {
+    color: #999999;
+}
+
+.sidebar-nav>.sidebar-brand a:hover {
+    color: #fff;
+    background: none;
+}
+
+@media (min-width: 768px) {
+    #wrapper {
+        padding-right: 0;
+    }
+
+    #wrapper.toggled {
+        padding-right: 300px;
+    }
+
+    #sidebar-wrapper {
+        width: 0;
+    }
+
+    #wrapper.toggled #sidebar-wrapper {
+        width: 300px;
+    }
+
+    #page-content-wrapper {
+        padding: 20px;
+        position: relative;
+    }
+
+    #wrapper.toggled #page-content-wrapper {
+        position: relative;
+        margin-left: 0;
+    }
+}
+
+.sidebar-header {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    /* Optional */
+}
+
+.sidebar-content {
+    padding: 20px;
+}
+
+/* Increase overall modal size */
+.modal-xlx .modal-dialog {
+    max-width: 95vw;
+    /* Use viewport units for responsiveness */
+    min-width: 500px;
+    /* Ensure a minimum width */
+}
+
+/* Optional: Adjust content width to prevent overly wide text */
+.modal-xlx .modal-content {
+    max-width: 80%;
+    /* Adjust percentage as needed */
+    margin: 0 auto;
+    /* Center the content */
+}
+
+.dropdown-menu {
+    position: fixed !important;
+    /* Ensure fixed positioning */
+    z-index: 100;
+    /* Set high z-index to stay above other elements */
+}

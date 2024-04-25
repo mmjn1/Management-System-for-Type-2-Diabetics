@@ -3,7 +3,6 @@ from django import forms
 from django.contrib.auth.admin import UserAdmin
 
 from .models import(Patient, Doctor, 
-                    Prescription, 
                     PatientAppointment, 
                     SupportInquiry, 
                     CustomUser, 
@@ -14,6 +13,103 @@ from .models import(Patient, Doctor,
                     FieldResponse, FormResponse, UserMealEntry
                     )
 from django.utils.translation import gettext_lazy as _
+from .models.prescription import *
+
+from django.contrib import admin
+
+
+class DrugsInline(admin.TabularInline):
+    model = Prescription.Drug.through
+    extra = 1
+
+class SymptomsInline(admin.TabularInline):
+    model = Prescription.Symptoms.through
+    extra = 1
+
+class TestsInline(admin.TabularInline):
+    model = Prescription.Tests.through
+    extra = 1
+
+class VitalsInline(admin.TabularInline):
+    model = Prescription.Vitals.through
+    extra = 1
+
+class DiagnosesInline(admin.TabularInline):
+    model = Prescription.Diagnoses.through
+    extra = 1
+
+class HistoriesInline(admin.TabularInline):
+    model = Prescription.Histories.through
+    extra = 1
+
+class AdvicesInline(admin.TabularInline):
+    model = Prescription.Advices.through
+    extra = 1
+
+class FollowUpsInline(admin.TabularInline):
+    model = Prescription.FollowUps.through
+    extra = 1
+
+@admin.register(Salt)
+class SaltAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+
+@admin.register(Medicine)
+class MedicineAdmin(admin.ModelAdmin):
+    list_display = ('name', 'salt')
+    list_filter = ('salt',)
+    search_fields = ('name', 'salt__name')
+
+@admin.register(Drugs)
+class DrugsAdmin(admin.ModelAdmin):
+    list_display = ('Medical_name', 'dosage', 'frequency', 'Time_of_day', 'duration')
+    list_filter = ('Medical_name', 'frequency', 'Time_of_day')
+    search_fields = ('Medical_name__name', 'dosage')
+
+@admin.register(Symptoms)
+class SymptomsAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+
+@admin.register(Tests)
+class TestsAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+
+@admin.register(Vitals)
+class VitalsAdmin(admin.ModelAdmin):
+    list_display = ('name', 'reading', 'date')
+
+@admin.register(Diagnoses)
+class DiagnosesAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+
+@admin.register(Histories)
+class HistoriesAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+
+@admin.register(Advices)
+class AdvicesAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+
+@admin.register(FollowUps)
+class FollowUpsAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+
+@admin.register(Prescription)
+class PrescriptionAdmin(admin.ModelAdmin):
+    list_display = ('patient', 'prescribing_doctor', 'start_date', 'end_date', 'prescription_approved')
+    list_filter = ('prescribing_doctor', 'prescription_approved', 'start_date')
+    search_fields = ('patient__user__first_name', 'patient__user__last_name', 'prescribing_doctor__user__first_name', 'prescribing_doctor__user__last_name')
+    inlines = [
+        DrugsInline, SymptomsInline, TestsInline, VitalsInline, DiagnosesInline, HistoriesInline, AdvicesInline, FollowUpsInline
+    ]
+    readonly_fields = ('updated_at',)
+
+    def save_model(self, request, obj, form, change):
+        if not obj.pk:
+            # Only set the prescribing_doctor on the initial save.
+            obj.prescribing_doctor = request.user
+        super().save_model(request, obj, form, change)
+
 
 class FieldResponseInline(admin.TabularInline):
     model = FieldResponse
@@ -180,21 +276,17 @@ class FieldChoiceAdmin(admin.ModelAdmin):
 
 
 class UserMealEntryAdmin(admin.ModelAdmin):
-    list_display = ('user_input', 'patient', 'ai_advice', 'created_at')  # Fields to display in the list view
-    search_fields = ('user_input', 'patient__name', 'ai_advice')  # Fields to search in the admin
-    list_filter = ('created_at', 'patient')  # Filters to apply in the sidebar
-    date_hierarchy = 'created_at'  # Navigate through dates
-    ordering = ('-created_at',)  # Order by created_at descending by default
+    list_display = ('user_input', 'ai_advice', 'created_at')  
+    search_fields = ('user_input', 'ai_advice')  
+    date_hierarchy = 'created_at'  
+    ordering = ('-created_at',)  
 
-    # If you want to customize the form for adding/editing
-    # fields = ('user_input', 'patient', 'ai_advice')
 
 admin.site.register(UserMealEntry, UserMealEntryAdmin)
 
 
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Patient, PatientAdmin)
-admin.site.register(Prescription)
 admin.site.register(PatientAppointment, PatientAppointmentAdmin)
 admin.site.register(Doctor, DoctorAdmin)
 admin.site.register(MedicalLicense, MedicalLicenseAdmin)
