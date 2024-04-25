@@ -1,23 +1,367 @@
-import React from 'react';
-import Sidebar from '../../components/PatientSidebar';
-import Navbar from '../../components/PostLoginNavigation';
-import "../../sass/PatientDashboard.scss";
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import '../../sass/PatientDashboard.scss';
+import { Typography, Grid, IconButton, Button } from '@mui/material';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import AddIcon from '@mui/icons-material/Add';
+import axios from 'axios';
+import { Dialog, DialogTitle, DialogContent, TextField, DialogActions } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import PatientSidebar from '../../components/PatientSidebar';
+
 
 const DietaryHabits = () => {
-    return (   
-        <div className="home">
-            <Sidebar />
-            <div className="homeContainer">
-                <Navbar />
-                <div className="content">
-                    Track your dietary intake here with recommendations
-                    to improve your diet.
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [open, setOpen] = useState(false);
+    const [currentMeal, setCurrentMeal] = useState('');
+    const [foodEntry, setFoodEntry] = useState('');
+    const [foodEntryError, setFoodEntryError] = useState('');
+    const [dietaryAdvice, setDietaryAdvice] = useState('');
+    const [dialogMode, setDialogMode] = useState('add');
+
+    const formatDate = (date) => {
+        return date.toISOString().split('T')[0];
+    };
+
+    const loadEntriesForDate = (date) => {
+        const dateKey = formatDate(date);
+        const savedEntries = localStorage.getItem(`entries_${dateKey}`);
+        return savedEntries ? JSON.parse(savedEntries) : {
+            Breakfast: [],
+            Lunch: [],
+            Dinner: [],
+            Snacks: []
+        };
+    };
+
+    const [entries, setEntries] = useState(() => loadEntriesForDate(new Date()));
+
+    // Side effect to load entries for the new date when selectedDate changes
+    useEffect(() => {
+        const newEntries = loadEntriesForDate(selectedDate);
+        setEntries(newEntries);
+    }, [selectedDate]);
+
+
+    // Function to change the selected date and load entries for the new date
+    const changeDate = (offset) => {
+        setSelectedDate((prevDate) => {
+            const newDate = new Date(prevDate);
+            newDate.setDate(newDate.getDate() + offset);
+            return newDate;
+        });
+    };
+
+    // Side effect to save entries to localStorage whenever they change
+    useEffect(() => {
+        const dateKey = formatDate(selectedDate);
+        localStorage.setItem(`entries_${dateKey}`, JSON.stringify(entries));
+    }, [entries, selectedDate]);
+
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    // Save entries to localStorage whenever they change
+    useEffect(() => {
+        localStorage.setItem('entries', JSON.stringify(entries));
+    }, [entries]);
+
+
+    const saveDietaryAdvice = (meal, food, advice) => {
+        setEntries(prevEntries => {
+            const updatedEntries = {
+                ...prevEntries,
+                [meal]: { food, advice }
+            };
+            // Save updated entries to localStorage
+            localStorage.setItem('entries', JSON.stringify(updatedEntries));
+            return updatedEntries;
+        }); setDietaryAdvice(advice);
+    };
+
+
+    const handleClickOpen = (meal, isEdit = false) => {
+        setCurrentMeal(meal);
+        if (isEdit) {
+            setFoodEntry(entries[meal]?.food || '');
+            setDialogMode('edit');
+        } else {
+            setFoodEntry('');
+            setDialogMode('add');
+        }
+        setOpen(true);
+    };
+
+    // Function to handle updating an existing food entry
+    const submitEdit = async (meal) => {
+        if (!foodEntry.trim()) {
+            setFoodEntryError('Food entry cannot be empty.');
+            return;
+        }
+
+        const entryId = entries[meal]?.id;
+        if (!entryId) {
+            console.error('No entry ID found for the meal:', meal);
+            return;
+        }
+
+        try {
+            const entryId = entries[currentMeal]?.id;
+            if (!entryId) {
+                console.error('No entry ID found for the meal:', currentMeal);
+                return;
+            }
+
+            const token = localStorage.getItem('token');
+            const response = await axios.patch(`/api/update-entry/${entryId}/`, { user_input: foodEntry }, {
+                headers: {
+                    Authorization: `Token ${token}`
+                }
+            });
+
+            // Assuming the server responds with the updated entry, including its ID
+            const updatedEntry = response.data;
+
+            // Update the entries state with the updated entry
+            setEntries(prevEntries => {
+                const updatedEntries = {
+                    ...prevEntries,
+                    [currentMeal]: {
+                        ...prevEntries[currentMeal],
+                        id: updatedEntry.id, // Confirm the ID
+                        food: foodEntry,
+                        advice: updatedEntry.advice // Set the updated advice
+                    }
+                };
+                // Save updated entries to localStorage
+                localStorage.setItem('entries', JSON.stringify(updatedEntries));
+                return updatedEntries;
+            });
+
+            // Close the dialog and clear any errors
+            handleClose();
+            setFoodEntryError('');
+
+
+        } catch (error) {
+            console.error('There was an error updating the food entry:', error);
+            setFoodEntryError('An error occurred while updating the food entry.');
+        }
+    };
+
+    // Function to handle deleting a food entry with confirmation
+    const handleDelete = async (meal, index) => {
+        if (window.confirm('Are you sure you want to delete this food entry?')) {
+            const entry = entries[meal][index];
+
+            if (entry && entry.id) {
+                try {
+                    const token = localStorage.getItem('token');
+                    await axios.delete(`/api/delete-entry/${entry.id}/`, {
+                        headers: {
+                            Authorization: `Token ${token}`,
+                        },
+                    });
+
+                    // Update the entries state to remove the food entry from the list
+                    setEntries((prevEntries) => {
+                        const updatedEntries = {
+                            ...prevEntries,
+                            [meal]: prevEntries[meal].filter((_, i) => i !== index),
+                        };
+                        // Save updated entries to localStorage
+                        const dateKey = formatDate(selectedDate);
+                        localStorage.setItem(`entries_${dateKey}`, JSON.stringify(updatedEntries));
+                        return updatedEntries;
+                    });
+                } catch (error) {
+                    console.error('There was an error deleting the food entry:', error);
+                }
+            } else {
+                console.error('No entry ID found for the meal:', meal);
+            }
+        }
+    };
+
+    const handleAddFood = async () => {
+        if (!foodEntry.trim()) {
+            setFoodEntryError('Food entry cannot be empty.');
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.post('/api/create-entry/', { user_input: foodEntry }, {
+                headers: {
+                    Authorization: `Token ${token}`
+                }
+            });
+
+            // Assuming the server responds with the new entry, including its ID
+            const newEntry = response.data;
+
+            // Update the entries state with the new entry
+            setEntries(prevEntries => {
+                const updatedEntries = { ...prevEntries };
+                // Check if there's an existing array for the currentMeal, if not create it
+                if (!updatedEntries[currentMeal]) {
+                    updatedEntries[currentMeal] = [];
+                }
+                // Add the new entry to the meal's array
+                updatedEntries[currentMeal].push({
+                    id: newEntry.id,
+                    food: foodEntry,
+                    advice: newEntry.advice
+                });
+
+                // Save updated entries to localStorage
+                localStorage.setItem('entries', JSON.stringify(updatedEntries));
+                return updatedEntries;
+            });
+
+            // Clear the food entry input and close the dialog
+            setFoodEntry('');
+            handleClose();
+        } catch (error) {
+            console.error('There was an error submitting the new food entry:', error);
+            setFoodEntryError('An error occurred while submitting the food entry.');
+        }
+    };
+
+    // Update food entry state when typing in the text field and clear the error if any
+    const handleFoodEntryChange = (event) => {
+        setFoodEntry(event.target.value);
+        // Clear the error message when the user starts typing
+        if (foodEntryError) setFoodEntryError('');
+    };
+
+
+    return (
+        <div className="dietary-habits-layout">
+            {/* <PatientSidebar /> */}
+
+            <main className="main-content">
+
+
+                <div style={{ backgroundColor: '#eef0f9', padding: '16px' }}>
+                    <Typography variant="h5" gutterBottom>
+                        Dietary Habits
+                    </Typography>
+                    <Typography variant="subtitle1" gutterBottom>
+                        Track and manage your daily food intake to better control your blood sugar levels.
+                    </Typography>
+                    <Grid container justifyContent="center" alignItems="center" sx={{ my: 2 }}>
+                        <IconButton onClick={() => changeDate(-1)} aria-label="Previous day">
+                            <ArrowBackIosIcon />
+                        </IconButton>
+                        <Grid item xs={12} sm={'auto'}>
+                            <Typography variant="body1" align="center">
+                                {formatDate(selectedDate)}
+                            </Typography>
+                        </Grid>
+                        <IconButton onClick={() => changeDate(1)} aria-label="Next day">
+                            <ArrowForwardIosIcon />
+                        </IconButton>
+                    </Grid>
+
+
+
+                    {['Breakfast', 'Lunch', 'Dinner', 'Snacks'].map((meal) => (
+                        <Grid container direction="column" spacing={2} sx={{ mt: 4 }} key={meal}>
+                            <Grid item>
+                                <Typography variant="h6" component="div">
+                                    {meal}
+                                </Typography>
+                            </Grid>
+                            {entries[meal].map((entry, index) => (
+                                <React.Fragment key={entry.id}>
+                                    <Grid item container direction="row" justifyContent="space-between" alignItems="center">
+                                        <Grid item xs={10} sm={10} md={11}>
+                                            <TextField
+                                                id={`${meal.toLowerCase()}-input-${index}`}
+                                                label={meal}
+                                                variant="outlined"
+                                                value={entry.food || ''}
+                                                InputProps={{
+                                                    readOnly: true,
+                                                }}
+                                                sx={{
+                                                    m: 1,
+                                                    width: '100%',
+                                                }}
+                                            />
+                                        </Grid>
+                                        <Grid item xs={2} sm={2} md={1}>
+                                            <IconButton color="primary" aria-label="edit food entry" onClick={() => handleClickOpen(meal, true, index)}>
+                                                <EditIcon />
+                                            </IconButton>
+                                            <IconButton color="secondary" aria-label="delete food entry" onClick={() => handleDelete(meal, index)}>
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </Grid>
+                                    </Grid>
+                                    {entry.advice && (
+                                        <Typography variant="body2" color="textSecondary" sx={{ mt: 2, mb: 1, mx: 1 }}>
+                                            {entry.advice}
+                                        </Typography>
+                                    )}
+                                </React.Fragment>
+                            ))}
+                            <Button
+                                variant="contained"
+                                size="small"
+                                startIcon={<AddIcon />}
+                                onClick={() => handleClickOpen(meal)}
+                                sx={{
+                                    bgcolor: 'primary.main',
+                                    '&:hover': { bgcolor: 'primary.dark' },
+                                    // Adjust width and padding to make the button smaller
+                                    maxWidth: '150px', // Set a max width for the button
+                                    padding: '4px 8px', // Reduced padding
+                                    fontSize: '0.75rem', // Smaller font size
+                                }}
+                            >
+                                ADD FOOD
+                            </Button>
+
+                        </Grid>
+                    ))}
+
+                    <Dialog open={open} onClose={handleClose}>
+                        <DialogTitle>{dialogMode === 'edit' ? `Edit Food for ${currentMeal}` : `Add Food for ${currentMeal}`}</DialogTitle>
+                        <DialogContent>
+                            <TextField
+                                autoFocus
+                                margin="dense"
+                                id="food"
+                                label="Food Name"
+                                type="text"
+                                fullWidth
+                                variant="standard"
+                                value={foodEntry}
+                                onChange={handleFoodEntryChange}
+                                error={!!foodEntryError}
+                                helperText={foodEntryError}
+                                required
+                            />
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={handleClose}>Cancel</Button>
+                            <Button onClick={dialogMode === 'edit' ? () => submitEdit(currentMeal) : handleAddFood}>
+                                {dialogMode === 'edit' ? 'Update' : 'Add'}
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
+
 
                 </div>
-            </div>
+            </main>
+
         </div>
     );
-}
+};
 
 export default DietaryHabits;

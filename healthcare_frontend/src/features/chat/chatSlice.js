@@ -27,7 +27,7 @@ export const chatSlice = createSlice({
           (m) => m.tempId === message.tempId
         );
         if (optimisticIndex > -1) {
-          state.messages.splice(optimisticIndex, 1, message); // Replace the optimistic message
+          state.messages.splice(optimisticIndex, 1, message);
         } else {
           state.messages.push(message);
         }
