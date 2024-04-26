@@ -18,6 +18,7 @@ const DietaryHabits = () => {
     const [foodEntry, setFoodEntry] = useState('');
     const [foodEntryError, setFoodEntryError] = useState('');
     const [dietaryAdvice, setDietaryAdvice] = useState('');
+    const [currentEntryId, setCurrentEntryId] = useState(null);
     const [dialogMode, setDialogMode] = useState('add');
 
     const formatDate = (date) => {
@@ -69,6 +70,12 @@ const DietaryHabits = () => {
         localStorage.setItem('entries', JSON.stringify(entries));
     }, [entries]);
 
+    const updateLocalStorageEntries = (updatedEntries) => {
+        const dateKey = formatDate(selectedDate);
+        localStorage.setItem(`entries_${dateKey}`, JSON.stringify(updatedEntries));
+        setEntries(updatedEntries);
+    };
+
 
     const saveDietaryAdvice = (meal, food, advice) => {
         setEntries(prevEntries => {
@@ -83,69 +90,49 @@ const DietaryHabits = () => {
     };
 
 
-    const handleClickOpen = (meal, isEdit = false) => {
+    const handleClickOpen = (meal, isEdit = false, index = null) => {
         setCurrentMeal(meal);
-        if (isEdit) {
-            setFoodEntry(entries[meal]?.food || '');
+        if (isEdit && index !== null) {
+            const entry = entries[meal][index];
+            setFoodEntry(entry.food);
+            setCurrentEntryId(entry.id); // Store the entry ID in state
             setDialogMode('edit');
         } else {
             setFoodEntry('');
+            setCurrentEntryId(null); // Reset the entry ID
             setDialogMode('add');
         }
         setOpen(true);
     };
 
     // Function to handle updating an existing food entry
-    const submitEdit = async (meal) => {
+    const submitEdit = async () => {
         if (!foodEntry.trim()) {
             setFoodEntryError('Food entry cannot be empty.');
             return;
         }
 
-        const entryId = entries[meal]?.id;
-        if (!entryId) {
-            console.error('No entry ID found for the meal:', meal);
-            return;
-        }
-
         try {
-            const entryId = entries[currentMeal]?.id;
-            if (!entryId) {
-                console.error('No entry ID found for the meal:', currentMeal);
-                return;
-            }
-
             const token = localStorage.getItem('token');
-            const response = await axios.patch(`/api/update-entry/${entryId}/`, { user_input: foodEntry }, {
+            const response = await axios.patch(`/api/update-entry/${currentEntryId}/`, { user_input: foodEntry }, {
                 headers: {
                     Authorization: `Token ${token}`
                 }
             });
 
-            // Assuming the server responds with the updated entry, including its ID
             const updatedEntry = response.data;
 
-            // Update the entries state with the updated entry
             setEntries(prevEntries => {
                 const updatedEntries = {
                     ...prevEntries,
-                    [currentMeal]: {
-                        ...prevEntries[currentMeal],
-                        id: updatedEntry.id, // Confirm the ID
-                        food: foodEntry,
-                        advice: updatedEntry.advice // Set the updated advice
-                    }
+                    [currentMeal]: prevEntries[currentMeal].map(e => e.id === currentEntryId ? { ...e, food: foodEntry, advice: updatedEntry.advice } : e)
                 };
-                // Save updated entries to localStorage
-                localStorage.setItem('entries', JSON.stringify(updatedEntries));
+                updateLocalStorageEntries(updatedEntries);
                 return updatedEntries;
             });
 
-            // Close the dialog and clear any errors
             handleClose();
             setFoodEntryError('');
-
-
         } catch (error) {
             console.error('There was an error updating the food entry:', error);
             setFoodEntryError('An error occurred while updating the food entry.');
@@ -186,6 +173,7 @@ const DietaryHabits = () => {
         }
     };
 
+    // Function to handle adding a new food entry
     const handleAddFood = async () => {
         if (!foodEntry.trim()) {
             setFoodEntryError('Food entry cannot be empty.');
@@ -200,36 +188,27 @@ const DietaryHabits = () => {
                 }
             });
 
-            // Assuming the server responds with the new entry, including its ID
-            const newEntry = response.data;
+            const newEntry = response.data; // Ensure this includes the 'id'
 
-            // Update the entries state with the new entry
             setEntries(prevEntries => {
                 const updatedEntries = { ...prevEntries };
-                // Check if there's an existing array for the currentMeal, if not create it
                 if (!updatedEntries[currentMeal]) {
                     updatedEntries[currentMeal] = [];
                 }
-                // Add the new entry to the meal's array
-                updatedEntries[currentMeal].push({
-                    id: newEntry.id,
-                    food: foodEntry,
-                    advice: newEntry.advice
-                });
+                updatedEntries[currentMeal].push(newEntry); // Directly use newEntry which should include 'id'
 
-                // Save updated entries to localStorage
-                localStorage.setItem('entries', JSON.stringify(updatedEntries));
+                updateLocalStorageEntries(updatedEntries);
                 return updatedEntries;
             });
 
-            // Clear the food entry input and close the dialog
-            setFoodEntry('');
             handleClose();
+            setFoodEntry('');
         } catch (error) {
             console.error('There was an error submitting the new food entry:', error);
             setFoodEntryError('An error occurred while submitting the food entry.');
         }
     };
+
 
     // Update food entry state when typing in the text field and clear the error if any
     const handleFoodEntryChange = (event) => {
