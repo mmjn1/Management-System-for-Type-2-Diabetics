@@ -9,18 +9,29 @@ from .common_imports import (
     authenticate, # from django.contrib.auth import authenticate
     _ # from django.utils.translation import gettext_lazy as _
 )
-
-
 from HealthManagementApp.models import CustomUser as User
 
 
 class InActiveUser(AuthenticationFailed):
+    """
+    Custom exception class for handling authentication failures specifically related to inactive user accounts.
+    This class extends the AuthenticationFailed exception from SimpleJWT and sets a specific status code and error message.
+    """
     status_code = status.HTTP_406_NOT_ACCEPTABLE
     default_detail = "Please activate your account before logging in."
     # default_code = 'no_active_account'
 
+
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer, TokenObtainSerializer):
+    """
+    Custom serializer for obtaining JWT tokens for users. This serializer extends both TokenObtainPairSerializer
+    and TokenObtainSerializer from SimpleJWT to handle token creation with additional checks for user account status.
+    """
     def validate(self, attrs):
+        """
+        Validates the user's credentials and checks the account status before issuing JWT tokens.
+        If the user's account is inactive or the credentials are invalid, appropriate exceptions are raised.
+        """
         authenticate_kwargs = {
             self.username_field: attrs[self.username_field],
             'password': attrs['password'],
@@ -29,44 +40,24 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer, TokenObtainSeri
             authenticate_kwargs['request'] = self.context['request']
         except KeyError:
             pass
-        '''
-        Checking if the user exists by getting the email(username field) from authentication_kwargs.
-        If the user exists we check if the user account is active.
-        If the user account is not active we raise the exception and pass the message. 
-        Thus stopping the user from getting authenticated altogether. 
-        
-        And if the user does not exist at all we raise an exception with a different error message.
-        Thus stopping the execution righ there.  
-        '''
+
+        # Check if the user exists and whether their account is active.
         try:
-         user = User.objects.get(email=authenticate_kwargs['email'])
-         if not user.is_active:
-             self.error_messages['no_active_account']=_(
-                 'The account is inactive'
-             )
-             raise InActiveUser();
+            user = User.objects.get(email=authenticate_kwargs['email'])
+            if not user.is_active:
+                self.error_messages['no_active_account'] = _('The account is inactive')
+                raise InActiveUser()
         except User.DoesNotExist:
-          self.error_messages['no_active_account'] =_(
-                'Invalid login credentials'
-              )
-          raise exceptions.AuthenticationFailed(
+            self.error_messages['no_active_account'] = _('Invalid login credentials')
+            raise exceptions.AuthenticationFailed(
                 self.error_messages['no_active_account'],
                 'no_active_account',
-          )
+            )
 
-        '''
-        We come here if everything above goes well.
-        Here we authenticate the user.
-        The authenticate function return None if the credentials do not match 
-        or the user account is inactive. However here we can safely raise the exception
-        that the credentials did not match as we do all the checks above this point.
-        '''
-
+        # Authenticate the user with the provided credentials.
         self.user = authenticate(**authenticate_kwargs)
         if self.user is None:
-            self.error_messages['no_active_account'] = _(
-                'Invalid login credentials'
-            )
+            self.error_messages['no_active_account'] = _('Invalid login credentials')
             raise exceptions.AuthenticationFailed(
                 self.error_messages['no_active_account'],
                 'no_active_account',

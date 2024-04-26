@@ -18,15 +18,28 @@ from HealthManagementApp.serialisers.auth import (
 
 class AdminTokenObtainPairView(TokenViewBase):
     """
-    Takes a set of credentials and returns an access and refresh JSON web
-    token pair to prove the authentication of those credentials.
-    Returns HTTP 406 when patient account is inactive and HTTP 401 when login credentials are invalid.
+    A view that handles the authentication of administrative users and returns JWT access and refresh tokens.
+    This view uses the AdminAuthTokenSerializer to validate the credentials provided in the request.
+    It allows any user to attempt authentication but will only succeed if the credentials match an administrative user.
+
+    Responses:
+    - HTTP 200 OK: If the credentials are valid and the user is an admin, returns the token pair.
+    - HTTP 401 Unauthorized: If the login credentials are invalid.
+    - HTTP 406 Not Acceptable: If the account is inactive (handled by the serializer).
     """
     permission_classes = [AllowAny]
-
     serializer_class = AdminAuthTokenSerializer
 
     def post(self, request, *args, **kwargs):
+        """
+        Handles POST requests to authenticate an admin user and issue JWT tokens.
+
+        Args:
+            request: The HTTP request object containing the authentication credentials.
+
+        Returns:
+            Response: A DRF Response object containing the JWT token pair or an error message.
+        """
         serializer = self.get_serializer(data=request.data)
         try:
             serializer.is_valid(raise_exception=True)

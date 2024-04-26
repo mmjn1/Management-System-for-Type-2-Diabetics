@@ -14,19 +14,12 @@ User = get_user_model()
 
 class UserSerializer(UserCreatePasswordRetypeSerializer):
     """
-    User Serializer: A serializer class that converts a User model instance into Python data types
-    and vice versa.
-    NOTE: This serializer is used for the registration of a new user.
-          It defined in the project's settings.py file.
+    A serializer for user registration that extends Djoser's UserCreatePasswordRetypeSerializer.
+    This serializer handles the creation of new users with fields such as username, email, password,
+    and name. It ensures that the password is not returned in the response by setting it as write-only.
+    The 're_password' field is used for password confirmation during registration but is not stored in the model.
     """
-
     class Meta(UserCreatePasswordRetypeSerializer.Meta):
-        """
-        Meta class: A class that contains the metadata of the UserSerializer class.
-        The serializer only includes the fields for username, email, password, and re_password.
-        !!! NOTE: The re_password field is not included in the User model. It is only used for validation.
-                 - Djoser 2.1.0 has special serializer for this purpose (UserCreatePasswordRetypeSerializer)
-        """
         model = CustomUser
         fields = [
             'username',
@@ -42,26 +35,19 @@ class UserSerializer(UserCreatePasswordRetypeSerializer):
 
     def validate(self, data):
         """
-        validate: A method that validates the data passed in.
-        is_valid() method is called in the view. If it returns False, the view will raise a validation error.
+        Validates the input data. This method is called before creating a new user instance.
+        It ensures that all necessary validations are passed, otherwise, it raises a validation error.
         """
-        # print("data: ")
-        # print(data)
         return data
 
     def create(self, validated_data):
         """
-        create: A method that creates a new User instance and returns it.
+        Creates a new user instance using the validated data. This method handles the removal of the
+        're_password' field which is not intended to be stored in the database.
         """
-        # print("validated data: ")
-        # print(validated_data)
         try:
-
             re_password = validated_data.pop('re_password', None)
             user = super().create(validated_data)
-            # print("user: ")
-            # print(user)
-
             return user
 
         except Exception as e:
@@ -70,12 +56,10 @@ class UserSerializer(UserCreatePasswordRetypeSerializer):
 
 class old_UserSerializer(serializers.HyperlinkedModelSerializer):
     """
-    User Serializer
-    description: This serializer is used to serialize
-    the User model for the API endpoint /api/users/ and
-    hyperlinked to the user's profile
+    A serializer for existing users that provides a hyperlinked identity for user instances.
+    This serializer is typically used for user listing endpoints where each user's data is linked to their profile.
+    It includes fields like URL, email, name, and role.
     """
-
     class Meta:
         model = User
         fields = ['url', 'email', 'name', 'role']

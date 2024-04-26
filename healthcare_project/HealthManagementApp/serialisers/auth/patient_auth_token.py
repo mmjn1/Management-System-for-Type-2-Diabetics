@@ -19,14 +19,24 @@ from .custom_token_utils import (
 
 
 class PatientAuthTokenSerializer(CustomTokenObtainPairSerializer):
+    """
+    A custom serializer for authenticating patients, extending the CustomTokenObtainPairSerializer.
+    This serializer adds an additional layer of validation to check the user's role before issuing a JWT token.
+    It ensures that only users with a specific role (patients) are allowed to authenticate.
+    """
     def validate(self, attrs):
-        data = super().validate(attrs)
-        user = self.user
+        """
+        Validates the user's credentials and role. If the user's role is not '1' (patient),
+        an AuthenticationFailed exception is raised, preventing login.
+        """
+        data = super().validate(attrs)  # Validate using the parent class method
+        user = self.user  # Access the authenticated user from the parent class
 
+        # Check if the authenticated user has the patient role
         if user.role != '1':
             raise exceptions.AuthenticationFailed(
-                _('Unathorized user'),
-                'unauthorized_user'
+                _('Unauthorized user'),  # User-friendly error message
+                'unauthorized_user'  # Error code
             )
 
         return data
