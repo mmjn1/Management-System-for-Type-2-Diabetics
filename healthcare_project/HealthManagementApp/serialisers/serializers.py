@@ -92,7 +92,7 @@ class NewPatientSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(source='user.first_name')
     last_name = serializers.CharField(source='user.last_name')
     email = serializers.CharField(source='user.email')
-    id = serializers.CharField(source='user.id')
+    #id = serializers.CharField(source='user.id')
 
     class Meta:
         model = Patient

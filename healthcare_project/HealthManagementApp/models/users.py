@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager, Permission
 from django.db import models
 from HealthManagementApp.models.roles import Role
 from HealthManagementApp.models.medical_license import MedicalLicense
+import datetime
 
 """
 create_user is for creating regular users within the application
@@ -85,7 +86,9 @@ class CustomUser(AbstractUser, PermissionsMixin):
 
 
 class Doctor(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True, related_name="doctor_user")
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name="doctor_user")
+    patients = models.ManyToManyField('HealthManagementApp.Patient', related_name='treated_by_doctors', null=True,
+                                      blank=True)
     speciality = models.CharField(max_length=50, blank=True, null=True)
     years_of_experience = models.CharField(max_length=50, blank=True, null=True)
     medical_license = models.OneToOneField(MedicalLicense, on_delete=models.CASCADE, null=True, blank=True, related_name="licensed_doctor")
@@ -101,7 +104,7 @@ class Doctor(models.Model):
 
 
 class Patient(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True, related_name="patient_user")
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name="patient_user")
     doctors = models.ManyToManyField('Doctor', related_name='patients_treated')
     current_diabetes_medication = models.TextField(blank=True, null=True)
     dietary_habits = models.TextField(blank=True, null=True)
@@ -115,8 +118,7 @@ class Patient(models.Model):
     physical_activity_level = models.TextField(blank=True, null=True)
     smoking_habits = models.CharField(max_length=50, blank=True, null=True)
     alcohol_consumption = models.CharField(max_length=50, blank=True, null=True)
-    
+
     def __str__(self):
         return f'{self.user.first_name} {self.user.last_name}'
-
     

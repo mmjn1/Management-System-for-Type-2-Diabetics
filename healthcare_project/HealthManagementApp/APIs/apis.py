@@ -249,7 +249,7 @@ def custom_login(request):
 
     if user:
         # token, _ = settings.TOKEN_MODEL.objects.get_or_create(user=user)
-        _, token = djsoer_setting.TOKEN_MODEL.objects.get_or_create(user=user)
+        token, _  = djsoer_setting.TOKEN_MODEL.objects.get_or_create(user=user)
         
         return Response({
             "token": 'token_data',
@@ -267,21 +267,31 @@ class loginAPI(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         patient_id = None
         doctor_id = None
+        token_instance = None
+        created = False
+
         serializer = self.get_serializer(data=request.data)
+
         if serializer.is_valid():
             user = serializer.validated_data
+
+            token_instance, created = djsoer_setting.TOKEN_MODEL.objects.get_or_create(user=user)
+
             try:
                 patient_id = Patient.objects.get(user=user).id
             except Exception as e:
                 print(e)
+
             try:
                 doctor_id = Doctor.objects.get(user=user).id
             except Exception as e:
                 print(e)
-                _, token = djsoer_setting.TOKEN_MODEL.objects.get_or_create(user=user)
+                # _, token = djsoer_setting.TOKEN_MODEL.objects.get_or_create(user=user)
+
             return Response({
                 "user": UserSerializersData(user, context=self.get_serializer_context()).data,
-                "token": str(_),
+                #"token": str(_),
+                "token": str(token_instance),  
                 "patient_id": patient_id,
                 "doctor_id": doctor_id
 
@@ -293,8 +303,8 @@ class loginAPI(generics.GenericAPIView):
             )
 
 
-
 class PrescriptionCreate(APIView):
+    
     serializer_class = PrescriptionSerializer
 
     def get_queryset(self):
@@ -320,6 +330,8 @@ class PrescriptionCreate(APIView):
 
         serializer = PrescriptionSerializer(prescription)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+
 
     def _handle_related_data(self, prescription, data):
         fields = ['Symptoms', 'Tests', 'Vitals', 'Diagnoses', 'Histories', 'Advices', 'FollowUps', 'Drug']
@@ -334,16 +346,20 @@ class PrescriptionCreate(APIView):
 
             if field_name == 'Symptoms':
                 for item in items:
-                    if 'id' in item:  # Update existing
+                    if item.get('id'):  # Update existing
                         symptom = related_manager.model.objects.get(pk=item['id'])
                     else:  # Create new
                         symptom = related_manager.model.objects.create(
-                            name=item['name'])  # Assuming 'name' is the only other field
+                            name=item['name'])  
                     related_manager.add(symptom)
 
             elif field_name == 'Tests':
                 for item in items:
-                    test = related_manager.model.objects.get(pk=item['id'])
+                    if item.get('id'):  # Update existing
+                        test = related_manager.model.objects.get(pk=item['id'])
+                    else:  # Create new
+                        test = related_manager.model.objects.create(
+                            name=item['name'])  
                     related_manager.add(test)
 
             elif field_name == 'Vitals':
@@ -470,8 +486,8 @@ def send_prescription(request):
     patient_id = prescription.patient.id
     doctor_fname = prescription.prescribing_doctor.user.first_name
     doctor_lname = prescription.prescribing_doctor.user.last_name
-    Mobile = prescription.patient.Mobile
-    gender = prescription.patient.gender
+    # Mobile = prescription.patient.Mobile
+#     gender = prescription.patient.gender
     date = prescription.start_date
 
     drugs = prescription.Drug.all()
@@ -523,8 +539,8 @@ def send_prescription(request):
         'history_data': history_data,
         'advice_data': advice_data,
         'followup_data': followup_data,
-        'Mobile': Mobile,
-        'gender': gender,
+#         'Mobile': Mobile,
+        # 'gender': gender,
         'date': date
     }
     if secondary_email:
