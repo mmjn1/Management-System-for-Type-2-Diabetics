@@ -15,15 +15,19 @@ from HealthManagementApp.serialisers.auth import (
 
 class PatientTokenObtainPairView(TokenViewBase):
     """
-    Takes a set of patient credentials and returns an access and refresh JSON web
-    token pair to prove the authentication of those credentials.
-    Returns HTTP 406 when patient account is inactive and HTTP 401 when login credentials are invalid.
+    A view that handles the authentication of patients and returns JWT access and refresh tokens.
+    This view uses the PatientAuthTokenSerializer to validate the credentials provided in the request.
+    It allows any user to attempt authentication but will only succeed if the credentials match a patient user.
+
     """
     permission_classes = [AllowAny]
 
     serializer_class = PatientAuthTokenSerializer
 
     def post(self, request, *args, **kwargs):
+        """
+        Handles POST requests to authenticate a patient user and issue JWT tokens.
+        """
         serializer = self.get_serializer(data=request.data)
         try:
             serializer.is_valid(raise_exception=True)

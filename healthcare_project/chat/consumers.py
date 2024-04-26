@@ -35,6 +35,12 @@ User = get_user_model()
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
+        """
+        Handles the WebSocket connection event. This method is called when a client
+        attempts to establish a WebSocket connection. It sets up the necessary parameters,
+        adds the connection to a group for group messaging, and sends back previously
+        stored messages to the client.
+        """
         print('called 1')
         self.user_id = self.scope['url_route']['kwargs']['user_id']
         self.other_user_id = self.scope['url_route']['kwargs']['other_user_id']
@@ -45,10 +51,20 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({'type': 'old_messages', 'messages': old_messages}))
 
     async def disconnect(self, close_code):
+        """
+        Handles the WebSocket disconnection event. This method is called when a client
+        disconnects from the WebSocket. It removes the connection from the group to
+        stop further message broadcasting to this client.
+        """
         print('called 2')
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
     async def receive(self, text_data=None, bytes_data=None):
+        """
+        Handles receiving messages from WebSocket. This method is triggered when a client sends
+        a message through the WebSocket. It processes both text and binary data, handles file
+        attachments if present, saves the message to the database, and broadcasts it to the group.
+        """
         print('called 3')
         data = None
         directory = 'temp_uploads'
@@ -81,6 +97,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def get_filtered_messages(self):
+        """
+        Retrieves messages from the database that are filtered based on the current user and the other user involved in the chat.
+        This method ensures that only relevant messages are fetched, enhancing privacy and relevance. It also formats the messages
+        to include additional details such as sender and recipient full names, and formatted timestamps. If attachments are present,
+        they are encoded into a base64 format for transmission over the WebSocket.
+        """
         print('called 4')
         queryset = (
             Message.objects.filter(
@@ -111,10 +133,19 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @sync_to_async
     def get_user(self, user_id):
+        """
+        Retrieves a user object from the database using the provided user ID. This method is essential for fetching
+        user details that are necessary for sending personalized messages and managing user-specific data within the chat.
+        """
         print('called 5')
         return User.objects.get(id=user_id)
 
     async def chat_message(self, event):
+        """
+        Handles sending chat messages to the client. This method is called internally
+        when a message needs to be sent to the client. It formats the message data,
+        including attachments, and sends it through the WebSocket.
+        """
         print('called 6')
         message = event['message']
         recipient_id = event['recipient_id']
@@ -149,6 +180,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @sync_to_async
     def get_old_messages(self):
+        """
+        Fetches the last 50 messages from the database for the chat session. This method is used to populate the chat history
+        when a user initially connects to the chat. It ensures that users can view recent conversations upon joining the chat.
+        Messages are annotated with additional details such as sender and recipient full names and formatted timestamps.
+        """
         print('called 7')
         return list(
             Message.objects.all().annotate(
@@ -164,12 +200,17 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @sync_to_async
     def save_message(self, message, recipient_id, sender_id, attachment=None):
+        """
+        Saves a new message to the database. This method is responsible for creating a message record with the provided
+        sender and recipient IDs, the message content, and an optional attachment. The attachment, if provided, is stored
+        as encoded file data.
+        """
         print('called 8')
         Message.objects.create(
             sender_id=sender_id,
             recipient_id=recipient_id,
             message=message,
-            attachment=attachment  # Store the encoded file data
+            attachment=attachment  
         )
 
 

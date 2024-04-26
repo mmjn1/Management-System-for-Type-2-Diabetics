@@ -1,22 +1,11 @@
 from .common_imports import (
-
-    # django imports
-    get_object_or_404, # from django.shortcuts import get_object_or_404
-
-    # rest framework imports
-    generics, # from rest_framework import generics
-    Response, # from rest_framework.response import Response
-    api_view, # from rest_framework.decorators import api_view
-
-    # djoser imports
-    UserViewSet, # from djoser.views import UserViewSet
-
-    # local imports
-    CustomUser, # from HealthManagementApp.models import CustomUser
-
-    # permission imports
-    permissions, # from rest_framework.permissions import AllowAny
-
+    get_object_or_404, 
+    generics, 
+    Response, 
+    api_view, 
+    UserViewSet, 
+    CustomUser, 
+    permissions, 
 )
 
 from HealthManagementApp.serialisers import (
@@ -24,19 +13,29 @@ from HealthManagementApp.serialisers import (
 )
 
 from .base_user_views import (
-    UserRegistrationView, # from .base_user_views import UserRegistrationView
+    UserRegistrationView, 
 )
 
 class PatientCreateView(UserRegistrationView):
     """
-    Patient registration view
+    A view for registering new patients. This class extends UserRegistrationView, utilizing the Djoser UserViewSet
+    for handling user registration with additional configurations specific to patients.
+
+    Attributes:
+        serializer_class (Serializer): Specifies the serializer to use for patient registration. This is set to
+                                       PatientRegisterSerialiser which handles the serialization of patient data.
+        permission_classes (list): Defines the permission classes that control access to this view. Set to AllowAny
+                                   to permit any user to access this view, facilitating the registration of new patients.
     """
-    serializer_class = PatientRegisterSerialiser # override the serializer class
-    permission_classes = [permissions.AllowAny] # allow any user to access this view
+    serializer_class = PatientRegisterSerialiser 
+    permission_classes = [permissions.AllowAny] 
 
     def get_serializer_class(self):
         """
-        Return the class to use for the serializer.
+        Overrides the get_serializer_class method from UserRegistrationView to specify the serializer class
+        for patient registration.
+
+        Returns:
+            PatientRegisterSerialiser: The serializer class used for registering new patients.
         """
-        # print("PatientCreateView.get_serializer_class() called")
         return PatientRegisterSerialiser

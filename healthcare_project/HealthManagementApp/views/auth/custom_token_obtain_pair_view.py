@@ -13,8 +13,9 @@ from .common_imports import (
 
 class CustomTokenObtainPairView(TokenViewBase):
     """
-    Takes a set of user credentials and returns an access and refresh JSON web
-    token pair to prove the authentication of those credentials.
+     A view that handles the authentication process and returns JWT access and refresh tokens using custom validations.
+    This view uses the CustomTokenObtainPairSerializer to validate the credentials provided in the request.
+    It is designed to handle specific cases such as inactive user accounts and other custom validation scenarios.
     """
     serializer_class = CustomTokenObtainPairSerializer
 
