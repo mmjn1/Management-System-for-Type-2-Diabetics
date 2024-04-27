@@ -66,11 +66,18 @@ export const fetchPrescriptionsPatient = createAsyncThunk(
 
 export const createPrescription = createAsyncThunk(
   'Prescription/createPrescription',
-  async data => {
-    const response = await axios.post('api/Prescription/', data, header)
-    return response.data
+  async (data) => {
+    const token = await localStorage.getItem('token');
+    const header = {
+      headers: {
+        Authorization: `Token ${token}`,
+      },
+    };
+    
+    const response = await axios.post('api/Prescription/', data, header);
+    return response.data;
   },
-)
+);
 
 export const updatePrescription = createAsyncThunk(
   'Prescription/updatePrescription',
@@ -195,13 +202,11 @@ export const PrescriptionSlice = createSlice({
           item => item.id === action.payload.id,
         )
         if (PrescriptionIndex !== -1) {
-          // Update the is_blocked property
           state.Prescription[PrescriptionIndex].is_blocked =
             action.payload.is_blocked
 
           toast.success('Updated...', { id: TID })
         } else {
-          // Handle if the Prescription is not found (might be an error condition)
         }
         // state.Prescription = [...state.Prescription, action.payload]
         toast.success('Updated...', { id: TID })
