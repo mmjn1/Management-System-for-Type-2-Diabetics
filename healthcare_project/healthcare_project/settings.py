@@ -46,6 +46,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 # Application definition
 INSTALLED_APPS = [
+    'django_celery_beat',
     'jazzmin',
     'channels',
     'django.contrib.admin',
@@ -63,6 +64,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
     'drf_spectacular',
+    "django_celery_results",
+
 ]
 
 
@@ -397,3 +400,11 @@ JAZZMIN_SETTINGS = {
     "language_chooser": False,
 }
 
+DEFAULT_FROM_EMAIL = 'Celery <ngalahd@gmail.com>'
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Europe/London'
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
