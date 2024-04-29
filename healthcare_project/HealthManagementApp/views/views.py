@@ -41,6 +41,8 @@ from django.http import HttpResponse
 from HealthManagementApp.models import UserMealEntry
 import json
 import os
+import logging
+
 
 login_url = os.environ.get('FRONT_END_URL_LOGIN')
 User = get_user_model()
@@ -88,49 +90,48 @@ def get_dietary_advice(request):
     else:
         return JsonResponse({'error': 'Invalid request'}, status=400)
 
-@csrf_exempt
+logger = logging.getLogger(__name__)
+
 @api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
 def update_dietary_advice(request, entry_id):
-    if request.method == "PATCH":
-        try:
-            data = json.loads(request.body)
-            user_input = data.get("user_input")
-
-            entry = UserMealEntry.objects.get(pk=entry_id)
-
-            entry.user_input = user_input
-
-            response = client.chat.completions.create(
-                model="ft:gpt-3.5-turbo-0125:personal:dietary-advice-bot:9CUENrwC",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": "This chatbot provides dietary advice for people with type 2 diabetes."
-                    },
-                    {
-                        "role": "user",
-                        "content": user_input
-                    }
-                ],
-                max_tokens=150,
-                temperature=0.7,
-                frequency_penalty=0,
-                presence_penalty=0,
-            )
-            advice = response.choices[0].message.content
-
-            entry.ai_advice = advice
-            entry.save()
-
-            return JsonResponse({
-                'id': entry.id,
-                'advice': advice
-            }, status=200)
-
-        except UserMealEntry.DoesNotExist:
-            return JsonResponse({'error': 'UserMealEntry not found'}, status=404)
-    else:
+    if request.method != "PATCH":
         return HttpResponseNotAllowed(['PATCH'])
+
+    try:
+        data = json.loads(request.body)
+        user_input = data.get("user_input")
+        if not user_input:
+            return JsonResponse({'error': 'Missing user input'}, status=400)
+
+        entry = UserMealEntry.objects.get(pk=entry_id)
+        entry.user_input = user_input
+
+        client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        response = client.chat.completions.create(
+            model="ft:gpt-3.5-turbo-0125:personal:dietary-advice-bot:9CUENrwC",
+            messages=[
+                {"role": "system", "content": "This chatbot provides dietary advice for people with type 2 diabetes."},
+                {"role": "user", "content": user_input}
+            ],
+            max_tokens=150,
+            temperature=0.7,
+            frequency_penalty=0,
+            presence_penalty=0,
+        )
+        advice = response.choices[0].message.content
+        entry.ai_advice = advice
+        entry.save()
+
+        return JsonResponse({'id': entry.id, 'advice': advice}, status=200)
+
+    except UserMealEntry.DoesNotExist:
+        logger.error(f"UserMealEntry with id {entry_id} not found.")
+        return JsonResponse({'error': 'UserMealEntry not found'}, status=404)
+    except Exception as e:
+        logger.error(f"An error occurred: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
+
 
 @api_view(['DELETE'])
 def delete_dietary_advice(request, entry_id):
@@ -152,7 +153,7 @@ def delete_dietary_advice(request, entry_id):
     else:
         return HttpResponseNotAllowed(['DELETE'])
 
-"""PP
+"""
 SupportInquiryView handles the creation of new SupportInquiry instances.
 Defined the queryset as all instances of SupportInquiry.
 The serializer_class is set to SupportInquirySerializer, 
@@ -232,9 +233,7 @@ class VerificationView(View):
 
 def activate_account(request):
     return redirect(login_url)
-    # return render(request, 'activateAccount.html', context={
-    #     'FRONT_END_URL_LOGIN': os.environ.get('FRONT_END_URL_LOGIN')
-    # })
+   
 
 
 # fetching the appointment types - Doctor
