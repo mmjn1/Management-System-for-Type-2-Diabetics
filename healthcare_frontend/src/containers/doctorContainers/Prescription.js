@@ -39,12 +39,7 @@ const customStyles = {
  * for selecting a patient and specifying prescription details such as symptoms, tests, vitals,
  * diagnoses, patient history, advices, follow-ups, and drugs.
  *
- * Usage:
- * <Prescription />
- *
- * State Variables:
- * - Various `useState` hooks manage the state of the form inputs, selections, and toggles for different sections.
- *
+ * 
  * Effects:
  * - `useEffect` hooks are utilized to fetch necessary data on component mount and to perform
  *   actions based on certain state changes.
@@ -443,7 +438,11 @@ const Prescription = () => {
     genericNameRef.current.clearValue()
     drugNameRef.current.clearValue()
   }
+
   const handleMedicineRemoveNonIndex = () => {
+    // Removes a selected medicine from the recommendedMedicines array based on its index.
+    // The index to remove is determined by the value of selectedSaltToRemove.
+    // After removal, it resets the selectedSaltToRemove to null to clear the selection.
     setRecommendedMedicines(
       recommendedMedicines.filter((_, i) => i !== selectedSaltToRemove.value),
     )

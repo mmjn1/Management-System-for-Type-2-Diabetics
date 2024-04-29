@@ -10,6 +10,24 @@ import PaginationButtons from '../doctorContainers/PaginationButtons'
 import * as PropTypes from 'prop-types'
 import { sendEmail } from '../../features/prescription/EmailSlice'
 
+
+  /**
+   * This component is for managing and displaying prescriptions for Patients.  It allows patients to view detailed prescription information 
+   * and email their prescription to themselves or other recipients manage prescription
+   * 
+   *
+   * Features:
+   * - **Email Prescription**: Facilitates sending prescriptions directly to patients' emails. Th
+   * - **View Prescription Details**: Displays comprehensive details about each prescription, including patient
+   *   ID, name, prescription date, and medication details.
+   *     
+   * - **Pagination and Search**: Implements pagination to manage large datasets effectively and includes a search
+   *   feature to quickly find specific prescriptions.
+   *
+   *  
+   */
+
+
 function DropdownPageSize(props) {
   return null
 }

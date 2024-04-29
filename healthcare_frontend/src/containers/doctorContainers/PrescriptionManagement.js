@@ -11,6 +11,26 @@ import * as PropTypes from 'prop-types'
 import { sendEmail } from '../../features/prescription/EmailSlice'
 import FollowupModal from './FollowupModal'
 
+ /**
+   * This component is for managing prescriptions for Doctors. 
+   * This component provides a interface for both viewing and managing patient prescriptions.
+   * 
+   * It includes functionality for:
+   * - Displaying a list of prescriptions with details such as patient ID, name, prescription date,
+   *   and current blood sugar levels.
+   * - Emailing prescriptions directly from the interface.
+   * - Editing and deleting prescriptions through modal forms.
+   * - Filtering and searching through the list of prescriptions.
+   * 
+   * 
+   * Key Features:
+   * - **Email Prescription**: Allows sending prescriptions directly via email through a form in the sidebar.
+   * - **View and Edit**: Each prescription can be viewed in detail, and necessary adjustments can be made.
+   * - **Delete Prescription**: Prescriptions can be deleted with confirmation prompts to prevent accidental deletions.
+   * - **Pagination and Search**: Supports pagination and has a search feature to easily find specific prescriptions.
+   * 
+   */
+
 
 function DropdownPageSize(props) {
   return null
