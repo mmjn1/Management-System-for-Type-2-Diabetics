@@ -30,7 +30,6 @@ import { updatePrescription } from '../../features/prescription/PrescriptionSlic
  *
  */
 
-
 const FollowupModal = ({ item, show, onHide }) => {
   const dispatch = useDispatch();
   const now = new Date();
@@ -126,6 +125,7 @@ const FollowupModal = ({ item, show, onHide }) => {
   const [recommendedMedicines, setRecommendedMedicines] = useState([]);
   const [newSymptom, createNewSymptom] = useState(null);
   const [newTests, createNewTests] = useState(null);
+  const [modifiedSaltOptions, setModifiedSaltOptions] = useState(null);
 
   const mergeMedicines = (backendDrugs, existingRecommended) => {
     const recommendedMap = new Map(existingRecommended.map((med) => [med.medicine_id, med])); // Index for efficiency
@@ -338,10 +338,14 @@ const FollowupModal = ({ item, show, onHide }) => {
     }
   };
 
-  const modifiedSaltOptions = salts.data.map((item) => ({
-    value: item.id,
-    label: item.name,
-  }));
+  useEffect(() => {
+    const modifiedSaltOptions = salts.data.map((item) => ({
+      value: item.id,
+      label: item.name,
+    }));
+    setModifiedSaltOptions(modifiedSaltOptions);
+  }, [salts.data]);
+
   const handleChangeNewSalt = (newValue, actionMeta) => {
     setSelectedSalt(newValue ? newValue.value : null);
     if (actionMeta.action === 'select-option') {
@@ -353,6 +357,10 @@ const FollowupModal = ({ item, show, onHide }) => {
     }
     if (actionMeta.action === 'create-option') {
       setNewGenericName(newValue.value);
+      setModifiedSaltOptions((prevOptions) => [
+        ...prevOptions,
+        { value: newValue.value, label: newValue.value },
+      ]);
     }
   };
   const handleChangeDrugName = (newValue, actionMeta) => {
@@ -367,17 +375,34 @@ const FollowupModal = ({ item, show, onHide }) => {
       setNewDrugName(newValue.value);
     }
   };
+
   const addMedicine = () => {
-    setMedicines([
-      ...medicines,
-      {
-        id: Date.now(),
-        salt: 'temp_id' || selectedMedicine.salt,
-        saltName: newGenericName ? newGenericName : selectedMedicine.saltName,
-        drug: 'temp_id' || selectedMedicine.drug,
-        drugName: newDrugName ? newDrugName : selectedMedicine.drugName,
-      },
-    ]);
+    const existingDrugIndex = medicines.findIndex(
+      (medicine) => medicine.saltName === selectedMedicine.saltName,
+    );
+
+    const newDrug = {
+      drug: 'temp_id' || selectedMedicine.drug,
+      drugName: newDrugName ? newDrugName : selectedMedicine.drugName,
+    };
+
+    if (existingDrugIndex !== -1) {
+      setMedicines((prevMedicines) => {
+        const updatedMedicines = [...prevMedicines];
+        updatedMedicines[existingDrugIndex].drugs.push(newDrug);
+        return updatedMedicines;
+      });
+    } else {
+      setMedicines([
+        ...medicines,
+        {
+          id: Date.now(),
+          salt: 'temp_id' || selectedMedicine.salt,
+          saltName: newGenericName ? newGenericName : selectedMedicine.saltName,
+          drugs: [newDrug],
+        },
+      ]);
+    }
 
     setSelectedMedicine({ salt: null, saltName: '', drug: null, drugName: '' });
     setNewGenericName('');
@@ -385,6 +410,7 @@ const FollowupModal = ({ item, show, onHide }) => {
     genericNameRef.current.clearValue();
     drugNameRef.current.clearValue();
   };
+
   const handleSaltChange = (selectedOption) => {
     setSelectedSaltToRemove(selectedOption);
   };
@@ -473,7 +499,6 @@ const FollowupModal = ({ item, show, onHide }) => {
       followups,
       drug,
     };
-    console.log(body);
     dispatch(updatePrescription(body));
   };
   const handleMedicineRemoveNonIndex = () => {
@@ -1441,14 +1466,27 @@ const FollowupModal = ({ item, show, onHide }) => {
                     ))}
 
                     {medicines.map((item, key) => (
-                      <DropdownButton key={key} title={item.saltName} className='m-1'>
-                        <Dropdown.Item
-                          onClick={() =>
-                            handleMedicineSelect(item.salt, item.drug, item.saltName, item.drugName)
-                          }
-                        >
-                          {item.drugName}
-                        </Dropdown.Item>
+                      <DropdownButton
+                        drop='up-centered'
+                        key={key}
+                        title={item.saltName}
+                        className='m-1'
+                      >
+                        {item.drugs.map((drug, drug_key) => (
+                          <Dropdown.Item
+                            key={drug_key}
+                            onClick={() =>
+                              handleMedicineSelect(
+                                item.salt,
+                                drug.drug,
+                                drug.drugName,
+                                item.saltName,
+                              )
+                            }
+                          >
+                            {drug.drugName}
+                          </Dropdown.Item>
+                        ))}
                       </DropdownButton>
                     ))}
                   </div>

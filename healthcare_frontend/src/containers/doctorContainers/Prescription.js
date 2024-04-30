@@ -1,23 +1,23 @@
-import Select from 'react-select'
-import { useDispatch, useSelector } from 'react-redux'
-import { Fragment, useEffect, useRef, useState } from 'react'
-import Creatable from 'react-select/creatable'
-import { toast } from 'react-hot-toast'
-import BlankPatient from '../../containers/doctorContainers/BlankPatient'
-import { Badge, Dropdown, DropdownButton } from 'react-bootstrap'
-import PlusSVG from '../../assets/SVGS/PlusSVG'
-import MinusSVG from '../../assets/SVGS/MinusSVG'
-import SaveSVG from '../../assets/SVGS/SaveSVG'
-import { fetchPatient } from '../../features/patient/fetchPatients'
-import moment from 'moment/moment'
-import { fetchSymptoms } from '../../features/prescription/SymptomsSlice'
-import { fetchTests } from '../../features/prescription/TestsSlice'
-import { fetchSalts } from '../../features/prescription/SaltSlice'
-import BlackMedicine from '../../containers/doctorContainers/BlackMedicine'
-import { createPrescription } from '../../features/prescription/PrescriptionSlice'
+import Select from 'react-select';
+import { Fragment, useEffect, useRef, useState } from 'react';
+import BlankPatient from './BlankPatient';
+import { Badge, Dropdown, DropdownButton } from 'react-bootstrap';
+import PlusSVG from '../../assets/SVGS/PlusSVG';
+import MinusSVG from '../../assets/SVGS/MinusSVG';
+import SaveSVG from '../../assets/SVGS/SaveSVG';
+import { fetchPatient } from '../../features/patient/fetchPatients';
+import { useDispatch, useSelector } from 'react-redux';
+import moment from 'moment/moment';
+import { fetchSymptoms } from '../../features/prescription/SymptomsSlice';
+import { fetchTests } from '../../features/prescription/TestsSlice';
+import { fetchSalts } from '../../features/prescription/SaltSlice';
+import BlackMedicine from './BlackMedicine';
+import { createPrescription } from '../../features/prescription/PrescriptionSlice';
+import Creatable from 'react-select/creatable';
+import { toast } from 'react-hot-toast';
 
 const customStyles = {
-  control: provided => ({
+  control: (provided) => ({
     ...provided,
     width: '200%',
   }),
@@ -26,91 +26,88 @@ const customStyles = {
 
     width: '100%',
   }),
-  menu: provided => ({
+  menu: (provided) => ({
     ...provided,
     width: '200%',
   }),
-}
+};
 
 /**
- * `Prescription` component enables users, specifically doctors, to create, manage,
- * and submit patient prescriptions. The component connects to several Redux slices for fetching
- * necessary data like patients, symptoms, tests, and medication salts. It provides an interactive UI
- * for selecting a patient and specifying prescription details such as symptoms, tests, vitals,
+ * The `Prescription` component enables users, specifically doctors, to create, manage,
+ * and submit patient prescriptions. It connects to several Redux slices to fetch
+ * necessary data such as patients, symptoms, tests, and medication salts. The component provides an interactive UI
+ * for selecting a patient and specifying prescription details including symptoms, tests, vitals,
  * diagnoses, patient history, advices, follow-ups, and drugs.
  *
- * 
  * Effects:
- * - `useEffect` hooks are utilized to fetch necessary data on component mount and to perform
+ * - Utilizes `useEffect` hooks to fetch necessary data on component mount and to perform
  *   actions based on certain state changes.
  *
  * Critical Functions:
- * - `handleMedicineSelect`: Handles the selection of a medicine for the prescription.
- * - `handleInputChange`: Manages changes to the vitals input fields.
- * - `Submit`: Compiles and dispatches the prescription data, performs validation to ensure no fields are empty.
- * - `handleChangeNewSalt`, `handleChangeDrugName`: Handle the selection and creation of new salts and drug names in the creatable select inputs.
+ * - `handleMedicineSelect`: Manages the selection of medicines for the prescription.
+ * - `handleInputChange`: Handles changes to the vitals input fields.
+ * - `Submit`: Compiles and dispatches the prescription data, includes validation to ensure no fields are empty.
+ * - `handleChangeNewSalt`, `handleChangeDrugName`: Manage the selection and creation of new salts and drug names in the creatable select inputs.
  * - `addMedicine`: Adds a new medicine to the prescription list.
- * - `handleMedicineRemoveNonIndex`: Removes a selected medicine based on a non-index identifier.
+ * - `handleMedicineRemoveNonIndex`: Removes a selected medicine based on a specific identifier such as a unique ID or name.
  *
- * The component is designed to be used within a doctor's dashboard where they have the ability to manage patient prescriptions efficiently.
+ * This component is designed for use within a doctor's dashboard, where they can efficiently manage patient prescriptions.
  */
 
-
-
 const Prescription = () => {
-  const dispatch = useDispatch()
-  const now = new Date()
+  const dispatch = useDispatch();
+  const now = new Date();
 
-  const genericNameRef = useRef(null)
-  const drugNameRef = useRef(null)
-  const SymptomRef = useRef(null)
-  const TestsRef = useRef(null)
+  const genericNameRef = useRef(null);
+  const drugNameRef = useRef(null);
+  const SymptomRef = useRef(null);
+  const TestsRef = useRef(null);
 
-  const Patients = useSelector(state => state.PatientSlice)
-  const symptoms = useSelector(state => state.Symptoms)
-  const tests = useSelector(state => state.Tests)
-  const salts = useSelector(state => state.Salts)
+  const Patients = useSelector((state) => state.PatientSlice);
+  const symptoms = useSelector((state) => state.Symptoms);
+  const tests = useSelector((state) => state.Tests);
+  const salts = useSelector((state) => state.Salts);
   const [followup, setFollowup] = useState([
     'Meet after 1 month',
     'Meet after 2 month',
     'Meet after 3 month',
-  ])
+  ]);
   const [advices, setAdvices] = useState([
     'Do not smoke',
-    'Avoid rich foods high in simple sugars.',
-    'Walk for at least 1 hour every day',
-  ])
-  const [activeTab, setActiveTab] = useState('add')
-  const [activeTestTab, setActiveTestTab] = useState('add')
-  const [activeAdviceTab, setActiveAdviceTab] = useState('add')
-  const [activeFollowupTab, setActiveFollowupTab] = useState('add')
-  const [activeDrugsTab, setActiveDrugsTab] = useState('add')
-  const [Symptoms, setSymptoms] = useState(false)
-  const [Tests, setTests] = useState(false)
-  const [AdviceOther, setAdviceOther] = useState(false)
-  const [FollowupOther, setFollowupOther] = useState(false)
-  const [Drugs, setDrugs] = useState(false)
-  const [selectPatient, setSelectPatient] = useState(null)
-  const [filteredPatientData, setFilteredPatientData] = useState(null)
-  const [selectedAdviceToRemove, setSelectedAdviceToRemove] = useState(null)
-  const [selectedFollowUpToRemove, setSelectedFollowupToRemove] = useState(null)
-  const [vitalsobject, setVitals] = useState([])
-  const [Diagnoses, setDiagnoses] = useState([])
-  const [History, setHistory] = useState([])
-  const [selectedBadges, setSelectedBadges] = useState([])
-  const [selectedTests, setSelectedTests] = useState([])
-  const [selectedAdvices, setSelectedAdvices] = useState([])
-  const [selectedFollowups, setSelectedFollowups] = useState([])
-  const [newAdvice, setNewAdvice] = useState('')
-  const [newFollowup, setNewFollowup] = useState('')
-  const [selectedSaltToRemove, setSelectedSaltToRemove] = useState(null)
-  const [recommendedMedicines, setRecommendedMedicines] = useState([])
-  const [selectedSymptoms, setSelectedSymptoms] = useState(null)
-  const [selectedTest, setSelectedTest] = useState(null)
-  const [drugNameOptions, setDrugNameOptions] = useState([])
-  const [selectedSalt, setSelectedSalt] = useState(null)
-  const [newGenericName, setNewGenericName] = useState('')
-  const [newDrugName, setNewDrugName] = useState('')
+    'Avoid rich foods',
+    'Walk 1 hour everyday',
+  ]);
+  const [activeTab, setActiveTab] = useState('add');
+  const [activeTestTab, setActiveTestTab] = useState('add');
+  const [activeAdviceTab, setActiveAdviceTab] = useState('add');
+  const [activeFollowupTab, setActiveFollowupTab] = useState('add');
+  const [activeDrugsTab, setActiveDrugsTab] = useState('add');
+  const [Symptoms, setSymptoms] = useState(false);
+  const [Tests, setTests] = useState(false);
+  const [AdviceOther, setAdviceOther] = useState(false);
+  const [FollowupOther, setFollowupOther] = useState(false);
+  const [Drugs, setDrugs] = useState(false);
+  const [selectPatient, setSelectPatient] = useState(null);
+  const [filteredPatientData, setFilteredPatientData] = useState(null);
+  const [selectedAdviceToRemove, setSelectedAdviceToRemove] = useState(null);
+  const [selectedFollowUpToRemove, setSelectedFollowupToRemove] = useState(null);
+  const [vitalsobject, setVitals] = useState([]);
+  const [Diagnoses, setDiagnoses] = useState([]);
+  const [History, setHistory] = useState([]);
+  const [selectedBadges, setSelectedBadges] = useState([]);
+  const [selectedTests, setSelectedTests] = useState([]);
+  const [selectedAdvices, setSelectedAdvices] = useState([]);
+  const [selectedFollowups, setSelectedFollowups] = useState([]);
+  const [newAdvice, setNewAdvice] = useState('');
+  const [newFollowup, setNewFollowup] = useState('');
+  const [selectedSaltToRemove, setSelectedSaltToRemove] = useState(null);
+  const [recommendedMedicines, setRecommendedMedicines] = useState([]);
+  const [selectedSymptoms, setSelectedSymptoms] = useState(null);
+  const [selectedTest, setSelectedTest] = useState(null);
+  const [drugNameOptions, setDrugNameOptions] = useState([]);
+  const [selectedSalt, setSelectedSalt] = useState(null);
+  const [newGenericName, setNewGenericName] = useState('');
+  const [newDrugName, setNewDrugName] = useState('');
   const [selectedMedicine, setSelectedMedicine] = useState({
     salt: null,
     saltName: '',
@@ -119,46 +116,45 @@ const Prescription = () => {
     dosage: ['0', '0', '0'],
     time: '',
     duration: '',
-  })
-  const [medicines, setMedicines] = useState([])
-  const [hasEmptyFields, setHasEmptyFields] = useState(false)
-  const [newSymptom, createNewSymptom] = useState(null)
-  const [newTests, createNewTests] = useState(null)
+  });
+  const [medicines, setMedicines] = useState([]);
+  const [hasEmptyFields, setHasEmptyFields] = useState(false);
+  const [newSymptom, createNewSymptom] = useState(null);
+  const [newTests, createNewTests] = useState(null);
+  const [modifiedSaltOptions, setModifiedSaltOptions] = useState(null);
 
   useEffect(() => {
-    dispatch(fetchPatient())
-    dispatch(fetchSymptoms())
-    dispatch(fetchTests())
-    dispatch(fetchSalts())
-  }, [dispatch])
+    dispatch(fetchPatient());
+    dispatch(fetchSymptoms());
+    dispatch(fetchTests());
+    dispatch(fetchSalts());
+  }, [dispatch]);
 
   useEffect(() => {
     if (Patients.data && selectPatient) {
-      const selectedData = Patients.data.find(
-        patient => patient.id === selectPatient,
-      )
-      setFilteredPatientData(selectedData)
+      const selectedData = Patients.data.find((patient) => patient.id === selectPatient);
+      setFilteredPatientData(selectedData);
     } else {
-      setFilteredPatientData(null)
+      setFilteredPatientData(null);
     }
-  }, [Patients.data, selectPatient])
+  }, [Patients.data, selectPatient]);
 
   useEffect(() => {
     if (selectedSalt) {
-      const saltData = salts.data.find(salt => salt.id === selectedSalt)
+      const saltData = salts.data.find((salt) => salt.id === selectedSalt);
       if (saltData) {
-        const drugOptions = saltData.medicines.map(med => ({
+        const drugOptions = saltData.medicines.map((med) => ({
           value: med.id,
           label: med.name,
-        }))
-        setDrugNameOptions(drugOptions)
+        }));
+        setDrugNameOptions(drugOptions);
       } else {
-        setDrugNameOptions([])
+        setDrugNameOptions([]);
       }
     } else {
-      setDrugNameOptions([])
+      setDrugNameOptions([]);
     }
-  }, [selectedSalt, salts.data])
+  }, [selectedSalt, salts.data]);
 
   const handleMedicineSelect = (salt_id, med_key, medicineName, saltName) => {
     const newMedicine = {
@@ -169,195 +165,188 @@ const Prescription = () => {
       dosage: ['0', '0', '0'],
       time: '',
       duration: '',
-    }
+    };
 
-    setRecommendedMedicines([...recommendedMedicines, newMedicine])
-  }
-  const handleSaltChange = selectedOption => {
-    setSelectedSaltToRemove(selectedOption)
-  }
-  const handleBadgeClick = badge => {
-    if (selectedBadges.find(item => item.id === badge.id)) {
-      setSelectedBadges(selectedBadges.filter(item => item.id !== badge.id))
+    setRecommendedMedicines([...recommendedMedicines, newMedicine]);
+  };
+  const handleSaltChange = (selectedOption) => {
+    setSelectedSaltToRemove(selectedOption);
+  };
+  const handleBadgeClick = (badge) => {
+    if (selectedBadges.find((item) => item.id === badge.id)) {
+      setSelectedBadges(selectedBadges.filter((item) => item.id !== badge.id));
     } else {
-      setSelectedBadges([...selectedBadges, badge])
+      setSelectedBadges([...selectedBadges, badge]);
     }
-  }
+  };
   const handleAddDropdownChange = () => {
-    const newBadge = newSymptom
+    const newBadge = newSymptom;
     if (newBadge) {
-      setSelectedBadges([...selectedBadges, newBadge])
-      SymptomRef.current.clearValue()
+      setSelectedBadges([...selectedBadges, newBadge]);
+      SymptomRef.current.clearValue();
     }
-    createNewSymptom(null)
-  }
+    createNewSymptom(null);
+  };
   const handleRemoveDropdownChange = () => {
-    const badgeToRemove = selectedSymptoms
+    const badgeToRemove = selectedSymptoms;
     if (badgeToRemove) {
-      setSelectedBadges(
-        selectedBadges.filter(item => item.id !== badgeToRemove.id),
-      )
+      setSelectedBadges(selectedBadges.filter((item) => item.id !== badgeToRemove.id));
     }
-    setSelectedSymptoms(null)
-  }
-  const handleTestClick = testdata => {
-    if (selectedTests.find(item => item.id === testdata.id)) {
-      setSelectedTests(selectedTests.filter(item => item.id !== testdata.id))
+    setSelectedSymptoms(null);
+  };
+  const handleTestClick = (testdata) => {
+    if (selectedTests.find((item) => item.id === testdata.id)) {
+      setSelectedTests(selectedTests.filter((item) => item.id !== testdata.id));
     } else {
-      setSelectedTests([...selectedTests, testdata])
+      setSelectedTests([...selectedTests, testdata]);
     }
-  }
+  };
   const handleAddDropdownTestChange = () => {
-    const newTest = newTests
+    const newTest = newTests;
     if (newTest !== null) {
-      setSelectedTests([...selectedTests, newTest])
+      setSelectedTests([...selectedTests, newTest]);
     }
-    setSelectedTest(null)
-  }
+    setSelectedTest(null);
+  };
   const handleRemoveDropdownTestChange = () => {
-    const TestToRemove = selectedTest
+    const TestToRemove = selectedTest;
     if (TestToRemove) {
-      setSelectedTests(
-        selectedTests.filter(item => item.id !== TestToRemove.id),
-      )
+      setSelectedTests(selectedTests.filter((item) => item.id !== TestToRemove.id));
     }
-    setSelectedTest(null)
-  }
-  const handleAddFields = medicalIndex => {
-    const updatedMedicines = [...recommendedMedicines]
-    updatedMedicines[medicalIndex].dosage.push({})
-    setRecommendedMedicines(updatedMedicines)
-  }
-  const handleRemoveField = medicalIndex => {
-    const updatedMedicines = [...recommendedMedicines]
-    updatedMedicines[medicalIndex].dosage.pop()
-    setRecommendedMedicines(updatedMedicines)
-  }
+    setSelectedTest(null);
+  };
+  const handleAddFields = (medicalIndex) => {
+    const updatedMedicines = [...recommendedMedicines];
+    updatedMedicines[medicalIndex].dosage.push({});
+    setRecommendedMedicines(updatedMedicines);
+  };
+  const handleRemoveField = (medicalIndex) => {
+    const updatedMedicines = [...recommendedMedicines];
+    updatedMedicines[medicalIndex].dosage.pop();
+    setRecommendedMedicines(updatedMedicines);
+  };
   const handleAddVitals = () => {
-    setVitals([...vitalsobject, { name: '', reading: '' }])
-  }
+    setVitals([...vitalsobject, { name: '', reading: '' }]);
+  };
   const handleInputChange = (index, event) => {
-    const newVitals = [...vitalsobject]
-    newVitals[index][event.target.name] = event.target.value
-    setVitals(newVitals)
-  }
-  const handleRemoveVital = index => {
-    setVitals(vitalsobject.filter((_, i) => i !== index))
-  }
+    const newVitals = [...vitalsobject];
+    newVitals[index][event.target.name] = event.target.value;
+    setVitals(newVitals);
+  };
+  const handleRemoveVital = (index) => {
+    setVitals(vitalsobject.filter((_, i) => i !== index));
+  };
   const handleAddDiagnoses = () => {
-    setDiagnoses([...Diagnoses, { name: '' }])
-  }
+    setDiagnoses([...Diagnoses, { name: '' }]);
+  };
   const handleInputDiagnosesChange = (index, event) => {
-    const newDiagonses = [...Diagnoses]
-    newDiagonses[index][event.target.name] = event.target.value
-    setDiagnoses(newDiagonses)
-  }
-  const handleRemoveDiagnoses = index => {
-    setDiagnoses(Diagnoses.filter((_, i) => i !== index))
-  }
+    const newDiagonses = [...Diagnoses];
+    newDiagonses[index][event.target.name] = event.target.value;
+    setDiagnoses(newDiagonses);
+  };
+  const handleRemoveDiagnoses = (index) => {
+    setDiagnoses(Diagnoses.filter((_, i) => i !== index));
+  };
   const handleAddHistory = () => {
-    setHistory([...History, { name: '' }])
-  }
+    setHistory([...History, { name: '' }]);
+  };
   const handleInputHistoryChange = (index, event) => {
-    const newHistory = [...History]
-    newHistory[index][event.target.name] = event.target.value
-    setHistory(newHistory)
-  }
-  const handleRemoveHistory = index => {
-    setHistory(History.filter((_, i) => i !== index))
-  }
+    const newHistory = [...History];
+    newHistory[index][event.target.name] = event.target.value;
+    setHistory(newHistory);
+  };
+  const handleRemoveHistory = (index) => {
+    setHistory(History.filter((_, i) => i !== index));
+  };
   const handleAddAdvice = () => {
-    setAdvices([...advices, newAdvice])
-    setSelectedAdvices([...selectedAdvices, newAdvice])
-    setNewAdvice('')
-  }
-  const handleAdviceClick = advice => {
+    setAdvices([...advices, newAdvice]);
+    setSelectedAdvices([...selectedAdvices, newAdvice]);
+    setNewAdvice('');
+  };
+  const handleAdviceClick = (advice) => {
     if (selectedAdvices.includes(advice)) {
-      setSelectedAdvices(selectedAdvices.filter(item => item !== advice))
+      setSelectedAdvices(selectedAdvices.filter((item) => item !== advice));
     } else {
-      setSelectedAdvices([...selectedAdvices, advice])
+      setSelectedAdvices([...selectedAdvices, advice]);
     }
-  }
-  const handleFollowUpClick = followup => {
+  };
+  const handleFollowUpClick = (followup) => {
     if (selectedFollowups.includes(followup)) {
-      setSelectedFollowups(selectedFollowups.filter(item => item !== followup))
+      setSelectedFollowups(selectedFollowups.filter((item) => item !== followup));
     } else {
-      setSelectedFollowups([...selectedFollowups, followup])
+      setSelectedFollowups([...selectedFollowups, followup]);
     }
-  }
+  };
   const handleRemoveAdvice = () => {
-    setSelectedAdvices(
-      selectedAdvices.filter(item => item !== selectedAdviceToRemove),
-    )
+    setSelectedAdvices(selectedAdvices.filter((item) => item !== selectedAdviceToRemove));
 
-    setAdvices(advices.filter(item => item !== selectedAdviceToRemove))
-  }
-  const handleSelectedAdviceChange = e => {
-    setSelectedAdviceToRemove(e.target.value)
-  }
+    setAdvices(advices.filter((item) => item !== selectedAdviceToRemove));
+  };
+  const handleSelectedAdviceChange = (e) => {
+    setSelectedAdviceToRemove(e.target.value);
+  };
   const handleAddFollowup = () => {
-    setFollowup([...followup, newFollowup])
-    setSelectedFollowups([...selectedFollowups, newFollowup])
-    setNewFollowup('')
-  }
+    setFollowup([...followup, newFollowup]);
+    setSelectedFollowups([...selectedFollowups, newFollowup]);
+    setNewFollowup('');
+  };
   const handleRemoveFollowup = () => {
-    setSelectedFollowups(
-      selectedFollowups.filter(item => item !== selectedFollowUpToRemove),
-    )
+    setSelectedFollowups(selectedFollowups.filter((item) => item !== selectedFollowUpToRemove));
 
-    setFollowup(followup.filter(item => item !== selectedFollowUpToRemove))
-  }
-  const handleSelectedFollowupChange = e => {
-    setSelectedFollowupToRemove(e.target.value)
-  }
-  const handleMedicineRemove = index => {
-    setRecommendedMedicines(recommendedMedicines.filter((_, i) => i !== index))
-  }
+    setFollowup(followup.filter((item) => item !== selectedFollowUpToRemove));
+  };
+  const handleSelectedFollowupChange = (e) => {
+    setSelectedFollowupToRemove(e.target.value);
+  };
+  const handleMedicineRemove = (index) => {
+    setRecommendedMedicines(recommendedMedicines.filter((_, i) => i !== index));
+  };
   const addDosage = (medicalIndex, index, value) => {
-    setRecommendedMedicines(prevMeds =>
+    setRecommendedMedicines((prevMeds) =>
       prevMeds.map((medicine, medIndex) => {
         if (medIndex === medicalIndex) {
-          const updatedDosage = [...medicine.dosage]
-          updatedDosage[index] = value
-          return { ...medicine, dosage: updatedDosage }
+          const updatedDosage = [...medicine.dosage];
+          updatedDosage[index] = value;
+          return { ...medicine, dosage: updatedDosage };
         } else {
-          return medicine
+          return medicine;
         }
       }),
-    )
-  }
+    );
+  };
   const addMedicineTime = (medicalIndex, value) => {
-    setRecommendedMedicines(prevMeds =>
+    setRecommendedMedicines((prevMeds) =>
       prevMeds.map((medicine, medIndex) => {
         if (medIndex === medicalIndex) {
-          return { ...medicine, time: value }
+          return { ...medicine, time: value };
         } else {
-          return medicine
+          return medicine;
         }
       }),
-    )
-  }
+    );
+  };
   const addMedicineDuration = (medicalIndex, value) => {
-    setRecommendedMedicines(prevMeds =>
+    setRecommendedMedicines((prevMeds) =>
       prevMeds.map((medicine, medIndex) => {
         if (medIndex === medicalIndex) {
-          return { ...medicine, duration: value }
+          return { ...medicine, duration: value };
         } else {
-          return medicine
+          return medicine;
         }
       }),
-    )
-  }
+    );
+  };
+
   const Submit = () => {
-    const patient = selectPatient
-    const symptoms = selectedBadges
-    const tests = selectedTests
-    const vitals = vitalsobject
-    const diagnoses = Diagnoses
-    const histories = History
-    const advices = selectedAdvices
-    const followups = selectedFollowups
-    const drug = recommendedMedicines
+    const patient = selectPatient;
+    const symptoms = selectedBadges;
+    const tests = selectedTests;
+    const vitals = vitalsobject;
+    const diagnoses = Diagnoses;
+    const histories = History;
+    const advices = selectedAdvices;
+    const followups = selectedFollowups;
+    const drug = recommendedMedicines;
 
     const body = {
       patient,
@@ -369,41 +358,48 @@ const Prescription = () => {
       advices,
       followups,
       drug,
-    }
+    };
 
     const isEmpty = Object.entries(body).some(([key, value]) => {
-      return key !== 'patient' && Array.isArray(value) && value.length === 0
-    })
+      return key !== 'patient' && Array.isArray(value) && value.length === 0;
+    });
 
     if (isEmpty) {
-      setHasEmptyFields(true)
-      toast.error('Please fill in all required fields.')
-      return
+      setHasEmptyFields(true);
+      toast.error('Please fill in all required fields.');
+      return;
     }
 
-    setHasEmptyFields(false)
+    setHasEmptyFields(false);
 
-    dispatch(createPrescription(body))
-  }
+    dispatch(createPrescription(body));
+  };
 
-  const modifiedSaltOptions = salts.data.map(item => ({
-    value: item.id,
-    label: item.name,
-  }))
+  useEffect(() => {
+    const modifiedSaltOptions = salts.data.map((item) => ({
+      value: item.id,
+      label: item.name,
+    }));
+    setModifiedSaltOptions(modifiedSaltOptions);
+  }, [salts.data]);
 
   const handleChangeNewSalt = (newValue, actionMeta) => {
-    setSelectedSalt(newValue ? newValue.value : null)
+    setSelectedSalt(newValue ? newValue.value : null);
     if (actionMeta.action === 'select-option') {
       setSelectedMedicine({
         ...selectedMedicine,
         salt: newValue.value,
         saltName: newValue.label,
-      })
+      });
     }
     if (actionMeta.action === 'create-option') {
-      setNewGenericName(newValue.value)
+      setNewGenericName(newValue.value);
+      setModifiedSaltOptions((prevOptions) => [
+        ...prevOptions,
+        { value: newValue.value, label: newValue.value },
+      ]);
     }
-  }
+  };
 
   const handleChangeDrugName = (newValue, actionMeta) => {
     if (actionMeta.action === 'select-option') {
@@ -411,43 +407,54 @@ const Prescription = () => {
         ...selectedMedicine,
         drug: newValue.value,
         drugName: newValue.label,
-      })
+      });
     }
     if (actionMeta.action === 'create-option') {
-      setNewDrugName(newValue.value)
+      setNewDrugName(newValue.value);
     }
-  }
+  };
+
   const addMedicine = () => {
-    setMedicines([
-      ...medicines,
-      {
-        id: Date.now(),
-        salt: 'temp_id' || selectedMedicine.salt,
-        saltName: newGenericName ? newGenericName : selectedMedicine.saltName,
-        drug: 'temp_id' || selectedMedicine.drug,
-        drugName: newDrugName ? newDrugName : selectedMedicine.drugName,
-      },
-    ])
+    const existingDrugIndex = medicines.findIndex(
+      (medicine) => medicine.saltName === selectedMedicine.saltName,
+    );
 
-    setSelectedMedicine({ salt: null, saltName: '', drug: null, drugName: '' })
+    const newDrug = {
+      drug: 'temp_id' || selectedMedicine.drug,
+      drugName: newDrugName ? newDrugName : selectedMedicine.drugName,
+    };
 
+    if (existingDrugIndex !== -1) {
+      setMedicines((prevMedicines) => {
+        const updatedMedicines = [...prevMedicines];
+        updatedMedicines[existingDrugIndex].drugs.push(newDrug);
+        return updatedMedicines;
+      });
+    } else {
+      setMedicines([
+        ...medicines,
+        {
+          id: Date.now(),
+          salt: 'temp_id' || selectedMedicine.salt,
+          saltName: newGenericName ? newGenericName : selectedMedicine.saltName,
+          drugs: [newDrug],
+        },
+      ]);
+    }
 
-
-    setNewGenericName('')
-    setNewDrugName('')
-    genericNameRef.current.clearValue()
-    drugNameRef.current.clearValue()
-  }
+    setSelectedMedicine({ salt: null, saltName: '', drug: null, drugName: '' });
+    setNewGenericName('');
+    setNewDrugName('');
+    genericNameRef.current.clearValue();
+    drugNameRef.current.clearValue();
+  };
 
   const handleMedicineRemoveNonIndex = () => {
-    // Removes a selected medicine from the recommendedMedicines array based on its index.
-    // The index to remove is determined by the value of selectedSaltToRemove.
-    // After removal, it resets the selectedSaltToRemove to null to clear the selection.
     setRecommendedMedicines(
       recommendedMedicines.filter((_, i) => i !== selectedSaltToRemove.value),
-    )
-    setSelectedSaltToRemove(null)
-  }
+    );
+    setSelectedSaltToRemove(null);
+  };
 
   const handleChangeSymptoms = (newValue, actionMeta) => {
     if (actionMeta.action === 'select-option') {
@@ -485,9 +492,7 @@ const Prescription = () => {
                         <div className='d-flex align-items-center justify-content-between flex-wrap py-3'>
                           {/*begin::Info*/}
                           <div className='d-flex align-items-center mr-2 py-2'>
-                            <h3 className='font-weight-bold mb-0 mr-10'>
-                              Prescriptions
-                            </h3>
+                            <h3 className='font-weight-bold mb-0 mr-10'>Prescriptions</h3>
                           </div>
                           {/*end::Info*/}
                           {/*begin::Users*/}
@@ -514,9 +519,9 @@ const Prescription = () => {
                               id='select-react'
                               class='form-control'
                               placeholder='Select Patient'
-                              onChange={e => setSelectPatient(e.value)}
+                              onChange={(e) => setSelectPatient(e.value)}
                               isLoading={Patients.status === 'loading'}
-                              options={Patients.data.map(arr => ({
+                              options={Patients.data.map((arr) => ({
                                 value: arr.id,
                                 label: arr.first_name + ' ' + arr.last_name,
                               }))}
@@ -525,10 +530,7 @@ const Prescription = () => {
                           {/*end::Info*/}
                           {/*begin::Users*/}
                           <div className='symbol-group symbol-hover py-2'>
-                            <button
-                              className='btn btn-outline-warning'
-                              onClick={() => Submit()}
-                            >
+                            <button className='btn btn-outline-warning' onClick={() => Submit()}>
                               <span className='svg-icon'>
                                 <SaveSVG />
                               </span>
@@ -578,29 +580,29 @@ const Prescription = () => {
                                         {filteredPatientData.last_name}
                                       </span>
                                     </div>
-                                    {/* <div style={{ marginRight: '5px' }}>
+                                    <div style={{ marginRight: '5px' }}>
                                       {' '}
                                       <span>
                                         <b>Age: </b>
                                       </span>
                                       <span>{filteredPatientData.age}</span>
-                                    </div> */}
-                                    {/* <div style={{ marginRight: '5px' }}>
+                                    </div>
+                                    <div style={{ marginRight: '5px' }}>
                                       {' '}
                                       <span>
                                         <b>Mobile: </b>
                                       </span>
                                       <span>{filteredPatientData.Mobile}</span>
-                                    </div> */}
+                                    </div>
                                     <div style={{ marginRight: '5px' }}>
                                       {' '}
                                       <span>
                                         <b>Diagnosis Date: </b>
                                       </span>
                                       <span>
-                                        {moment(
-                                          filteredPatientData.date_of_diagnosis,
-                                        ).format('MMM DD YYYY, h:mm:a')}
+                                        {moment(filteredPatientData.date_of_diagnosis).format(
+                                          'MMM DD YYYY, h:mm:ss a',
+                                        )}
                                       </span>
                                     </div>
                                     <div style={{ marginRight: '5px' }}>
@@ -608,9 +610,7 @@ const Prescription = () => {
                                       <span>
                                         <b>Diabetes: </b>
                                       </span>
-                                      <span>
-                                        {filteredPatientData.type_of_diabetes}
-                                      </span>
+                                      <span>{filteredPatientData.type_of_diabetes}</span>
                                     </div>
                                     <div style={{ marginRight: '5px' }}>
                                       {' '}
@@ -618,11 +618,8 @@ const Prescription = () => {
                                         <b>Sugar level: </b>
                                       </span>
                                       <span>
-                                        {filteredPatientData.blood_sugar_level}{' '}
-                                        /{' '}
-                                        {
-                                          filteredPatientData.target_blood_sugar_level
-                                        }
+                                        {filteredPatientData.blood_sugar_level} /{' '}
+                                        {filteredPatientData.target_blood_sugar_level}
                                       </span>
                                     </div>
                                     <div style={{ marginRight: '5px' }}>
@@ -630,20 +627,14 @@ const Prescription = () => {
                                       <span>
                                         <b>Smoking Habits: </b>
                                       </span>
-                                      <span>
-                                        {filteredPatientData.smoking_habits}
-                                      </span>
+                                      <span>{filteredPatientData.smoking_habits}</span>
                                     </div>
                                     <div style={{ marginRight: '5px' }}>
                                       {' '}
                                       <span>
                                         <b>Alcohol Consumption: </b>
                                       </span>
-                                      <span>
-                                        {
-                                          filteredPatientData.alcohol_consumption
-                                        }
-                                      </span>
+                                      <span>{filteredPatientData.alcohol_consumption}</span>
                                     </div>
                                   </>
                                 )
@@ -695,9 +686,7 @@ const Prescription = () => {
                                         <li className='nav-item'>
                                           <button
                                             className={`nav-link ${activeTab === 'remove' ? 'active' : ''}`}
-                                            onClick={() =>
-                                              setActiveTab('remove')
-                                            }
+                                            onClick={() => setActiveTab('remove')}
                                           >
                                             Remove
                                           </button>
@@ -713,16 +702,12 @@ const Prescription = () => {
                                             id='Symptons-name-select'
                                             options={symptoms.data
                                               .filter(
-                                                item =>
+                                                (item) =>
                                                   !selectedBadges
-                                                    .map(badge =>
-                                                      badge.name.toLowerCase(),
-                                                    )
-                                                    .includes(
-                                                      item.name.toLowerCase(),
-                                                    ),
+                                                    .map((badge) => badge.name.toLowerCase())
+                                                    .includes(item.name.toLowerCase()),
                                               )
-                                              .map(item => ({
+                                              .map((item) => ({
                                                 value: item.id,
                                                 label: item.name,
                                               }))}
@@ -743,24 +728,17 @@ const Prescription = () => {
                                           {/* Remove dropdown */}
                                           <select
                                             className='form-select'
-                                            onChange={e =>
+                                            onChange={(e) =>
                                               setSelectedSymptoms(
                                                 selectedBadges.find(
-                                                  badge =>
-                                                    badge.id ===
-                                                    parseInt(e.target.value),
+                                                  (badge) => badge.id === parseInt(e.target.value),
                                                 ),
                                               )
                                             }
                                           >
-                                            <option>
-                                              Select item to remove
-                                            </option>
-                                            {selectedBadges.map(badge => (
-                                              <option
-                                                key={badge.id}
-                                                value={badge.id}
-                                              >
+                                            <option>Select item to remove</option>
+                                            {selectedBadges.map((badge) => (
+                                              <option key={badge.id} value={badge.id}>
                                                 {badge.name}
                                               </option>
                                             ))}
@@ -784,9 +762,7 @@ const Prescription = () => {
                                           className='m-1 cursor-pointer'
                                           pill
                                           bg={
-                                            selectedBadges.some(
-                                              badge => badge.id === item.id,
-                                            )
+                                            selectedBadges.some((badge) => badge.id === item.id)
                                               ? 'primary'
                                               : 'secondary'
                                           }
@@ -838,9 +814,7 @@ const Prescription = () => {
                                         <li className='nav-item'>
                                           <button
                                             className={`nav-link ${activeTestTab === 'add' ? 'active' : ''}`}
-                                            onClick={() =>
-                                              setActiveTestTab('add')
-                                            }
+                                            onClick={() => setActiveTestTab('add')}
                                           >
                                             Add
                                           </button>
@@ -848,9 +822,7 @@ const Prescription = () => {
                                         <li className='nav-item'>
                                           <button
                                             className={`nav-link ${activeTestTab === 'remove' ? 'active' : ''}`}
-                                            onClick={() =>
-                                              setActiveTestTab('remove')
-                                            }
+                                            onClick={() => setActiveTestTab('remove')}
                                           >
                                             Remove
                                           </button>
@@ -866,16 +838,12 @@ const Prescription = () => {
                                             id='Test-name-select'
                                             options={tests.data
                                               .filter(
-                                                item =>
+                                                (item) =>
                                                   !selectedTests
-                                                    .map(badge =>
-                                                      badge.name.toLowerCase(),
-                                                    )
-                                                    .includes(
-                                                      item.name.toLowerCase(),
-                                                    ),
+                                                    .map((badge) => badge.name.toLowerCase())
+                                                    .includes(item.name.toLowerCase()),
                                               )
-                                              .map(item => ({
+                                              .map((item) => ({
                                                 value: item.id,
                                                 label: item.name,
                                               }))}
@@ -884,9 +852,7 @@ const Prescription = () => {
                                             placeholder='Test name'
                                           />
                                           <button
-                                            onClick={
-                                              handleAddDropdownTestChange
-                                            }
+                                            onClick={handleAddDropdownTestChange}
                                             className='btn btn-primary mt-2'
                                           >
                                             Add Test
@@ -897,32 +863,23 @@ const Prescription = () => {
                                           {/* Remove dropdown */}
                                           <select
                                             className='form-select'
-                                            onChange={e =>
+                                            onChange={(e) =>
                                               setSelectedTest(
                                                 selectedTests.find(
-                                                  item =>
-                                                    item.id ===
-                                                    parseInt(e.target.value),
+                                                  (item) => item.id === parseInt(e.target.value),
                                                 ),
                                               )
                                             }
                                           >
-                                            <option>
-                                              Select item to remove
-                                            </option>
-                                            {selectedTests.map(badgeTest => (
-                                              <option
-                                                key={badgeTest.id}
-                                                value={badgeTest.id}
-                                              >
+                                            <option>Select item to remove</option>
+                                            {selectedTests.map((badgeTest) => (
+                                              <option key={badgeTest.id} value={badgeTest.id}>
                                                 {badgeTest.name}
                                               </option>
                                             ))}
                                           </select>
                                           <button
-                                            onClick={
-                                              handleRemoveDropdownTestChange
-                                            }
+                                            onClick={handleRemoveDropdownTestChange}
                                             className='btn btn-danger mt-2'
                                           >
                                             Remove Test
@@ -941,9 +898,7 @@ const Prescription = () => {
                                           className='m-1 cursor-pointer'
                                           pill
                                           bg={
-                                            selectedTests.some(
-                                              badge => badge.id === item.id,
-                                            )
+                                            selectedTests.some((badge) => badge.id === item.id)
                                               ? 'primary'
                                               : 'secondary'
                                           }
@@ -999,10 +954,7 @@ const Prescription = () => {
                                     </div>
                                   ) : (
                                     vitalsobject.map((vital, index) => (
-                                      <div
-                                        className='wrapper d-flex mb-2'
-                                        key={index}
-                                      >
+                                      <div className='wrapper d-flex mb-2' key={index}>
                                         {' '}
                                         {/* d-flex for responsiveness */}
                                         <input
@@ -1011,9 +963,7 @@ const Prescription = () => {
                                           name='name'
                                           placeholder='Name of vital'
                                           value={vital.name}
-                                          onChange={event =>
-                                            handleInputChange(index, event)
-                                          }
+                                          onChange={(event) => handleInputChange(index, event)}
                                         />
                                         <input
                                           className='form-control me-2'
@@ -1021,15 +971,11 @@ const Prescription = () => {
                                           name='reading'
                                           placeholder='Reading of vital'
                                           value={vital.reading}
-                                          onChange={event =>
-                                            handleInputChange(index, event)
-                                          }
+                                          onChange={(event) => handleInputChange(index, event)}
                                         />
                                         <button
                                           className='btn svg-icon'
-                                          onClick={() =>
-                                            handleRemoveVital(index)
-                                          }
+                                          onClick={() => handleRemoveVital(index)}
                                         >
                                           <MinusSVG />
                                         </button>
@@ -1065,10 +1011,7 @@ const Prescription = () => {
                                     </div>
                                   ) : (
                                     Diagnoses.map((dia, index) => (
-                                      <div
-                                        className='wrapper d-flex mb-2'
-                                        key={index}
-                                      >
+                                      <div className='wrapper d-flex mb-2' key={index}>
                                         {' '}
                                         {/* d-flex for responsiveness */}
                                         <input
@@ -1077,18 +1020,13 @@ const Prescription = () => {
                                           name='name'
                                           placeholder='Write down a dianosis here'
                                           value={dia.name}
-                                          onChange={event =>
-                                            handleInputDiagnosesChange(
-                                              index,
-                                              event,
-                                            )
+                                          onChange={(event) =>
+                                            handleInputDiagnosesChange(index, event)
                                           }
                                         />
                                         <button
                                           className='btn svg-icon'
-                                          onClick={() =>
-                                            handleRemoveDiagnoses(index)
-                                          }
+                                          onClick={() => handleRemoveDiagnoses(index)}
                                         >
                                           <MinusSVG />
                                         </button>
@@ -1124,10 +1062,7 @@ const Prescription = () => {
                                     </div>
                                   ) : (
                                     History.map((history, index) => (
-                                      <div
-                                        className='wrapper d-flex mb-2'
-                                        key={index}
-                                      >
+                                      <div className='wrapper d-flex mb-2' key={index}>
                                         {' '}
                                         {/* d-flex for responsiveness */}
                                         <input
@@ -1136,18 +1071,13 @@ const Prescription = () => {
                                           name='name'
                                           placeholder='Write down a history here'
                                           value={history.name}
-                                          onChange={event =>
-                                            handleInputHistoryChange(
-                                              index,
-                                              event,
-                                            )
+                                          onChange={(event) =>
+                                            handleInputHistoryChange(index, event)
                                           }
                                         />
                                         <button
                                           className='btn svg-icon'
-                                          onClick={() =>
-                                            handleRemoveHistory(index)
-                                          }
+                                          onClick={() => handleRemoveHistory(index)}
                                         >
                                           <MinusSVG />
                                         </button>
@@ -1162,182 +1092,128 @@ const Prescription = () => {
                               {/*start: Medications*/}
                               <div className='row my-4'>
                                 <div className='col-12'>
-                                  <h6 className='font-weight-boldest'>
-                                    Medications
-                                  </h6>
+                                  <h6 className='font-weight-boldest'>Medications</h6>
                                   {recommendedMedicines.length === 0 ? (
                                     <BlackMedicine />
                                   ) : (
-                                    recommendedMedicines.map(
-                                      (medicine, medicalIndex) => (
-                                        <div
-                                          className='medical-row'
-                                          key={medicalIndex}
-                                        >
-                                          <div>
-                                            <div className='d-flex justify-content-between'>
-                                              <div
-                                                id='medicine-name'
-                                                className='float-right'
-                                              >
-                                                {medicalIndex + 1}.{' '}
-                                                {medicine.name} ({medicine.salt}
-                                                )
-                                              </div>
-                                              <div
-                                                id='remove-id'
-                                                className='svg-icon my-plus-button ml-auto text-right'
-                                                style={{ cursor: 'pointer' }}
-                                                title='remove medication'
-                                                onClick={() =>
-                                                  handleMedicineRemove(
-                                                    medicalIndex,
-                                                  )
-                                                }
-                                              >
-                                                <MinusSVG />
-                                              </div>
+                                    recommendedMedicines.map((medicine, medicalIndex) => (
+                                      <div className='medical-row' key={medicalIndex}>
+                                        <div>
+                                          <div className='d-flex justify-content-between'>
+                                            <div id='medicine-name' className='float-right'>
+                                              {medicalIndex + 1}. {medicine.name} ({medicine.salt})
                                             </div>
-                                          </div>
-
-                                          <div className='binary-input-container'>
-                                            <div className='d-flex flex-nowrap align-items-center'>
-                                              {medicine.dosage.map(
-                                                (field, index) => (
-                                                  <div
-                                                    className='input-group'
-                                                    key={index}
-                                                    style={{ width: '30px' }}
-                                                  >
-                                                    <input
-                                                      type='text'
-                                                      className='form-control binary-input m-0 p-0'
-                                                      maxLength='1'
-                                                      placeholder='0'
-                                                      onChange={e =>
-                                                        addDosage(
-                                                          medicalIndex,
-                                                          index,
-                                                          e.target.value,
-                                                        )
-                                                      }
-                                                    />
-                                                  </div>
-                                                ),
-                                              )}
-                                              <div className='d-flex flex-column align-items-center mt-1 '>
-                                                <div className='row p-0 m-0'>
-                                                  <div
-                                                    className={
-                                                      medicine.dosage.length > 3
-                                                        ? 'col-6 p-0 m-0'
-                                                        : 'col-0 p-0 m-0'
-                                                    }
-                                                  >
-                                                    {medicine.dosage.length >
-                                                      3 && (
-                                                        <button
-                                                          onClick={() =>
-                                                            handleRemoveField(
-                                                              medicalIndex,
-                                                            )
-                                                          }
-                                                          className='btn svg-icon my-plus-button m-0 p-0'
-                                                          title='remove dose'
-                                                        >
-                                                          <MinusSVG />
-                                                        </button>
-                                                      )}
-                                                  </div>
-                                                  <div
-                                                    className={
-                                                      medicine.dosage.length > 3
-                                                        ? 'col-6 p-0 m-0'
-                                                        : 'col-12 p-0 m-0'
-                                                    }
-                                                  >
-                                                    {medicine.dosage.length <
-                                                      6 && (
-                                                        <button
-                                                          onClick={() =>
-                                                            handleAddFields(
-                                                              medicalIndex,
-                                                            )
-                                                          }
-                                                          className='btn svg-icon my-plus-button m-0 p-0'
-                                                          title='add dosge'
-                                                        >
-                                                          <PlusSVG />
-                                                        </button>
-                                                      )}
-                                                  </div>
-                                                </div>
-                                              </div>
-                                            </div>
-                                            <div className='mt-2'>
-                                              <select
-                                                onChange={e =>
-                                                  addMedicineTime(
-                                                    medicalIndex,
-                                                    e.target.value,
-                                                  )
-                                                }
-                                                className='form-select'
-                                              >
-                                                <option
-                                                  value='-1'
-                                                  disabled
-                                                  selected
-                                                >
-                                                  Select time
-                                                </option>
-                                                <option>After meal</option>
-                                                <option>
-                                                  30 minutes after meal
-                                                </option>
-                                                <option>
-                                                  30 minutes before meal
-                                                </option>
-                                                <option>Before meal</option>
-                                                <option>Anytime</option>
-                                                <option> With a meal</option>
-                                              </select>
-                                            </div>
-                                            <div className='mt-2'>
-                                              <select
-                                                onChange={e =>
-                                                  addMedicineDuration(
-                                                    medicalIndex,
-                                                    e.target.value,
-                                                  )
-                                                }
-                                                className='form-select'
-                                              >
-                                                <option
-                                                  value='-1'
-                                                  disabled
-                                                  selected
-                                                >
-                                                  Select duration
-                                                </option>
-                                                <option>1 month</option>
-                                                <option>Continued</option>
-                                                <option>7 days</option>
-                                                <option>10 days</option>
-                                                <option>14 days</option>
-                                                <option>15 days</option>
-                                                <option>20 days</option>
-                                                <option>21 days</option>
-                                                <option>30 days</option>
-                                                <option>2 months</option>
-                                                <option>3 months</option>
-                                                <option>6 months</option>
-                                              </select>
+                                            <div
+                                              id='remove-id'
+                                              className='svg-icon my-plus-button ml-auto text-right'
+                                              style={{ cursor: 'pointer' }}
+                                              title='remove medication'
+                                              onClick={() => handleMedicineRemove(medicalIndex)}
+                                            >
+                                              <MinusSVG />
                                             </div>
                                           </div>
                                         </div>
-                                      ),
-                                    )
+
+                                        <div className='binary-input-container'>
+                                          <div className='d-flex flex-nowrap align-items-center'>
+                                            {medicine.dosage.map((field, index) => (
+                                              <div
+                                                className='input-group'
+                                                key={index}
+                                                style={{ width: '30px' }}
+                                              >
+                                                <input
+                                                  type='text'
+                                                  className='form-control binary-input m-0 p-0'
+                                                  maxLength='1'
+                                                  placeholder='0'
+                                                  onChange={(e) =>
+                                                    addDosage(medicalIndex, index, e.target.value)
+                                                  }
+                                                />
+                                              </div>
+                                            ))}
+                                            <div className='d-flex flex-column align-items-center mt-1 '>
+                                              <div className='row p-0 m-0'>
+                                                <div
+                                                  className={
+                                                    medicine.dosage.length > 3
+                                                      ? 'col-6 p-0 m-0'
+                                                      : 'col-0 p-0 m-0'
+                                                  }
+                                                >
+                                                  {medicine.dosage.length > 3 && (
+                                                    <button
+                                                      onClick={() =>
+                                                        handleRemoveField(medicalIndex)
+                                                      }
+                                                      className='btn svg-icon my-plus-button m-0 p-0'
+                                                      title='remove dose'
+                                                    >
+                                                      <MinusSVG />
+                                                    </button>
+                                                  )}
+                                                </div>
+                                                <div
+                                                  className={
+                                                    medicine.dosage.length > 3
+                                                      ? 'col-6 p-0 m-0'
+                                                      : 'col-12 p-0 m-0'
+                                                  }
+                                                >
+                                                  {medicine.dosage.length < 6 && (
+                                                    <button
+                                                      onClick={() => handleAddFields(medicalIndex)}
+                                                      className='btn svg-icon my-plus-button m-0 p-0'
+                                                      title='add dosge'
+                                                    >
+                                                      <PlusSVG />
+                                                    </button>
+                                                  )}
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                          <div className='mt-2'>
+                                            <select
+                                              onChange={(e) =>
+                                                addMedicineTime(medicalIndex, e.target.value)
+                                              }
+                                              className='form-select'
+                                            >
+                                              <option value='-1' disabled selected>
+                                                Select time
+                                              </option>
+                                              <option>After meal</option>
+                                              <option>30 minutes after meal</option>
+                                              <option>30 minutes before meal</option>
+                                              <option>Before meal</option>
+                                              <option>anytime</option>
+                                            </select>
+                                          </div>
+                                          <div className='mt-2'>
+                                            <select
+                                              onChange={(e) =>
+                                                addMedicineDuration(medicalIndex, e.target.value)
+                                              }
+                                              className='form-select'
+                                            >
+                                              <option value='-1' disabled selected>
+                                                Select duration
+                                              </option>
+                                              <option>1 month</option>
+                                              <option>Continued</option>
+                                              <option>7 days</option>
+                                              <option>14 days</option>
+                                              <option>20 days</option>
+                                              <option>2 months</option>
+                                              <option>3 months</option>
+                                            </select>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    ))
                                   )}
                                 </div>
                               </div>
@@ -1346,11 +1222,9 @@ const Prescription = () => {
                               <div className='row my-4'>
                                 <div className='col-12 col-md-6 col-lg-6'>
                                   <h6 className='font-weight-boldest'>
-                                    <span>Advice</span>
+                                    <span>Advices</span>
                                     <span
-                                      onClick={() =>
-                                        setAdviceOther(!AdviceOther)
-                                      }
+                                      onClick={() => setAdviceOther(!AdviceOther)}
                                       className='ml-5 svg-icon my-plus-button'
                                       title='Add or remove Symptoms'
                                     >
@@ -1369,9 +1243,7 @@ const Prescription = () => {
                                         <li className='nav-item'>
                                           <button
                                             className={`nav-link ${activeAdviceTab === 'add' ? 'active' : ''}`}
-                                            onClick={() =>
-                                              setActiveAdviceTab('add')
-                                            }
+                                            onClick={() => setActiveAdviceTab('add')}
                                           >
                                             Add
                                           </button>
@@ -1379,9 +1251,7 @@ const Prescription = () => {
                                         <li className='nav-item'>
                                           <button
                                             className={`nav-link ${activeAdviceTab === 'remove' ? 'active' : ''}`}
-                                            onClick={() =>
-                                              setActiveAdviceTab('remove')
-                                            }
+                                            onClick={() => setActiveAdviceTab('remove')}
                                           >
                                             Remove
                                           </button>
@@ -1398,9 +1268,7 @@ const Prescription = () => {
                                             className='form-control'
                                             placeholder='Add Item'
                                             value={newAdvice}
-                                            onChange={e =>
-                                              setNewAdvice(e.target.value)
-                                            }
+                                            onChange={(e) => setNewAdvice(e.target.value)}
                                           />
                                           <button
                                             onClick={handleAddAdvice}
@@ -1414,23 +1282,14 @@ const Prescription = () => {
                                           {/* Remove dropdown */}
                                           <select
                                             className='form-select'
-                                            onChange={
-                                              handleSelectedAdviceChange
-                                            }
+                                            onChange={handleSelectedAdviceChange}
                                           >
-                                            <option>
-                                              Select item to remove
-                                            </option>
-                                            {selectedAdvices.map(
-                                              (advice, index) => (
-                                                <option
-                                                  key={index}
-                                                  value={advice}
-                                                >
-                                                  {advice}
-                                                </option>
-                                              ),
-                                            )}
+                                            <option>Select item to remove</option>
+                                            {selectedAdvices.map((advice, index) => (
+                                              <option key={index} value={advice}>
+                                                {advice}
+                                              </option>
+                                            ))}
                                           </select>
                                           <button
                                             className='btn btn-danger mt-2'
@@ -1449,13 +1308,9 @@ const Prescription = () => {
                                         className='m-1 cursor-pointer'
                                         pill
                                         bg={
-                                          selectedAdvices.includes(advice)
-                                            ? 'primary'
-                                            : 'secondary'
+                                          selectedAdvices.includes(advice) ? 'primary' : 'secondary'
                                         }
-                                        onClick={() =>
-                                          handleAdviceClick(advice)
-                                        }
+                                        onClick={() => handleAdviceClick(advice)}
                                       >
                                         {advice}
                                       </Badge>
@@ -1467,17 +1322,11 @@ const Prescription = () => {
                                   <h6 className='font-weight-boldest'>
                                     <span>Follow-up</span>
                                     <span
-                                      onClick={() =>
-                                        setFollowupOther(!FollowupOther)
-                                      }
+                                      onClick={() => setFollowupOther(!FollowupOther)}
                                       className='ml-5 svg-icon my-plus-button'
                                       title='Add or remove followup'
                                     >
-                                      {FollowupOther ? (
-                                        <MinusSVG />
-                                      ) : (
-                                        <PlusSVG />
-                                      )}
+                                      {FollowupOther ? <MinusSVG /> : <PlusSVG />}
                                     </span>
                                   </h6>
 
@@ -1492,9 +1341,7 @@ const Prescription = () => {
                                         <li className='nav-item'>
                                           <button
                                             className={`nav-link ${activeFollowupTab === 'add' ? 'active' : ''}`}
-                                            onClick={() =>
-                                              setActiveFollowupTab('add')
-                                            }
+                                            onClick={() => setActiveFollowupTab('add')}
                                           >
                                             Add
                                           </button>
@@ -1502,9 +1349,7 @@ const Prescription = () => {
                                         <li className='nav-item'>
                                           <button
                                             className={`nav-link ${activeFollowupTab === 'remove' ? 'active' : ''}`}
-                                            onClick={() =>
-                                              setActiveFollowupTab('remove')
-                                            }
+                                            onClick={() => setActiveFollowupTab('remove')}
                                           >
                                             Remove
                                           </button>
@@ -1521,9 +1366,7 @@ const Prescription = () => {
                                             className='form-control'
                                             placeholder='Add Item'
                                             value={newFollowup}
-                                            onChange={e =>
-                                              setNewFollowup(e.target.value)
-                                            }
+                                            onChange={(e) => setNewFollowup(e.target.value)}
                                           />
                                           <button
                                             onClick={handleAddFollowup}
@@ -1537,23 +1380,14 @@ const Prescription = () => {
                                           {/* Remove dropdown */}
                                           <select
                                             className='form-select'
-                                            onChange={
-                                              handleSelectedFollowupChange
-                                            }
+                                            onChange={handleSelectedFollowupChange}
                                           >
-                                            <option>
-                                              Select item to remove
-                                            </option>
-                                            {selectedFollowups.map(
-                                              (advice, index) => (
-                                                <option
-                                                  key={index}
-                                                  value={advice}
-                                                >
-                                                  {advice}
-                                                </option>
-                                              ),
-                                            )}
+                                            <option>Select item to remove</option>
+                                            {selectedFollowups.map((advice, index) => (
+                                              <option key={index} value={advice}>
+                                                {advice}
+                                              </option>
+                                            ))}
                                           </select>
                                           <button
                                             className='btn btn-danger mt-2'
@@ -1576,9 +1410,7 @@ const Prescription = () => {
                                             ? 'primary'
                                             : 'secondary'
                                         }
-                                        onClick={() =>
-                                          handleFollowUpClick(advice)
-                                        }
+                                        onClick={() => handleFollowUpClick(advice)}
                                       >
                                         {advice}
                                       </Badge>
@@ -1587,6 +1419,7 @@ const Prescription = () => {
                                 </div>
                               </div>
                               {/*end: Advices*/}
+
                               {/*start: Drugs*/}
                               <Fragment>
                                 <div className='row my-4'>
@@ -1612,9 +1445,7 @@ const Prescription = () => {
                                           <li className='nav-item'>
                                             <button
                                               className={`nav-link ${activeDrugsTab === 'add' ? 'active' : ''}`}
-                                              onClick={() =>
-                                                setActiveDrugsTab('add')
-                                              }
+                                              onClick={() => setActiveDrugsTab('add')}
                                             >
                                               Add
                                             </button>
@@ -1622,9 +1453,7 @@ const Prescription = () => {
                                           <li className='nav-item'>
                                             <button
                                               className={`nav-link ${activeFollowupTab === 'remove' ? 'active' : ''}`}
-                                              onClick={() =>
-                                                setActiveDrugsTab('remove')
-                                              }
+                                              onClick={() => setActiveDrugsTab('remove')}
                                             >
                                               Remove
                                             </button>
@@ -1676,9 +1505,7 @@ const Prescription = () => {
                                             />
                                             <button
                                               className='btn btn-danger mt-2'
-                                              onClick={
-                                                handleMedicineRemoveNonIndex
-                                              }
+                                              onClick={handleMedicineRemoveNonIndex}
                                             >
                                               Remove Medicine
                                             </button>
@@ -1717,22 +1544,26 @@ const Prescription = () => {
 
                                   {medicines.map((item, key) => (
                                     <DropdownButton
+                                      drop='up-centered'
                                       key={key}
                                       title={item.saltName}
                                       className='m-1'
                                     >
-                                      <Dropdown.Item
-                                        onClick={() =>
-                                          handleMedicineSelect(
-                                            item.salt,
-                                            item.drug,
-                                            item.saltName,
-                                            item.drugName,
-                                          )
-                                        }
-                                      >
-                                        {item.drugName}
-                                      </Dropdown.Item>
+                                      {item.drugs.map((drug, drug_key) => (
+                                        <Dropdown.Item
+                                          key={drug_key}
+                                          onClick={() =>
+                                            handleMedicineSelect(
+                                              item.salt,
+                                              drug.drug,
+                                              drug.drugName,
+                                              item.saltName,
+                                            )
+                                          }
+                                        >
+                                          {drug.drugName}
+                                        </Dropdown.Item>
+                                      ))}
                                     </DropdownButton>
                                   ))}
                                 </div>
@@ -1755,7 +1586,7 @@ const Prescription = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default Prescription;

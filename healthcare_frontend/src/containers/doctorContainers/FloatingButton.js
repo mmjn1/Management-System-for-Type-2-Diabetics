@@ -1,15 +1,14 @@
-
-import React from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
-import './floating.css'
+import React from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import './floating.css';
 
 function FloatingButton() {
-  const navigate = useNavigate()
-  const location = useLocation()
+  const navigate = useNavigate();
+  const location = useLocation();
   const handleClick = () => {
-    navigate('/doctor/prescription')
-  }
-  const isButtonActive = location.pathname !== '/doctor/prescription'
+    navigate('/doctor/prescription');
+  };
+  const isButtonActive = location.pathname !== '/doctor/prescription';
 
   return (
     <div
@@ -32,7 +31,7 @@ function FloatingButton() {
         />
       </svg>
     </div>
-  )
+  );
 }
 
-export default FloatingButton
+export default FloatingButton;

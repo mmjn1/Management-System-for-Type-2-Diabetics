@@ -47,7 +47,6 @@
 .floating-button.inactive {
     background-color: gray;
     cursor: default;
-    
 }
 
 .MuiBox-root.inactive {
@@ -81,41 +80,34 @@
 
 .my-plus-button:hover svg path {
     fill: gray;
-    
 }
 
 .binary-input-container {
     display: flex;
     gap: 5px;
-    
 
 }
 
 .binary-input {
     width: 30px;
-    /* Set the desired width */
     height: 30px;
-    /* Set height equal to width for square shape */
     border: none;
     text-align: center;
 }
 
 .wrapper {
     display: flex;
-    /* Use flexbox for easy arrangement */
     align-items: center;
-    /* Align items vertically to the center */
 }
 
 .form-control {
     margin-right: 10px;
 }
 
-
+.clear {}
 
 .dropdown-toggle::after {
     display: none !important;
-    /* Hide the arrow */
 }
 
 .css-gwx6oe {
@@ -289,7 +281,7 @@
 .sidebar-header {
     padding: 15px;
     border-bottom: 1px solid #eee;
-    
+    /* Optional */
 }
 
 .sidebar-content {
@@ -300,19 +292,16 @@
 .modal-xlx .modal-dialog {
     max-width: 95vw;
     min-width: 500px;
-    
 }
 
 
 .modal-xlx .modal-content {
     max-width: 80%;
-
     margin: 0 auto;
-
 }
+
 
 .dropdown-menu {
     position: fixed !important;
     z-index: 100;
-    
 }
