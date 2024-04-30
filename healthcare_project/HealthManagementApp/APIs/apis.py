@@ -304,7 +304,6 @@ class loginAPI(generics.GenericAPIView):
 
 
 class PrescriptionCreate(APIView):
-    
     serializer_class = PrescriptionSerializer
 
     def get_queryset(self):
@@ -317,7 +316,6 @@ class PrescriptionCreate(APIView):
 
     def post(self, request):
         data = request.data
-
         try:
             patient = Patient.objects.get(pk=data.get('patient'))
             doctor = request.user.doctor_user
@@ -330,8 +328,6 @@ class PrescriptionCreate(APIView):
 
         serializer = PrescriptionSerializer(prescription)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    
-
 
     def _handle_related_data(self, prescription, data):
         fields = ['Symptoms', 'Tests', 'Vitals', 'Diagnoses', 'Histories', 'Advices', 'FollowUps', 'Drug']
@@ -350,7 +346,7 @@ class PrescriptionCreate(APIView):
                         symptom = related_manager.model.objects.get(pk=item['id'])
                     else:  # Create new
                         symptom = related_manager.model.objects.create(
-                            name=item['name'])  
+                            name=item['name'])  # Assuming 'name' is the only other field
                     related_manager.add(symptom)
 
             elif field_name == 'Tests':
@@ -359,7 +355,7 @@ class PrescriptionCreate(APIView):
                         test = related_manager.model.objects.get(pk=item['id'])
                     else:  # Create new
                         test = related_manager.model.objects.create(
-                            name=item['name'])  
+                            name=item['name'])  # Assuming 'name' is the only other field
                     related_manager.add(test)
 
             elif field_name == 'Vitals':
@@ -395,10 +391,12 @@ class PrescriptionCreate(APIView):
 
             elif field_name == 'Drug':
                 for medicine in items:
-                    if medicine.get('salt_id') == 'temp_id':
-                        salt = Salt.objects.create(name=medicine.get('salt'))
+
+                    get_, created = Salt.objects.get_or_create(name=medicine.get('salt'))
+                    if created:
+                        salt = created
                     else:
-                        salt = Salt.objects.get(pk=medicine.get('salt_id'))
+                        salt = get_
 
                     if medicine.get('medicine_id') == 'temp_id':
                         medicine_obj = Medicine.objects.create(
@@ -486,8 +484,8 @@ def send_prescription(request):
     patient_id = prescription.patient.id
     doctor_fname = prescription.prescribing_doctor.user.first_name
     doctor_lname = prescription.prescribing_doctor.user.last_name
-    # Mobile = prescription.patient.Mobile
-#     gender = prescription.patient.gender
+    #Mobile = prescription.patient.Mobile
+    #gender = prescription.patient.gender
     date = prescription.start_date
 
     drugs = prescription.Drug.all()
@@ -539,8 +537,8 @@ def send_prescription(request):
         'history_data': history_data,
         'advice_data': advice_data,
         'followup_data': followup_data,
-#         'Mobile': Mobile,
-        # 'gender': gender,
+        #'Mobile': Mobile,
+        #'gender': gender,
         'date': date
     }
     if secondary_email:
@@ -570,6 +568,7 @@ class PrescriptionData(APIView):
         return Response(serializer.data)
 
     def patch(self, request, pk, format=None):
+
         snippet = self.get_object(pk)
         serializer = PrescriptionSerializer(snippet, data=request.data)
         if serializer.is_valid():
@@ -624,26 +623,37 @@ class PrescriptionData(APIView):
                 snippet.Histories.add(item)
 
             for advices_data in advices:
+                item = None
                 try:
                     Advices.objects.filter(id=advices_data.get("id")).delete()
                 except Exception as e:
                     print(e)
-                item = Advices.objects.create(name=advices_data.get('name'))
+                try:
+                    item, _ = Advices.objects.get_or_create(name=advices_data.get('name'))
+                    print(item.id, "item")
+                    print(_, "___")
+                except Exception as e:
+                    print("e11->", e)
                 snippet.Advices.add(item)
 
             for followups_data in followups:
+                item = None
                 try:
                     FollowUps.objects.filter(id=followups_data.get("id")).delete()
                 except Exception as e:
                     print(e)
-                item = FollowUps.objects.create(name=followups_data.get('name'))
+                try:
+                    item, _ = FollowUps.objects.get_or_create(name=followups_data.get('name'))
+                except Exception as e:
+                    print("e11->", e)
                 snippet.FollowUps.add(item)
 
             for medicine in drug:
-                if medicine.get('salt_id') == 'temp_id':
-                    salt = Salt.objects.create(name=medicine.get('salt'))
+                get_, created = Salt.objects.get_or_create(name=medicine.get('salt'))
+                if created:
+                    salt = created
                 else:
-                    salt = Salt.objects.get(pk=medicine.get('salt_id'))
+                    salt = get_
 
                 if medicine.get('medicine_id') == 'temp_id':
                     medicine_obj = Medicine.objects.create(
@@ -922,3 +932,4 @@ class SaltDetail(APIView):
         salt = get_object_or_404(Salt, name=salt_name)
         serializer = SaltSerializer(salt)
         return Response(serializer.data)
+

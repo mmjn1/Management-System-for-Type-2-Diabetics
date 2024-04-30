@@ -44,24 +44,11 @@ urlpatterns = [
     path('api/patient/', PatientView.as_view(), name='patients'),
     path('AccountSuccess/', activate_account, name="AccountSuccess"),
     path('activate/<uidb64>/<token>', VerificationView.as_view(), name='activate'),
-    path('locations/', list_locations, name='list_locations'),
-    path('doctor-appointment-types/', doctor_appointment_types_view, name='doctor-appointment-types'),
-    path('patient-appointment-types/', patient_appointment_types_view, name='patient-appointment-types'),
-    path('doctor/patients/', get_patients_for_doctor, name='doctor-patients'),
 
     path('accountinfo/', update_patient_account_info, name='update-patient-account-info'),
     path('lifestyle-med/', update_patient_lifestylemed_info, name='update_patient_lifestylemed_info'),
     path('health-info/', update_patient_healthinfo, name='update_patient_healthinfo'),
 
-    path('create-availability/', create_weekly_availability, name='create_weekly_availability'),
-    path('update-availability/<int:pk>/', update_weekly_availability, name='update_weekly_availability'),
-
-    path('fetch-availability/', get_weekly_availability, name='get_weekly_availability'),
-    path('doctor-availability/', get_doctor_availability, name='get_doctor_availability'),
-    path('patient-create-appointment/', create_patient_appointment, name='create_patient_appointment'),
-    path('timeslots/<int:pk>/', TimeSlotView.as_view(), name='timeslot-detail'),
-    path('doctor/<int:pk>/', DoctorDetailView.as_view(), name='doctor-detail'),
-    path('appointments/<int:appointment_id>/', delete_appointment, name='delete_appointment'),
     path('current-patient/', CurrentPatientDetailView.as_view(), name='current-patient'),
     path('patient_records/', PatientListView.as_view(), name='patient-records'),
     path('patient-records/<int:patient_id>/', PatientDetailView.as_view(), name='patient-detail'),
@@ -77,11 +64,15 @@ urlpatterns = [
     path('account-information/', update_doctor_account_info, name='update_doctor_account_info'),
     path('professional-info/', update_professionalInfo, name='update_professionalInfo'),
     path('practice-details/', update_PracticeInfo, name='update_PracticeInfo'),
+    
     path('create-entry/', get_dietary_advice, name='get_dietary_advice'),
-
     path('update-entry/<int:entry_id>/', update_dietary_advice, name='update_meal_entry'),
     path('delete-entry/<int:entry_id>/', delete_dietary_advice, name='delete_dietary_advice'),
-    path('container-health/', health_check, name='health-check'),
+    
+    # Health Check endpoint: Used for monitoring the application's health status. 
+    # AWS ECS uses thus to ensure the service is up and running.
+    path('container-health/', health_check, name='health-check'), 
+
 
     path('Prescription/', PrescriptionCreate.as_view(), name='Create Prescription'),
     path('Prescription/<int:pk>/', PrescriptionData.as_view(), name='Update Prescription'),
@@ -118,6 +109,38 @@ urlpatterns = [
 
     path('salts/', SaltList.as_view(), name='salt-list'),
     path('salts/<str:salt_name>/', SaltDetail.as_view(), name='salt-detail'),
+
+
+    # Appointments URLS
+    path('doctor-appointment-types/', doctor_appointment_types_view, name='doctor-appointment-types'),
+    path('patient-appointment-types/', patient_appointment_types_view, name='patient-appointment-types'),
+    path('doctor/patients/', get_patients_for_doctor, name='doctor-patients'),
+
+    path('locations/', list_locations.as_view(), name='list_locations'),
+
+    path('create-availability/', create_weekly_availability, name='create_weekly_availability'),
+    path('fetch-availability/', get_weekly_availability, name='get_weekly_availability'),
+    path('timeslots/', get_time_slot_doctor, name='time_slot_by_doctor'),
+    path('doctoravailability/', DoctorAvailability, name='time_slot_by_doctor'),
+    # http://127.0.0.1:8000/api/fetch-availability/?doctor_id=1
+    path('doctor-availability/', get_doctor_availability, name='get_doctor_availability'),
+    # http://127.0.0.1:8000/api/doctor-availability/?doctorId=1&date=2024-01-01
+    path('timeslots/<int:pk>/', TimeSlotView.as_view(), name='timeslot-detail'),
+    path('doctor/<int:pk>/', DoctorDetailView.as_view(), name='doctor-detail'),
+    path('patient-create-appointment/', create_patient_appointment, name='create_patient_appointment'),
+    path('get-patient-appointment/', get_patient_appointment, name='get_patient_appointment'),
+    path('get-patient-appointment-pid/', get_patient_appointment_patient, name='get_patient_appointment_patient'),
+
+    path('patient-appointment/<int:pk>/', patient_appointment_data.as_view(), name='update patient_appointment'),
+    path('patient-appointment-other/<int:pk>/', patient_appointment_data_other.as_view(),
+         name='update patient_appointment'),
+
+    path('doctor-availability/<int:doctor_id>/<str:date_data>/', DoctorAvailabilityView.as_view()),
+
+    # WS
+    path('old_patient-create-appointment/', old_create_patient_appointment, name='create_patient_appointment'),
+    path('appointments/<int:appointment_id>/', delete_appointment, name='delete_appointment'),
+    path('update-availability/<int:pk>/', update_weekly_availability, name='update_weekly_availability'),
 
 ]
 
