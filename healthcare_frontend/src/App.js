@@ -8,14 +8,13 @@ import DashboardLayout from "./layout/PatientLayout";
 import BloodSugarPage from "../src/containers/patientContainers/BloodSugarPage";
 import DietaryHabits from "../src/containers/patientContainers/DietaryHabits";
 import EducationalResources from "../src/containers/patientContainers/EducationalResources";
-import PatientAppointmentsPage from "../src/containers/patientContainers/Calendar/Appointments";
+// import PatientAppointmentsPage from "../src/containers/patientContainers/Calendar/Appointments";
 import PatientDashboardPage from "../src/containers/patientContainers/PatientDashboardPage";
 import PatientPrescriptionsPage from "../src/containers/patientContainers/PatientPrescriptionsPage";
 import Profile from "../src/containers/patientContainers/Profile";
 import DoctorDashboardPage from "../src/containers/doctorContainers/DoctorDashboardPage";
 import DoctorProfile from "../src/containers/doctorContainers/DoctorProfile";
 import DoctorLayout from "./layout/DoctorLayout";
-import DoctorAppointmentsPage from "../src/containers/doctorContainers/DoctorCalendar/DoctorAppointmentsPage";
 import Chat from "./components/Chat";
 import ChatComponent from "./components/ChatComponent";
 import DoctorChat from "./components/DoctorChat";
@@ -29,6 +28,10 @@ import Prescription from '../src/containers/doctorContainers/Prescription';
 import PrescriptionManagement from '../src/containers/doctorContainers/PrescriptionManagement';
 import PatientPrescription from '../src/containers/patientContainers/PatientPrescription';
 import { useDispatch, useSelector } from 'react-redux';
+import DoctorAppointmentsPage from '../src/containers/doctorContainers/DoctorAppointmentsPage';
+import AppointmentList from './containers/doctorContainers/AppointmentList';
+import Appointments from './containers/patientContainers/Calendar/appointments';
+import PastAppointments from './containers/doctorContainers/PastAppointments';
 
 
 
@@ -45,12 +48,19 @@ const App = () => {
         <Route path="/diet" element={<DashboardLayout> <DietaryHabits /> </DashboardLayout>} />
         <Route path="/patient/chat" element={<DashboardLayout> {" "} <ChatComponent />{" "} </DashboardLayout>} />
         <Route path="/resources" element={<DashboardLayout> <EducationalResources /> </DashboardLayout>} />
-        <Route path="/patient/appointments" element={<DashboardLayout> <PatientAppointmentsPage /> </DashboardLayout>} />
+        {/* <Route path="/patient/appointments" element={<DashboardLayout> <PatientAppointmentsPage /> </DashboardLayout>} /> */}
         <Route path="/prescriptions" element={<DashboardLayout> <PatientPrescriptionsPage /> </DashboardLayout>} />
         <Route path="/patient/profile" element={<DashboardLayout> <Profile /> </DashboardLayout>} />
         <Route path="/myrecords" element={<DashboardLayout> <MyRecords /> </DashboardLayout>} />
         <Route path="/patient/prescription" element={<DashboardLayout> <PatientPrescription /> </DashboardLayout>} />
-
+        <Route path='/patient/appointments' element={ <DashboardLayout> <Appointments /> </DashboardLayout>}/>
+        
+        <Route path='/patient/appointments-list' element={ <DashboardLayout> <PastAppointments /> </DashboardLayout> }/>
+        
+        <Route path='/doctor/appointments-list' element={ <DoctorLayout> <AppointmentList /> </DoctorLayout>} />
+        
+        <Route path='/doctor/past-appointments' element={<DoctorLayout> <PastAppointments /> </DoctorLayout>} />
+        <Route path="/doctor/appointment-list" element={<DoctorLayout> <AppointmentList /> </DoctorLayout>} />
         <Route path="/doctor/appointments" element={<DoctorLayout> <DoctorAppointmentsPage /> </DoctorLayout>} />
         <Route path="/doctor/dashboard" element={<DoctorLayout> <DoctorDashboardPage /> </DoctorLayout>} />
         <Route path="/doctor/profile" element={<DoctorLayout> <DoctorProfile /> </DoctorLayout>} />

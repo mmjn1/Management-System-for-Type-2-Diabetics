@@ -7,16 +7,12 @@ import ForgetPasswordConfirm from "./features/api/forgetPassword_confirm";
 import fetchDoctor from "./features/doctor/FetchDoctor";
 import userDetailsSlice from "./features/api/Userdetails";
 import { apiSlice } from "./features/api/contactSlice";
-import appointmentsReducer from "./features/appointments/appointmentsSlice";
-import { patientAppointmentCreation } from "./features/appointments/patientAppointment";
 import chatReducer from "./features/chat/chatSlice";
 import fetchPatient from "./features/patient/fetchPatients";
 import storage from "redux-persist/lib/storage";
 import autoMergeLevel2 from "redux-persist/lib/stateReconciler/autoMergeLevel2";
 import { persistStore, persistReducer } from "redux-persist";
-import { doctorApi } from './features/appointments/availabilitySlice';
 import { updateProfile } from './features/patient/updateProfile';
-import { doctorAvailabilityApi } from './features/appointments/doctorAvailabilitySlice';
 import { timeslotApi } from './features/doctor/timeslotAPI';
 import patientRecordsReducer from "./features/api/patient_records";
 import { updateDoctorProfile } from './features/doctor/updateDoctorProfile';
@@ -32,9 +28,16 @@ import FollowUpsSlice from './features/prescription/FollowUpsSlice';
 import HistoriesSlice from './features/prescription/HistoriesSlice';
 import SaltSlice from './features/prescription/SaltSlice';
 import EmailSlice from './features/prescription/EmailSlice';
-// import paymentSlice from './features/prescription/PaymentSlice';
 import PackageSlice from './features/prescription/PackageSlice';
-// import MembershipSlice from './features/prescription/MembershipSlice';
+
+import LocationSlice from './features/appointments/LocationSlice';
+import TimeSlotsSlice from './features/appointments/DoctorAvailabilitySlice';
+import DoctorAvailability from './features/appointments/AvailabilitySlice';
+import DoctorPatientSlice from './features/appointments/Doctor_PatientSlice';
+import AppointmentTypesSlice from './features/appointments/AppointmentTypes';
+import PatientAppointmentSlice from './features/appointments/PatientAppointment';
+import AppointmentByPatientSlice from './features/appointments/patientdataSlice';
+import DoctorTimeSlotsSlice from './features/appointments/doctor_slots';
 
 const persistConfig = {
   key: 'root',
@@ -44,10 +47,7 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   [apiSlice.reducerPath]: apiSlice.reducer,
-  [doctorApi.reducerPath]: doctorApi.reducer,
   [updateProfile.reducerPath]: updateProfile.reducer,
-  [doctorAvailabilityApi.reducerPath]: doctorAvailabilityApi.reducer,
-  [patientAppointmentCreation.reducerPath]: patientAppointmentCreation.reducer,
   [timeslotApi.reducerPath]: timeslotApi.reducer,
   [updateDoctorProfile.reducerPath]: updateDoctorProfile.reducer,
 
@@ -58,7 +58,6 @@ const rootReducer = combineReducers({
   ForgetPasswordConfirm: ForgetPasswordConfirm,
   DoctorSlice: fetchDoctor,
   userDetails: userDetailsSlice,
-  appointments: appointmentsReducer,
   chat: chatReducer,
   PatientSlice: fetchPatient,
   patientRecords: patientRecordsReducer,
@@ -75,6 +74,14 @@ const rootReducer = combineReducers({
   Salts: SaltSlice,
   EmailSlice: EmailSlice,
   PackageSlice: PackageSlice,
+  LocationSlice: LocationSlice,
+  TimeSlotsSlice: TimeSlotsSlice,
+  DoctorAvailability: DoctorAvailability,
+  DoctorPatientSlice: DoctorPatientSlice,
+  AppointmentTypesSlice: AppointmentTypesSlice,
+  PatientAppointmentSlice: PatientAppointmentSlice,
+  AppointmentByPatientSlice: AppointmentByPatientSlice,
+  DoctorTimeSlotsSlice: DoctorTimeSlotsSlice,
 
 });
 
@@ -87,8 +94,7 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE', 'persist/PURGE'],
       },
-    }).concat(doctorApi.middleware).concat(doctorAvailabilityApi.middleware)
-      .concat(patientAppointmentCreation.middleware).concat(timeslotApi.middleware)
+    }).concat(timeslotApi.middleware)
       .concat(updateProfile.middleware).concat(updateDoctorProfile.middleware),
   devTools: process.env.NODE_ENV !== 'production',
 });
