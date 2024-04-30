@@ -1,81 +1,54 @@
-import React, { useState, useEffect } from 'react';
-import { Modal, Button } from 'react-bootstrap';
-import * as Yup from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
-import { FetchDoctorPatient } from '../../../features/appointments/Doctor_PatientSlice';
-import { FetchAppointmentTypes } from '../../../features/appointments/AppointmentTypes';
-import { fetchTimeSlots } from '../../../features/appointments/DoctorAvailabilitySlice';
-import { CreatePatientAppointment } from '../../../features/appointments/PatientAppointment';
+import { Button, Modal } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import { FetchAppointmentTypes } from '../../../features/appointments/AppointmentTypes';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchDoctor } from '../../../features/FetchDoctor';
 import { fetchDoctorTimeSlots } from '../../../features/appointments/doctor_slots';
+import { CreatePatientAppointment } from '../../../features/appointments/PatientAppointment';
 
 const today = new Date();
 today.setHours(0, 0, 0, 0);
 
 const AppointmentSchema = Yup.object().shape({
   appointment_type: Yup.string().required('Required'),
-  patient: Yup.string().required('Required'),
+  doctor: Yup.string().required('Required'),
   time_slot: Yup.string().required('Required'),
   appointment_date: Yup.date()
     .required('Required')
     .nullable()
     .min(today, 'Appointment cannot be in the past'),
-
   reason_for_appointment: Yup.string().required('Required'),
 });
 
-/**
- * AppointmentModal provides a form within a modal for scheduling new appointments.
- * It allows selection of patient, appointment type, date, time slot, and reason for the appointment.
- * The component integrates with Redux to fetch necessary data (patients, appointment types, time slots) and to dispatch the appointment creation action.
- * It uses Formik for form handling and Yup for form validation, ensuring that all required fields are filled out correctly before submission.
- *
- * Features:
- * - Dynamic fetching of patients and appointment types on component mount.
- * - Conditional rendering of time slots based on the selected date.
- * - Real-time form validation using Yup.
- * - Submission of the form results in creating an appointment in the backend.
- */
-
 const AppointmentModal = ({ showModal, handleClose }) => {
-  const doctorId = localStorage.getItem('doctor_id');
   const dispatch = useDispatch();
-  const patients = useSelector((state) => state.DoctorPatientSlice.data);
-  const appointmentTypes = useSelector((state) => state.AppointmentTypesSlice.data);
-  const slots = useSelector((state) => state.DoctorTimeSlotsSlice.data);
+  const appointment_types = useSelector((state) => state.AppointmentTypesSlice.data);
+  const doctors = useSelector((state) => state.DoctorSlice.data);
   const [selectedDate, setSelectedDate] = useState(null);
-
-  useEffect(() => {
-    dispatch(FetchDoctorPatient());
-    dispatch(FetchAppointmentTypes());
-    dispatch(fetchTimeSlots(doctorId));
-  }, [dispatch]);
+  const [selectedDoctor, setSelectedDoctor] = useState(null);
+  const slots = useSelector((state) => state.DoctorTimeSlotsSlice.data);
 
   const HandleSubmit = (values) => {
-    const doctor = localStorage.getItem('doctor_id');
-    const { appointment_date, appointment_type, patient, reason_for_appointment, time_slot } =
-      values;
-    const body = {
-      doctor,
-      appointment_type,
-      appointment_date,
-      patient,
-      reason_for_appointment,
-      time_slot,
-    };
-    dispatch(CreatePatientAppointment(body));
-    // handleClose();
+    dispatch(CreatePatientAppointment(values))
+    handleClose()
   };
+  useEffect(() => {
+    dispatch(fetchDoctor());
+    dispatch(FetchAppointmentTypes());
+  }, [dispatch]);
 
   const formik = useFormik({
     initialValues: {
-      patient: '',
+      patient:localStorage.getItem('patient_id'),
+      doctor: '',
       appointment_type: '',
       appointment_date: '',
       reason_for_appointment: '',
       time_slot: '',
     },
-    validationSchema: AppointmentSchema, // Keep your validation schema
+    validationSchema: AppointmentSchema,
     onSubmit: HandleSubmit,
   });
 
@@ -84,19 +57,25 @@ const AppointmentModal = ({ showModal, handleClose }) => {
     formik.setFieldValue('appointment_date', event.target.value);
   };
 
+  const handleDoctorChange = (event) => {
+    setSelectedDoctor(event.target.value);
+    formik.setFieldValue('doctor', event.target.value);
+  };
+
   useEffect(() => {
     if (selectedDate) {
       fetchSlots();
     }
-  }, [selectedDate]);
+  }, [selectedDate, selectedDoctor]);
 
   const fetchSlots = () => {
     const data = {
-      id: doctorId,
+      id: selectedDoctor,
       date: selectedDate.toLocaleDateString('en-CA'),
     };
     dispatch(fetchDoctorTimeSlots(data));
   };
+
 
   return (
     <Modal centered show={showModal} onHide={handleClose}>
@@ -106,50 +85,41 @@ const AppointmentModal = ({ showModal, handleClose }) => {
 
       <form onSubmit={formik.handleSubmit}>
         <Modal.Body>
-          <div className='form-group'>
-            <label htmlFor='patient'> Patient Selection </label>
 
+          <div className='form-group'>
+            <label htmlFor='doctor'> Doctor Selection </label>
             <select
-              name='patient'
-              className={`form-control ${formik.errors.patient && formik.touched.patient ? 'is-invalid' : ''}`}
-              onChange={(e) => {
-                formik.setFieldValue('patient', e.target.value, true);
-              }}
+              name='doctor'
+              className={`form-control ${formik.errors.doctor && formik.touched.doctor ? 'is-invalid' : ''}`}
+              onChange={handleDoctorChange}
             >
-              <option value=''>Select a patient</option>
-              {patients.map((patient) => (
-                <option key={patient.id} value={patient.id}>
-                  {patient.first_name} {patient.last_name}
+              <option value=''>Select a doctor</option>
+              {doctors.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.first_name} {item.last_name}
                 </option>
               ))}
             </select>
             <div className='invalid-feedback'>
-              {formik.errors.patient && formik.touched.patient && formik.errors.patient}
+              {formik.errors.doctor && formik.touched.doctor && formik.errors.doctor}
             </div>
           </div>
-
           <div className='form-group'>
             <label htmlFor='appointment_type'>Appointment Type</label>
             <select
-              onChange={formik.handleChange}
               name='appointment_type'
-              className={`form-control ${
-                formik.errors.appointment_type && formik.touched.appointment_type
-                  ? 'is-invalid'
-                  : ''
-              }`}
+              className={`form-control ${formik.errors.appointment_type && formik.touched.appointment_type ? 'is-invalid' : ''}`}
+              onChange={formik.handleChange}
             >
-              <option value=''>Select appointment type</option>
-              {appointmentTypes.map((type) => (
-                <option key={type.key} value={type.value}>
-                  {type.key}
+              <option value=''>select appointment type</option>
+              {appointment_types.map((item) => (
+                <option key={item.key} value={item.value}>
+                  {item.key}
                 </option>
               ))}
             </select>
             <div className='invalid-feedback'>
-              {formik.errors.appointment_type &&
-                formik.touched.appointment_type &&
-                formik.errors.appointment_type}
+              {formik.errors.appointment_type && formik.touched.appointment_type && formik.errors.v}
             </div>
           </div>
 
@@ -175,7 +145,7 @@ const AppointmentModal = ({ showModal, handleClose }) => {
           <div className='form-group'>
             {slots.length !== undefined ? (
               <>
-                <label htmlFor='end_time'>Time Slot</label>
+                <label htmlFor='time_slot'>Time Slot</label>
                 <button
                   onClick={() => fetchSlots()}
                   type='button'
@@ -210,7 +180,6 @@ const AppointmentModal = ({ showModal, handleClose }) => {
               {formik.errors.time_slot && formik.touched.time_slot && formik.errors.time_slot}
             </div>
           </div>
-
           <div className='form-group'>
             <label htmlFor='reason_for_appointment'>Reason for Appointment</label>
             <input
@@ -234,7 +203,7 @@ const AppointmentModal = ({ showModal, handleClose }) => {
             Cancel
           </Button>
           <Button variant='primary' type='submit'>
-            Send
+            Book
           </Button>
         </Modal.Footer>
       </form>
