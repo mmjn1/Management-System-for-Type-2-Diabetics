@@ -10,6 +10,11 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PatientSidebar from '../../components/PatientSidebar';
 
+/**
+ * `DietaryHabits` manages the dietary habits allows patients to add, edit, and delete food entries for different meals throughout the day,
+ * and it stores these entries in localStorage to maintain state across sessions.
+ */
+
 
 const DietaryHabits = () => {
     const [selectedDate, setSelectedDate] = useState(new Date());
@@ -21,10 +26,22 @@ const DietaryHabits = () => {
     const [currentEntryId, setCurrentEntryId] = useState(null);
     const [dialogMode, setDialogMode] = useState('add');
 
+
+    /**
+     * Formats a JavaScript Date object into a YYYY-MM-DD string.
+     * @param {Date} date - The date to format.
+     * @returns {string} The formatted date string.
+     */
     const formatDate = (date) => {
         return date.toISOString().split('T')[0];
     };
 
+
+    /**
+    * Loads the dietary entries for a given date from localStorage.
+    * @param {Date} date - The date for which to load entries.
+    * @returns {Object} An object containing arrays of entries for each meal type.
+    */
     const loadEntriesForDate = (date) => {
         const dateKey = formatDate(date);
         const savedEntries = localStorage.getItem(`entries_${dateKey}`);
@@ -38,7 +55,7 @@ const DietaryHabits = () => {
 
     const [entries, setEntries] = useState(() => loadEntriesForDate(new Date()));
 
-    // Side effect to load entries for the new date when selectedDate changes
+    // Initializes and updates the entries state whenever the selected date changes.
     useEffect(() => {
         const newEntries = loadEntriesForDate(selectedDate);
         setEntries(newEntries);
@@ -54,7 +71,7 @@ const DietaryHabits = () => {
         });
     };
 
-    // Side effect to save entries to localStorage whenever they change
+    // Saves the current state of entries to localStorage whenever they change.
     useEffect(() => {
         const dateKey = formatDate(selectedDate);
         localStorage.setItem(`entries_${dateKey}`, JSON.stringify(entries));
@@ -105,7 +122,9 @@ const DietaryHabits = () => {
         setOpen(true);
     };
 
-    // Function to handle updating an existing food entry
+    /**
+    * Submits the form for editing an existing entry. Validates the input and updates the entry via an API call.
+    */
     const submitEdit = async () => {
         if (!foodEntry.trim()) {
             setFoodEntryError('Food entry cannot be empty.');
@@ -173,7 +192,10 @@ const DietaryHabits = () => {
         }
     };
 
-    // Function to handle adding a new food entry
+    /**
+    * Handles the addition of a new food entry. This function is triggered when the user submits the form to add a new food entry.
+    * It performs input validation, makes an API call to create the entry, updates the local state, and handles any errors that occur during the process.
+    */
     const handleAddFood = async () => {
         if (!foodEntry.trim()) {
             setFoodEntryError('Food entry cannot be empty.');
@@ -188,26 +210,35 @@ const DietaryHabits = () => {
                 }
             });
 
-            const newEntry = response.data; // Ensure this includes the 'id'
+            const newEntry = response.data;
 
             setEntries(prevEntries => {
                 const updatedEntries = { ...prevEntries };
                 if (!updatedEntries[currentMeal]) {
                     updatedEntries[currentMeal] = [];
                 }
-                updatedEntries[currentMeal].push(newEntry); // Directly use newEntry which should include 'id'
+                // Directly push the new entry to the current meal array
+                updatedEntries[currentMeal].push({
+                    id: newEntry.id,
+                    food: foodEntry,
+                    advice: newEntry.advice
+                });
 
+                // Save the updated entries to localStorage
                 updateLocalStorageEntries(updatedEntries);
                 return updatedEntries;
             });
 
+            // Close the dialog and reset the states
             handleClose();
             setFoodEntry('');
+            setFoodEntryError('');
         } catch (error) {
             console.error('There was an error submitting the new food entry:', error);
             setFoodEntryError('An error occurred while submitting the food entry.');
         }
     };
+
 
 
     // Update food entry state when typing in the text field and clear the error if any

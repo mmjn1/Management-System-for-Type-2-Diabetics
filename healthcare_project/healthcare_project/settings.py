@@ -47,7 +47,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 # Application definition
 INSTALLED_APPS = [
     'django_celery_beat',
-    'jazzmin',
+    # 'jazzmin',
     'channels',
     'django.contrib.admin',
     'chat',
@@ -363,13 +363,9 @@ JAZZMIN_SETTINGS = {
         "HealthManagementApp.CustomUser": "fas fa-user",
         "HealthManagementApp.doctor": "fas fa-user-md",
         "HealthManagementApp.patient": "fas fa-user-injured",
-        "HealthManagementApp.PatientAppointment": "fas fa-calendar-alt",
-        "HealthManagementApp.doctor_appointment": "fas fa-calendar-alt",
         "HealthManagementApp.supportinquiry": "fas fa-question-circle",
         "chat.message": "fas fa-envelope",
         "HealthManagementApp.MedicalLicense": "fas fa-id-card",
-        "HealthManagementApp.WeeklyAvailability": "fas fa-calendar-alt",
-        "HealthManagementApp.TimeSlot": "fas fa-clock",
         "HealthManagementApp.Section": "fas fa-list",
         "HealthManagementApp.Field": "fas fa-list",
         "HealthManagementApp.FieldChoice": "fas fa-list",
@@ -382,6 +378,13 @@ JAZZMIN_SETTINGS = {
         "HealthManagementApp.Advices": "fas fa-comment-medical",
         "HealthManagementApp.FollowUps": "fas fa-calendar-check",
         "HealthManagementApp.Prescription": "fas fa-prescription-bottle-alt",
+
+        "chat.message": "fas fa-envelope",
+        "HealthManagementApp.PatientAppointment": "fas fa-calendar-alt",
+        "HealthManagementApp.DoctorAppointment": "fas fa-calendar-alt",
+        "HealthManagementApp.WeeklyAvailability": "fas fa-calendar-alt",
+        "HealthManagementApp.TimeSlot": "fas fa-clock",
+        "HealthManagementApp.location": "fas fa-map-marker-alt",
         
     },
 

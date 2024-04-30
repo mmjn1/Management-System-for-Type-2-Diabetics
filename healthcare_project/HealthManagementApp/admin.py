@@ -2,18 +2,14 @@ from django.contrib import admin
 from django import forms
 from django.contrib.auth.admin import UserAdmin
 
-from .models import(Patient, Doctor, 
-                    PatientAppointment, 
-                    SupportInquiry, 
-                    CustomUser, 
-                    DoctorAppointment, 
-                    MedicalLicense,
-                    WeeklyAvailability,
-                    TimeSlot, Form, Section, Field, FieldChoice,
-                    FieldResponse, FormResponse, UserMealEntry
-                    )
+from .models import *
 from django.utils.translation import gettext_lazy as _
 from .models.prescription import *
+from .models.users import *
+from .models.doctor_availability import *
+from .models.patient_appointment import *
+from .models.doctor_appointment import *
+
 
 from django.contrib import admin
 
@@ -210,46 +206,6 @@ class PatientAdmin(admin.ModelAdmin):
         return ", ".join([doctor.user.get_full_name() for doctor in obj.doctors.all()])
     get_doctors.short_description = 'Doctors'
 
-class TimeSlotInline(admin.TabularInline):
-    model = TimeSlot
-    extra = 1  
-    fields = ['start_time', 'end_time', 'location', 'is_available']
-
-@admin.register(WeeklyAvailability)
-class WeeklyAvailabilityAdmin(admin.ModelAdmin):
-    list_display = ('doctor', 'day_of_week', 'is_working')  
-    list_filter = ('doctor', 'day_of_week', 'is_working')  
-    search_fields = ('doctor__name', 'day_of_week')  
-    inlines = [TimeSlotInline]  
-
-@admin.register(TimeSlot)
-class TimeSlotAdmin(admin.ModelAdmin):
-    list_display = ('get_day_of_week', 'start_time', 'end_time', 'location', 'is_available')
-    list_filter = ('weekly_availability__day_of_week', 'location', 'is_available')
-    search_fields = ('weekly_availability__doctor__name', 'location')
-
-    def get_day_of_week(self, obj):
-        return obj.weekly_availability.day_of_week
-    get_day_of_week.admin_order_field = 'weekly_availability__day_of_week'  
-    get_day_of_week.short_description = 'Day of the Week'  
-
-
-class PatientAppointmentAdmin(admin.ModelAdmin):
-    list_display = ('doctor', 'patient', 'appointment_date', 'time_slot', 'appointment_type', 'reason_for_appointment')
-    search_fields = ('doctor__name', 'patient__name', 'appointment_type', 'reason_for_appointment')
-    date_hierarchy = 'appointment_date'
-    ordering = ('appointment_date', 'time_slot')
-    fieldsets = (
-        ('Appointment Information', {
-            'fields': ('doctor', 'patient', 'appointment_date', 'time_slot', 'appointment_type')
-        }),
-        ('Additional Details', {
-            'fields': ('reason_for_appointment',),
-            'description': 'Reason for the appointment and additional notes.'
-        }),
-    )
-
-
 @admin.register(Form)
 class FormAdmin(admin.ModelAdmin):
     list_display = ('name', 'doctor', 'patient')
@@ -282,9 +238,42 @@ class UserMealEntryAdmin(admin.ModelAdmin):
     ordering = ('-created_at',)  
 
 
+class PatientAppointmentAdmin(admin.ModelAdmin):
+    list_display = ('doctor', 'patient', 'appointment_date', 'time_slot', 'appointment_type', 'reason_for_appointment')
+    search_fields = ('doctor__name', 'patient__name', 'appointment_type', 'reason_for_appointment')
+    date_hierarchy = 'appointment_date'
+    ordering = ('appointment_date', 'time_slot')
+    fieldsets = (
+        ('Appointment Information', {
+            'fields': ('doctor', 'patient', 'appointment_date', 'time_slot', 'appointment_type')
+        }),
+        ('Additional Details', {
+            'fields': ('reason_for_appointment',),
+            'description': 'Reason for the appointment and additional notes.'
+        }),
+    )
+
+class WeeklyAvailabilityAdmin(admin.ModelAdmin):
+    list_display = ('doctor', 'day_of_week', 'is_working')
+    list_filter = ('doctor', 'day_of_week', 'is_working')
+    search_fields = ('doctor__name', 'day_of_week')
+
+class LocationAdmin(admin.ModelAdmin):
+    list_display = ('name', 'mode')
+    list_filter = ('mode',)
+    search_fields = ('name',)
+
+class TimeSlotAdmin(admin.ModelAdmin):
+    list_display = ('weekly_availability', 'start_time', 'end_time', 'location', 'is_available')
+    list_filter = ('weekly_availability__doctor', 'location', 'is_available')
+    search_fields = ('weekly_availability__doctor__name', 'location__name')
+
+
+admin.site.register(WeeklyAvailability, WeeklyAvailabilityAdmin)
+admin.site.register(location, LocationAdmin)
+admin.site.register(TimeSlot, TimeSlotAdmin)
+
 admin.site.register(UserMealEntry, UserMealEntryAdmin)
-
-
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Patient, PatientAdmin)
 admin.site.register(PatientAppointment, PatientAppointmentAdmin)
