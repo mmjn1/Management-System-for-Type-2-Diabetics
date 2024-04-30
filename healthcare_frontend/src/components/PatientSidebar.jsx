@@ -2,7 +2,6 @@ import "../assets/patientcss/sidebar.css";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
 import BloodtypeOutlinedIcon from '@mui/icons-material/BloodtypeOutlined';
-import MedicationOutlinedIcon from '@mui/icons-material/MedicationOutlined';
 import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
 import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
 import DiningOutlinedIcon from '@mui/icons-material/DiningOutlined';
@@ -14,6 +13,7 @@ import { logout } from "../features/api/userslice";
 import HomeOutlined from "@mui/icons-material/HomeOutlined";
 import { useEffect } from "react";
 import LocalLibraryOutlinedIcon from '@mui/icons-material/LocalLibraryOutlined';
+import BookOnlineIcon from '@mui/icons-material/BookOnline';
 
 
 const PatientSidebar = () => {
@@ -95,6 +95,15 @@ const PatientSidebar = () => {
               <li className={`sidebarListItem ${location.pathname === "/patient/appointments" ? "active" : ""}`}>
                 <CalendarMonthOutlinedIcon className="sidebarIcon" />
                 Appointments
+              </li>
+            </Link>
+
+            <Link to='/patient/appointments-list' className='link'>
+              <li
+                className={`sidebarListItem ${location.pathname === '/patient/appointments-list' ? 'active' : ''}`}
+              >
+                <BookOnlineIcon className='sidebarIcon' />
+                Past appointments
               </li>
             </Link>
 

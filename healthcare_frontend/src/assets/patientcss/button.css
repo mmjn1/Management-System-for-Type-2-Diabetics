@@ -1,36 +1,36 @@
 .scheduleAppointmentButton,
 .updateAvailabilityButton {
-  border-radius: 20px;
-  width: auto;
-  min-width: 120px; 
-  height: 40px;
-  padding: 0 15px;
-  margin-right: 10px; 
-  font-size: 15px;
-  color: white;
-  border: none;
-  box-shadow: 0 2px 5px 0 rgba(0,0,0,0.26);
-  cursor: pointer;
+    border-radius: 20px;
+    width: auto;
+    min-width: 120px;
+    height: 40px;
+    padding: 0 15px;
+    margin-right: 10px;
+    font-size: 15px;
+    color: white;
+    border: none;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+    cursor: pointer;
 }
 
 
 .scheduleAppointmentButton {
-  background-color: #007bff;
+    background-color: #007bff;
 }
 
 .scheduleAppointmentButton:hover,
 .scheduleAppointmentButton:focus {
-  background-color: #0056b3;
-  outline: none;
+    background-color: #0056b3;
+    outline: none;
 }
 
 .updateAvailabilityButton {
-  min-width: 180px; 
-  background-color: #28a745;
+    min-width: 180px;
+    background-color: #28a745;
 }
 
 .updateAvailabilityButton:hover,
 .updateAvailabilityButton:focus {
-  background-color: #218838;
-  outline: none;
+    background-color: #218838;
+    outline: none;
 }

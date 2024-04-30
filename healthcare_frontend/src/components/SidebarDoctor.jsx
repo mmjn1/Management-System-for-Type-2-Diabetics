@@ -12,7 +12,7 @@ import { logout } from "../features/api/userslice";
 import { useEffect } from "react";
 import DifferenceOutlinedIcon from '@mui/icons-material/DifferenceOutlined';
 import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
-import LocalLibraryOutlinedIcon from '@mui/icons-material/LocalLibraryOutlined';
+import BookOnlineIcon from '@mui/icons-material/BookOnline';
 
 const SidebarDoctor = () => {
   const dispatch = useDispatch();
@@ -71,6 +71,13 @@ const SidebarDoctor = () => {
               <li className={`sidebarListItem ${location.pathname === "/doctor/appointments" ? "active" : ""}`}>
                 <CalendarMonthOutlinedIcon className="sidebarIcon" />
                 Appointment Calendar
+              </li>
+            </Link>
+
+            <Link to='/doctor/appointments-list' className='link'>
+              <li className={`sidebarListItem ${location.pathname === '/doctor/appointments-list' ? 'active' : ''}`}>
+                <BookOnlineIcon className='sidebarIcon' />
+                All Appointment
               </li>
             </Link>
           </ul>
