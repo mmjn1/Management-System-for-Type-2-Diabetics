@@ -14,8 +14,8 @@ class Zoom_modal(models.Model):
     timezone = models.CharField(max_length=100, null=True, blank=True)
     agenda = models.CharField(max_length=100, null=True, blank=True)
     created_at = models.DateTimeField(max_length=100, null=True, blank=True)
-    start_url = models.URLField(max_length=100, null=True, blank=True)
-    join_url = models.URLField(max_length=100, null=True, blank=True)
+    start_url = models.URLField(max_length=500, null=True, blank=True)
+    join_url = models.URLField(max_length=500, null=True, blank=True)
     password = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
