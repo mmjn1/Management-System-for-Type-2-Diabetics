@@ -4,6 +4,29 @@ import { fetchPatientAppointment } from '../../features/appointments/PatientAppo
 import PaginationButtons from './PaginationButtons';
 import { Button, Dropdown, Modal } from 'react-bootstrap';
 
+
+/**
+ * `AppointmentList` is a React component that renders a list of patient appointments for a doctor.
+ * It provides functionalities such as pagination, searching, and viewing detailed information about each appointment.
+ *
+ * Features:
+ * - Fetches appointments from a Redux store using the `fetchPatientAppointment` action.
+ * - Allows users to search through appointments based on patient name, appointment ID, date, phone number, and email.
+ * - Implements pagination to manage the display of appointments in a tabular format.
+ * - Provides a modal view for detailed appointment information when a row is clicked.
+ *
+ * State Management:
+ * - Uses local state for managing current page, items per page, search text, filtered appointments, modal visibility, and selected row data.
+ * - Utilizes Redux for state management related to fetching and storing appointment data.
+ *
+ * Effects:
+ * - Fetches appointment data on component mount and whenever the doctor ID changes.
+ * - Filters appointments based on search input.
+ * - Calculates total pages for pagination based on the number of appointments and items per page.
+ *
+ * The component is designed to be used within a doctor's dashboard where they can manage their appointments efficiently.
+ */
+
 const AppointmentList = () => {
   const dispatch = useDispatch();
   const appointments = useSelector((state) => state.PatientAppointmentSlice);
@@ -79,7 +102,7 @@ const AppointmentList = () => {
           <div className='card card-custom gutter-b'>
             <div className='card-header flex-wrap border-0 pt-6 pb-0'>
               <div className='card-title'>
-                <h3 className='card-label'>Patient appointment management</h3>
+                <h3 className='card-label'>Patient Appointment Management</h3>
               </div>
               <div className='card-toolbar'>
                 <input

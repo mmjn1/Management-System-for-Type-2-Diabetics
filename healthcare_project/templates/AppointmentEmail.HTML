@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment Confirmation</title>
+    <style>
+        .container {
+            width: 80%;
+            margin: 0 auto;
+        }
+
+        body {
+            color: #919CAE;
+        }
+
+        body, h2, p, li, ol {
+            color: #738297
+        }
+    </style>
+</head>
+<body>
+<div class="container" style="font-family:Arial, sans-serif;">
+    <h2>Appointment Confirmation</h2>
+
+    <table style="border-collapse: collapse; width: 500px; margin: 0 auto;">
+        <tbody>
+        <tr>
+            <td style="padding: 10px;"><strong>Patient Name:</strong></td>
+            <td style="padding: 10px;">{{ patient_name }}</td>
+        </tr>
+        <tr>
+            <td style="padding: 10px;"><strong>Doctor Name:</strong></td>
+            <td style="padding: 10px;">Dr. {{ doctor_name }}</td>
+        </tr>
+        <tr>
+            <td style="padding: 10px;"><strong>Start Time:</strong></td>
+            <td style="padding: 10px;">{{ start_time }}</td>
+        </tr>
+        <tr>
+            <td style="padding: 10px;"><strong>End Time:</strong></td>
+            <td style="padding: 10px;">{{ end_time }}</td>
+        </tr>
+
+        <tr>
+            <td style="padding: 10px;"><strong>Location:</strong></td>
+            <td style="padding: 10px;">{{ location }}</td>
+        </tr>
+
+        <tr>
+            <td style="padding: 10px;"><strong>Appointment Date:</strong></td>
+            <td style="padding: 10px;">{{ appointment_date }}</td>
+        </tr>
+
+        <tr>
+            <td style="padding: 10px;"><strong>Appointment Type:</strong></td>
+            <td style="padding: 10px;">{{ appointment_type }}</td>
+        </tr>
+
+        <tr>
+            <td style="padding: 10px;"><strong>Meeting Link:</strong></td>
+            <td style="padding: 10px;">
+                <a href="{{ link_to_meeting }}" style="color: #007bff; text-decoration: none;">Join Meeting</a>
+            </td>
+        </tr>
+
+
+        </tbody>
+    </table>
+
+    <hr/>
+    <p style="text-align:center;"><b>CONFIDENTIAL: IMPORTANT</b> <br>This electronic prescription is confidential
+        and
+        intended only for the recipient named above. If received in error, delete immediately. Unauthorized
+        retention or
+        disclosure is prohibited. Any harm from not deleting is the recipient's responsibility.</p>
+</div>
+</body>
+</html>

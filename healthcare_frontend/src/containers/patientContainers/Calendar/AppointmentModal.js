@@ -4,7 +4,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { FetchAppointmentTypes } from '../../../features/appointments/AppointmentTypes';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchDoctor } from '../../../features/FetchDoctor';
+import { fetchDoctor } from '../../../features/doctor/FetchDoctor';
 import { fetchDoctorTimeSlots } from '../../../features/appointments/doctor_slots';
 import { CreatePatientAppointment } from '../../../features/appointments/PatientAppointment';
 
@@ -21,6 +21,30 @@ const AppointmentSchema = Yup.object().shape({
     .min(today, 'Appointment cannot be in the past'),
   reason_for_appointment: Yup.string().required('Required'),
 });
+
+/**
+ * `AppointmentModal`provides a user interface for patients to schedule new appointments.
+ * It integrates with Redux for state management and Formik for form handling, including validation using Yup.
+ *
+ * Features:
+ * - Allows users to select a doctor, appointment type, date, and time slot.
+ * - Fetches available doctors and appointment types from the backend.
+ * - Dynamically loads available time slots based on the selected doctor and date.
+ * - Validates user input to ensure all required fields are filled and the appointment date is not in the past.
+ * - Submits the appointment details to the backend upon form submission.
+ *
+ * Props:
+ * - showModal: Boolean that controls the visibility of the modal.
+ * - handleClose: Function to close the modal.
+ *
+ * State:
+ * - selectedDate: Stores the currently selected date.
+ * - selectedDoctor: Stores the currently selected doctor.
+ * - slots: Stores available time slots fetched based on the selected doctor and date.
+ *
+ * The component uses `useEffect` to fetch initial data and to reload available time slots when necessary.
+ */
+
 
 const AppointmentModal = ({ showModal, handleClose }) => {
   const dispatch = useDispatch();
@@ -41,7 +65,7 @@ const AppointmentModal = ({ showModal, handleClose }) => {
 
   const formik = useFormik({
     initialValues: {
-      patient:localStorage.getItem('patient_id'),
+      patient: localStorage.getItem('patient_id'),
       doctor: '',
       appointment_type: '',
       appointment_date: '',
@@ -76,6 +100,7 @@ const AppointmentModal = ({ showModal, handleClose }) => {
     dispatch(fetchDoctorTimeSlots(data));
   };
 
+  console.log(doctors)
 
   return (
     <Modal centered show={showModal} onHide={handleClose}>
@@ -129,11 +154,10 @@ const AppointmentModal = ({ showModal, handleClose }) => {
               type='date'
               name='appointment_date'
               onChange={handleDateChange}
-              className={`form-control ${
-                formik.errors.appointment_date && formik.touched.appointment_date
+              className={`form-control ${formik.errors.appointment_date && formik.touched.appointment_date
                   ? 'is-invalid'
                   : ''
-              }`}
+                }`}
             />
             <div className='invalid-feedback'>
               {formik.errors.appointment_date &&
@@ -156,9 +180,8 @@ const AppointmentModal = ({ showModal, handleClose }) => {
                 <select
                   onChange={formik.handleChange}
                   name='time_slot'
-                  className={`form-control ${
-                    formik.errors.time_slot && formik.touched.time_slot ? 'is-invalid' : ''
-                  }`}
+                  className={`form-control ${formik.errors.time_slot && formik.touched.time_slot ? 'is-invalid' : ''
+                    }`}
                 >
                   <option value=''>Select time slot</option>
                   {slots.length !== 0 ? (
@@ -185,11 +208,10 @@ const AppointmentModal = ({ showModal, handleClose }) => {
             <input
               onChange={formik.handleChange}
               name='reason_for_appointment'
-              className={`form-control ${
-                formik.errors.reason_for_appointment && formik.touched.reason_for_appointment
+              className={`form-control ${formik.errors.reason_for_appointment && formik.touched.reason_for_appointment
                   ? 'is-invalid'
                   : ''
-              }`}
+                }`}
             />
             <div className='invalid-feedback'>
               {formik.errors.reason_for_appointment &&

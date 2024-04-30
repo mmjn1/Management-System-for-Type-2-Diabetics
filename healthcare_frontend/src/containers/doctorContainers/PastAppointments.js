@@ -106,7 +106,7 @@ const PastAppointments = () => {
           <div className='card card-custom gutter-b'>
             <div className='card-header flex-wrap border-0 pt-6 pb-0'>
               <div className='card-title'>
-                <h3 className='card-label'>Doctor appointment management</h3>
+                <h3 className='card-label'>Doctor Appointment Management</h3>
               </div>
               <div className='card-toolbar'>
                 <input

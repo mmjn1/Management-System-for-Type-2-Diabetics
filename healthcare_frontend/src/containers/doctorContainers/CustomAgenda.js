@@ -12,7 +12,7 @@ import { Formik, useFormik } from 'formik';
 
 import { fetchTimeSlots } from '../../features/appointments/DoctorAvailabilitySlice';
 import { fetchDoctorTimeSlots } from '../../features/appointments/doctor_slots';
-import { fetchDoctor } from '../../features/FetchDoctor';
+import { fetchDoctor } from '../../features/doctor/FetchDoctor';
 
 const today = new Date();
 today.setHours(0, 0, 0, 0);
