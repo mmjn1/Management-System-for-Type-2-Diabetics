@@ -209,15 +209,6 @@ const CustomAgenda = ({ event }) => {
                 <strong>Meeting link:</strong>{' '}
                 <a href={event.meeting_link?.start_url}>Join Zoom meeting</a>
               </p>
-              <p>
-                <strong>Email:</strong> {event.patient_email}
-              </p>
-              <p>
-                <strong>Gender:</strong> {event.patient_gender}
-              </p>
-              <p>
-                <strong>Phone number:</strong> {event.patient_phone_number}
-              </p>
             </div>
           </div>
         </Modal.Body>
@@ -229,17 +220,17 @@ const CustomAgenda = ({ event }) => {
       </Modal>
       <Modal centered show={showDelete} onHide={handleDeleteClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Delete appointment</Modal.Title>
+          <Modal.Title>Confirm Delete Appointment</Modal.Title>
         </Modal.Header>
         <Modal.Body style={{ padding: '20px' }}>
-          Are you sure to delete appointment with {event.title}
+          Are you sure to delete this appointment? This action cannot be undone and will remove the appointment from the calendar.
         </Modal.Body>
         <Modal.Footer>
           <Button variant='secondary' onClick={handleDeleteClose}>
             Close
           </Button>
           <Button variant='danger' onClick={handleDelete}>
-            Confirm
+            Cancel
           </Button>
         </Modal.Footer>
       </Modal>
@@ -352,11 +343,10 @@ const CustomAgenda = ({ event }) => {
                     type='date'
                     name='appointment_date'
                     onChange={handleDateChange}
-                    className={`form-control ${
-                      formik.errors.appointment_date && formik.touched.appointment_date
-                        ? 'is-invalid'
-                        : ''
-                    }`}
+                    className={`form-control ${formik.errors.appointment_date && formik.touched.appointment_date
+                      ? 'is-invalid'
+                      : ''
+                      }`}
                   />
                   <div className='invalid-feedback'>
                     {formik.errors.appointment_date &&

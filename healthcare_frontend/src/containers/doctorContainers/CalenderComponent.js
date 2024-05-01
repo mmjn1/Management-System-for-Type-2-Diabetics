@@ -56,16 +56,7 @@ const CustomEvent = ({ event }) => {
               </p>
               <p>
                 <strong>Meeting link:</strong> <a href={event.meeting_link?.start_url}>Join Zoom meeting</a>
-              </p>
-              <p>
-                <strong>Email:</strong> {event.patient_email}
-              </p>
-              <p>
-                <strong>Gender:</strong> {event.patient_gender}
-              </p>
-              <p>
-                <strong>Phone number:</strong> {event.patient_phone_number}
-              </p>
+              </p> 
             </div>
           </div>
         </Modal.Body>
