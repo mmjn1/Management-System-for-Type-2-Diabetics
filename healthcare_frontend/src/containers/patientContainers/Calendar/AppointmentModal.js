@@ -54,14 +54,18 @@ const AppointmentModal = ({ showModal, handleClose }) => {
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const slots = useSelector((state) => state.DoctorTimeSlotsSlice.data);
 
+
   const HandleSubmit = (values) => {
     dispatch(CreatePatientAppointment(values))
     handleClose()
   };
+
+
   useEffect(() => {
     dispatch(fetchDoctor());
     dispatch(FetchAppointmentTypes());
   }, [dispatch]);
+  
 
   const formik = useFormik({
     initialValues: {
@@ -100,8 +104,6 @@ const AppointmentModal = ({ showModal, handleClose }) => {
     dispatch(fetchDoctorTimeSlots(data));
   };
 
-  console.log(doctors)
-
   return (
     <Modal centered show={showModal} onHide={handleClose}>
       <Modal.Header closeButton>
@@ -121,7 +123,7 @@ const AppointmentModal = ({ showModal, handleClose }) => {
               <option value=''>Select a doctor</option>
               {doctors.map((item) => (
                 <option key={item.id} value={item.id}>
-                  {item.first_name} {item.last_name}
+                  Dr. {item.first_name} {item.last_name}
                 </option>
               ))}
             </select>

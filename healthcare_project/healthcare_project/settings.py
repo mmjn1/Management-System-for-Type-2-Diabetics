@@ -47,7 +47,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 # Application definition
 INSTALLED_APPS = [
     'django_celery_beat',
-    # 'jazzmin',
+    'jazzmin',
     'channels',
     'django.contrib.admin',
     'chat',

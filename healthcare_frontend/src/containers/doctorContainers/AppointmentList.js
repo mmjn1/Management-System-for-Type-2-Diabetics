@@ -77,8 +77,6 @@ const AppointmentList = () => {
         user.last_name || '',
         appointment.id,
         appointment.appointment_date,
-        patient.Mobile || '',
-        patient.Email || '',
       ].join(' ');
 
       return searchableFields.toLowerCase().includes(searchTerm);
@@ -115,7 +113,7 @@ const AppointmentList = () => {
                   className='text-muted'
                   style={{ marginLeft: '1rem', fontSize: '0.8rem', color: '#888' }}
                 >
-                  type patient name, appointment id, date, Phone,Email
+                  type patient name, appointment id, date, Phone,
                 </span>
                 {/*end::Dropdown*/}
               </div>
@@ -165,12 +163,12 @@ const AppointmentList = () => {
                                 <div className='text-dark-75 font-weight-bolder font-size-lg mb-0'>
                                   {item.patient.user.first_name} {item.patient.user.last_name}
                                 </div>
-                                <a
+                                {/* <a
                                   href={`tel:${item.patient.Mobile}`}
                                   className='text-muted font-weight-bold text-hover-primary'
                                 >
                                   {item.patient.Mobile}
-                                </a>
+                                </a> */}
                               </div>
                             </div>
                           </span>
