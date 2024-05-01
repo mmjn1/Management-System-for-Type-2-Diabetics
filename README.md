@@ -78,6 +78,51 @@ To set up and run Daphne:
 
     daphne -b 0.0.0.0 -p 8000 healthcare_project.asgi:application
 
+
+**Setting up Redis:**
+
+*For macOS:*
+
+Redis can be installed on macOS using Homebrew:
+
+    brew install redis
+
+To start Redis server as a background service that will automatically restart at login:
+
+    brew services start redis
+
+*For Windows:*
+
+You can install Redis on Windows using the MSI installer available at:
+
+    https://github.com/tporadowski/redis/releases
+
+Download the `.msi` file and follow the installation instructions. After installation, you can start the Redis server through the start menu or by using the following command in Command Prompt:
+
+    redis-server
+
+
+**Running Celery Worker and Beat Services:**
+
+After setting up Redis, you will need to run Celery worker and beat services to handle task processing and scheduling.
+
+1. Open a new terminal window and type cd /mmjn1/healthcare_project and run the following command to start the Celery worker, which will process the tasks:
+
+    
+    celery -A healthcare_project.celery worker --pool=solo -l info
+    
+
+
+2. Open another new terminal window (Terminal 3) and run the following command to start the Celery beat service, which will schedule the periodic tasks:
+
+    
+    celery -A healthcare_project beat -l INFO   
+    
+
+**Important:** Ensure you have the Redis server running before you start these Celery services. The Celery worker and beat services must be running in separate terminal windows or as background processes in order for the application to process and schedule tasks correctly.
+
+
+
 **Setting up the Frontend (React)**
 Create another window on your terminal by clicking the + icon
 
