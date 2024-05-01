@@ -106,12 +106,12 @@ Download the `.msi` file and follow the installation instructions. After install
 
 After setting up Redis, you will need to run Celery worker and beat services to handle task processing and scheduling.
 
-1. Open a new terminal window and type cd /mmjn1/healthcare_project and run the following command to start the Celery worker, which will process the tasks:
+Open a new terminal window and type cd /mmjn1/healthcare_project and run the following command to start the Celery worker, which will process the tasks:
 
     celery -A healthcare_project.celery worker --pool=solo -l info
     
 
-2. Open another new terminal window (Terminal 3) and run the following command to start the Celery beat service, which will schedule the periodic tasks:
+Open another new terminal window (Terminal 3) and run the following command to start the Celery beat service, which will schedule the periodic tasks:
 
     celery -A healthcare_project beat -l INFO   
     
