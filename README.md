@@ -24,7 +24,7 @@ Start by cloning the repository to your local machine using a code editor such a
     git clone https://campus.cs.le.ac.uk/gitlab/ug_project/23-24/mmjn1.git
 
 
-**Setting up the Backend (Django)**
+## Setting up the Backend (Django)
 
 Navigate to the backend directory:
     
@@ -67,7 +67,7 @@ Your Django development server will be running at http://127.0.0.1:8000/
 You can access the admin panel by adding - http://127.0.0.1:8000/admin in the search bar and then enter your email and password
 
 
-**Setting Up WebSocket Connections with Daphne**
+## Setting Up WebSocket Connections with Daphne**
 For real-time chat functionality, the project uses Django Channels with Daphne as the ASGI server. 
 
 Create another window in your terminal by clicking the plus button and navigate to the healthcare_project directory by:
@@ -79,7 +79,7 @@ To set up and run Daphne:
     daphne -b 0.0.0.0 -p 8000 healthcare_project.asgi:application
 
 
-**Setting up Redis:**
+## Setting up Redis:
 
 *For macOS:*
 
@@ -102,7 +102,7 @@ Download the `.msi` file and follow the installation instructions. After install
     redis-server
 
 
-**Running Celery Worker and Beat Services:**
+## Running Celery Worker and Beat Services:
 
 After setting up Redis, you will need to run Celery worker and beat services to handle task processing and scheduling.
 
@@ -111,7 +111,7 @@ Open a new terminal window and type cd /mmjn1/healthcare_project and run the fol
     celery -A healthcare_project.celery worker --pool=solo -l info
     
 
-Open another new terminal window (Terminal 3) and run the following command to start the Celery beat service, which will schedule the periodic tasks:
+Open another new terminal window and run the following command to start the Celery beat service, which will schedule the periodic tasks:
 
     celery -A healthcare_project beat -l INFO   
     
@@ -120,7 +120,7 @@ Open another new terminal window (Terminal 3) and run the following command to s
 
 
 
-**Setting up the Frontend (React)**
+## Setting up the Frontend (React):
 Create another window on your terminal by clicking the + icon
 
 Navigate to the frontend directory:

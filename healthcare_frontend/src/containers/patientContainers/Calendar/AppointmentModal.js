@@ -60,12 +60,17 @@ const AppointmentModal = ({ showModal, handleClose }) => {
     handleClose()
   };
 
-
   useEffect(() => {
     dispatch(fetchDoctor());
     dispatch(FetchAppointmentTypes());
   }, [dispatch]);
   
+  useEffect(() => {
+    if (selectedDate) {
+      fetchSlots();
+    }
+  }, [selectedDate, selectedDoctor]);
+
 
   const formik = useFormik({
     initialValues: {
@@ -89,12 +94,6 @@ const AppointmentModal = ({ showModal, handleClose }) => {
     setSelectedDoctor(event.target.value);
     formik.setFieldValue('doctor', event.target.value);
   };
-
-  useEffect(() => {
-    if (selectedDate) {
-      fetchSlots();
-    }
-  }, [selectedDate, selectedDoctor]);
 
   const fetchSlots = () => {
     const data = {

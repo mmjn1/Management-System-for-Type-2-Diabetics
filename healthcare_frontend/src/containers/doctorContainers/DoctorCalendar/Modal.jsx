@@ -51,39 +51,6 @@ const AppointmentModal = ({ showModal, handleClose }) => {
     dispatch(fetchTimeSlots(doctorId));
   }, [dispatch]);
 
-  const HandleSubmit = (values) => {
-    const doctor = localStorage.getItem('doctor_id');
-    const { appointment_date, appointment_type, patient, reason_for_appointment, time_slot } =
-      values;
-    const body = {
-      doctor,
-      appointment_type,
-      appointment_date,
-      patient,
-      reason_for_appointment,
-      time_slot,
-    };
-    dispatch(CreatePatientAppointment(body));
-    // handleClose();
-  };
-
-  const formik = useFormik({
-    initialValues: {
-      patient: '',
-      appointment_type: '',
-      appointment_date: '',
-      reason_for_appointment: '',
-      time_slot: '',
-    },
-    validationSchema: AppointmentSchema, // Keep your validation schema
-    onSubmit: HandleSubmit,
-  });
-
-  const handleDateChange = (event) => {
-    setSelectedDate(new Date(event.target.value));
-    formik.setFieldValue('appointment_date', event.target.value);
-  };
-
   useEffect(() => {
     if (selectedDate) {
       fetchSlots();
@@ -97,6 +64,38 @@ const AppointmentModal = ({ showModal, handleClose }) => {
     };
     dispatch(fetchDoctorTimeSlots(data));
   };
+  const HandleSubmit = (values) => {
+    const doctor = localStorage.getItem('doctor_id');
+    const { appointment_date, appointment_type, patient, reason_for_appointment, time_slot } =
+      values;
+    const body = {
+      doctor,
+      appointment_type,
+      appointment_date,
+      patient,
+      reason_for_appointment,
+      time_slot,
+    };
+    dispatch(CreatePatientAppointment(body));
+  };
+
+  const formik = useFormik({
+    initialValues: {
+      patient: '',
+      appointment_type: '',
+      appointment_date: '',
+      reason_for_appointment: '',
+      time_slot: '',
+    },
+    validationSchema: AppointmentSchema,
+    onSubmit: HandleSubmit,
+  });
+
+  const handleDateChange = (event) => {
+    setSelectedDate(new Date(event.target.value));
+    formik.setFieldValue('appointment_date', event.target.value);
+  };
+
 
   return (
     <Modal centered show={showModal} onHide={handleClose}>
@@ -133,11 +132,10 @@ const AppointmentModal = ({ showModal, handleClose }) => {
             <select
               onChange={formik.handleChange}
               name='appointment_type'
-              className={`form-control ${
-                formik.errors.appointment_type && formik.touched.appointment_type
+              className={`form-control ${formik.errors.appointment_type && formik.touched.appointment_type
                   ? 'is-invalid'
                   : ''
-              }`}
+                }`}
             >
               <option value=''>Select appointment type</option>
               {appointmentTypes.map((type) => (
@@ -159,11 +157,10 @@ const AppointmentModal = ({ showModal, handleClose }) => {
               type='date'
               name='appointment_date'
               onChange={handleDateChange}
-              className={`form-control ${
-                formik.errors.appointment_date && formik.touched.appointment_date
+              className={`form-control ${formik.errors.appointment_date && formik.touched.appointment_date
                   ? 'is-invalid'
                   : ''
-              }`}
+                }`}
             />
             <div className='invalid-feedback'>
               {formik.errors.appointment_date &&
@@ -186,9 +183,8 @@ const AppointmentModal = ({ showModal, handleClose }) => {
                 <select
                   onChange={formik.handleChange}
                   name='time_slot'
-                  className={`form-control ${
-                    formik.errors.time_slot && formik.touched.time_slot ? 'is-invalid' : ''
-                  }`}
+                  className={`form-control ${formik.errors.time_slot && formik.touched.time_slot ? 'is-invalid' : ''
+                    }`}
                 >
                   <option value=''>Select time slot</option>
                   {slots.length !== 0 ? (
@@ -216,11 +212,10 @@ const AppointmentModal = ({ showModal, handleClose }) => {
             <input
               onChange={formik.handleChange}
               name='reason_for_appointment'
-              className={`form-control ${
-                formik.errors.reason_for_appointment && formik.touched.reason_for_appointment
+              className={`form-control ${formik.errors.reason_for_appointment && formik.touched.reason_for_appointment
                   ? 'is-invalid'
                   : ''
-              }`}
+                }`}
             />
             <div className='invalid-feedback'>
               {formik.errors.reason_for_appointment &&

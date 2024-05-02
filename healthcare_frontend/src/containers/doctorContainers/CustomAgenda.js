@@ -296,7 +296,7 @@ const CustomAgenda = ({ event }) => {
       </Modal>
       <Modal centered size='lg' show={showReschedule} onHide={() => setReschedule(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Rescheduled meeting for {event.title}</Modal.Title>
+          <Modal.Title>Reschedule meeting for {event.title}</Modal.Title>
         </Modal.Header>
         <Modal.Body style={{ padding: '20px' }}>
           <div className='row'>
