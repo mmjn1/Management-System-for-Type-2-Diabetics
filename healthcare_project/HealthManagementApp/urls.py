@@ -127,13 +127,14 @@ urlpatterns = [
     # http://127.0.0.1:8000/api/doctor-availability/?doctorId=1&date=2024-01-01
     path('timeslots/<int:pk>/', TimeSlotView.as_view(), name='timeslot-detail'),
     path('doctor/<int:pk>/', DoctorDetailView.as_view(), name='doctor-detail'),
-    path('patient-create-appointment/', create_patient_appointment, name='create_patient_appointment'),
+    path('patient-create-appointment/', create_new_appointment, name='create_patient_appointment'),
     path('get-patient-appointment/', get_patient_appointment, name='get_patient_appointment'),
     path('get-patient-appointment-pid/', get_patient_appointment_patient, name='get_patient_appointment_patient'),
 
     path('patient-appointment/<int:pk>/', patient_appointment_data.as_view(), name='update patient_appointment'),
-    path('patient-appointment-other/<int:pk>/', patient_appointment_data_other.as_view(),
-         name='update patient_appointment'),
+
+    path('appointment-followup/<int:pk>/', AppointmentFollowupView.as_view(),
+         name='appointment_follow_up'),
 
     path('doctor-availability/<int:doctor_id>/<str:date_data>/', DoctorAvailabilityView.as_view()),
 

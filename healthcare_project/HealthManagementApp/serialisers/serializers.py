@@ -1,24 +1,38 @@
 from HealthManagementApp.models import (
     SupportInquiry
 )
-import logging
 from HealthManagementApp.models.users import Doctor, Patient
 from HealthManagementApp.models.doctor_appointment import DoctorAppointment
 from HealthManagementApp.models.patient_appointment import PatientAppointment
 from HealthManagementApp.models.doctor_availability import WeeklyAvailability, TimeSlot
 from HealthManagementApp.models.customform import Form, Section, Field, FieldChoice, FormResponse, FieldResponse
 from HealthManagementApp.models.foodentry import UserMealEntry
-
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from rest_framework import serializers
 from django.contrib.auth import authenticate
-from django.contrib.auth.models import Permission, Group
 from django.db import transaction
 from django.db.models import Q
-from django.shortcuts import get_object_or_404
 from HealthManagementApp.models.users import CustomUser
 from HealthManagementApp.models.prescription import *
+from HealthManagementApp.models import *
+
+"""
+The serializers are used to convert complex data types like 
+querysets and model instances to native Python datatypes that can then be easily rendered into JSON, XML, or other 
+content types. Serializers also provide deserialization, allowing parsed data to be converted back into complex types, 
+after first validating the incoming data.
+
+The serializers in this module handle data for various models including User, Doctor, Patient, Appointments, 
+Prescriptions, and Weekly Availabilities. They ensure that data sent to and from the front-end is in the correct 
+format and adheres to specified data structures. This is crucial for maintaining data integrity and for the 
+application's front-end to function correctly.
+
+Each serializer is tailored to a specific model, with some serializers handling related models through nested 
+serialization. This allows for efficient data handling and manipulation, especially useful in scenarios where 
+related data is required in a single request/response cycle.
+
+"""
 
 
 User = get_user_model()
@@ -43,7 +57,7 @@ class DoctorSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(source='user.first_name')
     last_name = serializers.CharField(source='user.last_name')
     email = serializers.CharField(source='user.email')
-    id = serializers.CharField(source='user.id')
+    # id = serializers.CharField(source='user.id')
     license_number = serializers.CharField(source='medical_license.license_number', read_only=True)
 
     class Meta:
@@ -133,109 +147,6 @@ class UserSerializersData(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'email', 'first_name', 'middle_name', 'last_name', 'type')
-
-
-class DoctorAppointmentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DoctorAppointment
-        fields = ['id', 'patient', 'appointment_date', 'start_time', 'end_time', 'reason_for_visit', 'appointment_type']
-
-
-class TimeSlotSerializer(serializers.ModelSerializer):
-    is_available = serializers.BooleanField(read_only=True)
-    class Meta:
-        model = TimeSlot
-        fields = ['id', 'start_time', 'end_time', 'location', 'is_available']
-
-
-class PatientAppointmentSerializer(serializers.ModelSerializer):
-    time_slot = serializers.PrimaryKeyRelatedField(queryset=TimeSlot.objects.all())
-    
-    class Meta:
-        model = PatientAppointment
-        fields = ['id', 'patient', 'doctor', 'time_slot', 'appointment_type', 'reason_for_appointment', 'appointment_date']
-
-    def create(self, validated_data):
-        # Custom create method to handle creation of the appointment
-        appointment = PatientAppointment.objects.create(**validated_data)
-        return appointment
-
-
-class WeeklyAvailabilitySerializer(serializers.ModelSerializer):
-    time_slots = TimeSlotSerializer(many=True, required=False)
-
-    class Meta:
-        model = WeeklyAvailability
-        fields = ['id', 'doctor', 'day_of_week', 'is_working', 'time_slots']
-
-    def create(self, validated_data):
-        time_slots_data = validated_data.pop('time_slots', [])
-        weekly_availability = WeeklyAvailability.objects.create(**validated_data)
-        for time_slot_data in time_slots_data:
-            TimeSlot.objects.create(weekly_availability=weekly_availability, **time_slot_data)
-        return weekly_availability
-
-    def update(self, instance, validated_data):
-        time_slots_data = validated_data.pop('time_slots', [])
-        instance.day_of_week = validated_data.get('day_of_week', instance.day_of_week)
-        instance.is_working = validated_data.get('is_working', instance.is_working)
-        instance.save()
-
-        # Existing time slots keyed by a tuple of their unique fields
-        existing_time_slots = {(ts.start_time, ts.end_time, ts.location): ts for ts in instance.time_slots.all()}
-
-        # IDs of time slots that should remain after the update
-        updated_time_slot_ids = []
-
-        # Update existing time slots and mark new ones for creation
-        for time_slot_data in time_slots_data:
-            time_slot_id = time_slot_data.get('id', None)
-            time_slot_key = (time_slot_data['start_time'], time_slot_data['end_time'], time_slot_data['location'])
-
-            if time_slot_id:
-                # Update existing time slot
-                time_slot_instance = existing_time_slots.pop(time_slot_key, None)
-                if time_slot_instance:
-                    for key, value in time_slot_data.items():
-                        setattr(time_slot_instance, key, value)
-                    time_slot_instance.save()
-                    updated_time_slot_ids.append(time_slot_instance.id)
-                else:
-                    # Handle the case where the time slot ID does not match the unique fields
-                    # This could be an error or an indication that the time slot should be recreated
-                    # Add appropriate handling here, such as logging an error or raising an exception
-                    pass
-            else:
-                # Create new time slot if no existing slot matches
-                if time_slot_key not in existing_time_slots:
-                    new_time_slot = TimeSlot.objects.create(weekly_availability=instance, **time_slot_data)
-                    updated_time_slot_ids.append(new_time_slot.id)
-                else:
-                    # If the time slot already exists, update it instead of creating a new one
-                    existing_slot = existing_time_slots[time_slot_key]
-                    for key, value in time_slot_data.items():
-                        setattr(existing_slot, key, value)
-                    existing_slot.save()
-                    updated_time_slot_ids.append(existing_slot.id)
-
-        # Delete time slots that were not included in the update
-        time_slots_to_delete = [ts for ts in existing_time_slots.values() if ts.id not in updated_time_slot_ids]
-        for time_slot in time_slots_to_delete:
-            time_slot.delete()
-
-        return instance
-
-
-class DoctorAppointmentTypeSerializer(serializers.Serializer):
-    key = serializers.CharField(source='get_appointment_type_display')
-    value = serializers.CharField(source='appointment_type')
-
-
-
-class PatientAppointmentTypeSerializer(serializers.Serializer):
-    key = serializers.CharField(source='get_appointment_type_display')
-    value = serializers.CharField(source='appointment_type')
-
 
 class PatientDropdownSerializer(serializers.ModelSerializer):
     id = serializers.CharField(source='user.id')
@@ -489,3 +400,173 @@ class PrescriptionDetailSerializer(serializers.ModelSerializer):
         depth = 1
 
 
+class DoctorAppointmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DoctorAppointment
+        fields = ['id', 'patient', 'appointment_date', 'start_time', 'end_time', 'reason_for_visit', 'appointment_type']
+
+
+class TimeSlotSerializer(serializers.ModelSerializer):
+    # is_available = serializers.BooleanField(read_only=True)
+
+    class Meta:
+        model = TimeSlot
+        depth = 1
+        fields = '__all__'
+
+
+class PatientAppointmentSerializer(serializers.ModelSerializer):
+    time_slot = serializers.PrimaryKeyRelatedField(queryset=TimeSlot.objects.all())
+
+    class Meta:
+        model = PatientAppointment
+        fields = ['id', 'patient', 'doctor', 'time_slot', 'appointment_type', 'reason_for_appointment',
+                  'appointment_date']
+
+    def create(self, validated_data):
+        # Custom create method to handle creation of the appointment
+        appointment = PatientAppointment.objects.create(**validated_data)
+        return appointment
+
+
+class PatientAppointmentSerializerOther(serializers.ModelSerializer):
+    class Meta:
+        model = PatientAppointment
+        fields = '__all__'
+
+
+class PatientAppointmentSerializerDepth(serializers.ModelSerializer):
+    # meeting_link = serializers.CharField(source='meeting_link.start_url')
+    """
+    Serializer for deep serialization of PatientAppointment model instances.
+
+    This serializer is designed to provide a comprehensive representation of a PatientAppointment,
+    including detailed information about related entities up to two levels deep. It is particularly
+    useful in contexts where complete details about the appointment, including associated objects like
+    the patient's and doctor's detailed information, are required in a single API response.
+
+    The `depth = 2` setting enables the serializer to automatically include not only the direct
+    relationships of PatientAppointment (such as the linked Patient and Doctor) but also the relationships
+    of those related objects (e.g., the Doctor's clinic details or the Patient's medical history).
+
+    Attributes:
+        Meta:
+            model (Model): The main model class that this serializer handles, which is PatientAppointment.
+            fields (list of str): Specifies that all fields of the PatientAppointment model should be included in the serialization.
+            depth (int): Indicates the levels of related data to include. A depth of 2 means that the serializer
+                         includes the main object, its direct relations, and their direct relations.
+    """
+    class Meta:
+        model = PatientAppointment
+        depth = 2
+        fields = '__all__'
+
+
+class WeeklyAvailabilitySerializer(serializers.ModelSerializer):
+    """
+    Serializer for WeeklyAvailability model, handling serialization and deserialization of weekly availability data
+    for doctors including their available time slots.
+
+    This serializer extends the ModelSerializer and includes nested serialization for the related TimeSlot instances.
+    It provides custom create and update methods to handle the complexities of nested data and ensure data integrity
+    when creating or updating a doctor's weekly availability and their specific time slots.
+
+    Attributes:
+        time_slots (TimeSlotSerializer): A nested serializer to handle serialization of multiple TimeSlot instances.
+    """
+    time_slots = TimeSlotSerializer(many=True, required=False)
+
+    class Meta:
+        model = WeeklyAvailability
+        fields = ['id', 'doctor', 'day_of_week', 'is_working', 'time_slots']
+
+    def create(self, validated_data):
+        """
+        Custom create method for creating a WeeklyAvailability instance along with associated TimeSlot instances.
+
+        Args:
+            validated_data (dict): The validated data from the request.
+
+        Returns:
+            WeeklyAvailability: The newly created WeeklyAvailability instance.
+        """
+        time_slots_data = validated_data.pop('time_slots', [])
+        weekly_availability = WeeklyAvailability.objects.create(**validated_data)
+        for time_slot_data in time_slots_data:
+            TimeSlot.objects.create(weekly_availability=weekly_availability, **time_slot_data)
+        return weekly_availability
+
+    def update(self, instance, validated_data):
+        """
+        Custom update method for updating a WeeklyAvailability instance and its associated TimeSlot instances.
+
+        This method handles the complexity of updating or creating new time slots while removing those that are
+        no longer associated with the weekly availability.
+
+        Args:
+            instance (WeeklyAvailability): The instance being updated.
+            validated_data (dict): The validated data from the request.
+
+        Returns:
+            WeeklyAvailability: The updated WeeklyAvailability instance.
+        """
+        time_slots_data = validated_data.pop('time_slots', [])
+        instance.day_of_week = validated_data.get('day_of_week', instance.day_of_week)
+        instance.is_working = validated_data.get('is_working', instance.is_working)
+        instance.save()
+
+        # Existing time slots keyed by a tuple of their unique fields
+        existing_time_slots = {(ts.start_time, ts.end_time, ts.location): ts for ts in instance.time_slots.all()}
+
+        # IDs of time slots that should remain after the update
+        updated_time_slot_ids = []
+
+        # Update existing time slots and mark new ones for creation
+        for time_slot_data in time_slots_data:
+            time_slot_id = time_slot_data.get('id', None)
+            time_slot_key = (time_slot_data['start_time'], time_slot_data['end_time'], time_slot_data['location'])
+
+            if time_slot_id:
+                # Update existing time slot
+                time_slot_instance = existing_time_slots.pop(time_slot_key, None)
+                if time_slot_instance:
+                    for key, value in time_slot_data.items():
+                        setattr(time_slot_instance, key, value)
+                    time_slot_instance.save()
+                    updated_time_slot_ids.append(time_slot_instance.id)
+                else:
+                    pass
+            else:
+                # Create new time slot if no existing slot matches
+                if time_slot_key not in existing_time_slots:
+                    new_time_slot = TimeSlot.objects.create(weekly_availability=instance, **time_slot_data)
+                    updated_time_slot_ids.append(new_time_slot.id)
+                else:
+                    # If the time slot already exists, update it instead of creating a new one
+                    existing_slot = existing_time_slots[time_slot_key]
+                    for key, value in time_slot_data.items():
+                        setattr(existing_slot, key, value)
+                    existing_slot.save()
+                    updated_time_slot_ids.append(existing_slot.id)
+
+        # Delete time slots that were not included in the update
+        time_slots_to_delete = [ts for ts in existing_time_slots.values() if ts.id not in updated_time_slot_ids]
+        for time_slot in time_slots_to_delete:
+            time_slot.delete()
+
+        return instance
+
+
+class PatientDropdownSerializer(serializers.ModelSerializer):
+    # id = serializers.CharField(source='user.id')
+    first_name = serializers.CharField(source='user.first_name')
+    last_name = serializers.CharField(source='user.last_name')
+
+    class Meta:
+        model = Patient
+        fields = ['id', 'first_name', 'last_name']
+
+class locationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = location
+        fields = '__all__'

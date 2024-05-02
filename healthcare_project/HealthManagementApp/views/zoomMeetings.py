@@ -4,6 +4,18 @@ import base64
 from healthcare_project import settings
 import os
 
+"""
+This module provides functionalities to interact with the Zoom API for managing Zoom meetings .
+It includes functions to generate authentication tokens, retrieve access tokens, and create, update, or delete Zoom meetings.
+These capabilities support the scheduling and management of virtual consultations and follow-ups in a healthcare application.
+
+Functions:
+- generateToken: Generates a base64-encoded token for Zoom API authentication.
+- get_access_token: Retrieves an access token from Zoom using account credentials.
+- create_zoom_meeting: Creates a new Zoom meeting with specified details.
+- updateZoomMeeting: Updates the start time of an existing Zoom meeting.
+- deleteZoomMeeting: Deletes a specified Zoom meeting.
+"""
 
 def generateToken():
     """

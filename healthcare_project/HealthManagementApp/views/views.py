@@ -1023,7 +1023,7 @@ def time_difference(t1, t2):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def create_patient_appointment(request):
+def create_new_appointment(request):
     """
     Creates a new patient appointment and sends an email notification with the appointment details.
 
@@ -1131,19 +1131,20 @@ def create_patient_appointment(request):
 
 class patient_appointment_data(APIView):
     """
-    This class-based view handles patient appointment data retrieval, updates, and deletion.
+    This class-based view handles appointment data retrieval, updates, and deletion.
 
     Methods:
     - get_queryset: Retrieves the queryset based on the appointment ID from the URL.
     - get_object: Fetches the specific appointment object using the primary key.
     - get: Returns the serialized data of a specific appointment.
     - patch: Updates the appointment data partially and sends an email notification about the update.
-    - delete: Deletes a specific appointment and sends an email notification about the cancellation.
+    - delete: Cancels a specific appointment and sends an email notification about the cancellation.
 
     Each method ensures that operations are performed on the correct appointment instance by retrieving it
     using the appointment ID provided in the URL. The patch method also handles updating associated Zoom meeting details
     and sending formatted email notifications to both the doctor and the patient.
     """
+
     def get_queryset(self):
         return PatientAppointment.objects.filter(id=self.kwargs['pk'])
 
@@ -1313,10 +1314,10 @@ def get_patient_appointment_patient(request):
         return Response({'detail': 'No patient_id provided.'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class patient_appointment_data_other(generics.RetrieveUpdateDestroyAPIView):
+class AppointmentFollowupView(generics.RetrieveUpdateDestroyAPIView):
     """
-    This view handles the retrieval, update, and deletion of a specific patient appointment data.
-    
+    This view handles the retrieval, update, and deletion of follow-up notes for a specific appointment.
+
     It utilizes the PatientAppointmentSerializerOther for serialization of the appointment data.
     The queryset filters the PatientAppointment model to retrieve an appointment by its primary key (id),
     which is provided via URL parameters. This allows operations to be performed on a specific appointment instance.
@@ -1325,6 +1326,7 @@ class patient_appointment_data_other(generics.RetrieveUpdateDestroyAPIView):
     - get_serializer_class: Returns the serializer class used for the appointment data.
     - get_queryset: Filters and returns the appointment instance based on the primary key.
     """
+
     def get_serializer_class(self):
         return PatientAppointmentSerializerOther
 
@@ -1382,7 +1384,7 @@ class DoctorAvailabilityView(APIView):
         return Response(serialized_timeslots)
 
 
-################################################### #########################################################
+############################################################################################################
 
 # fetching the appointment types - Doctor
 def doctor_appointment_types_view(request):
