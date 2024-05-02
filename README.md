@@ -67,7 +67,7 @@ Your Django development server will be running at http://127.0.0.1:8000/
 You can access the admin panel by adding - http://127.0.0.1:8000/admin in the search bar and then enter your email and password
 
 
-## Setting Up WebSocket Connections with Daphne**
+## Setting Up WebSocket Connections with Daphne
 For real-time chat functionality, the project uses Django Channels with Daphne as the ASGI server. 
 
 Create another window in your terminal by clicking the plus button and navigate to the healthcare_project directory by:

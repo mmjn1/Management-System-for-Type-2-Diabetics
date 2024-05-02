@@ -27,6 +27,7 @@ const AppointmentSchema = Yup.object().shape({
 
 /**
  * CustomAgenda manages the display and interaction logic for a specific appointment event.
+ * 
  * It provides functionalities such as viewing appointment details, adding follow-up notes, rescheduling, and deleting appointments.
  * 
  * Props:
@@ -99,7 +100,6 @@ const CustomAgenda = ({ event }) => {
       data: values,
     };
     dispatch(updatePatientAppointment(body));
-    // setReschedule(false);
   };
 
   const formik = useFormik({
@@ -236,7 +236,7 @@ const CustomAgenda = ({ event }) => {
       </Modal>
       <Modal centered size='lg' show={showFollowup} onHide={() => setFollowup(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Add followup notes for {event.title}</Modal.Title>
+          <Modal.Title>Add Follow-Up Notes for the Appointment </Modal.Title>
         </Modal.Header>
         <Modal.Body style={{ padding: '20px' }}>
           <div className='row'>
@@ -267,7 +267,7 @@ const CustomAgenda = ({ event }) => {
                         as='textarea'
                         name='FollowupNote'
                         className='form-control'
-                        placeholder='Enter your follow-up notes'
+                        placeholder='Please detail any follow-up care, additional observations, or notes'
                         value={values.FollowupNote}
                         onChange={handleChange}
                         isInvalid={!!errors.FollowupNote}
@@ -284,7 +284,7 @@ const CustomAgenda = ({ event }) => {
                         Close
                       </Button>
                       <Button variant='outline-success' type='submit'>
-                        Save
+                        Save Notes
                       </Button>
                     </Modal.Footer>
                   </Form>
@@ -301,13 +301,14 @@ const CustomAgenda = ({ event }) => {
         <Modal.Body style={{ padding: '20px' }}>
           <div className='row'>
             <div className='col-6'>
+
               <p>
-                <strong>Appointment #:</strong> {event.id}
+                <strong>Appointment #</strong> {event.id} 
               </p>
             </div>
             <div className='col-6'>
               <p>
-                <strong>Appointment date:</strong> {event.appointment_date}
+                <strong>Appointment Date:</strong> {event.appointment_date}
               </p>
             </div>
           </div>
@@ -326,7 +327,7 @@ const CustomAgenda = ({ event }) => {
                     <option value=''>Select a doctor</option>
                     {doctors.map((item) => (
                       <option key={item.id} value={item.id}>
-                        {item.first_name} {item.last_name}
+                        Dr. {item.first_name} {item.last_name}
                       </option>
                     ))}
                   </select>
@@ -338,7 +339,7 @@ const CustomAgenda = ({ event }) => {
 
               <form className='form' noValidate onSubmit={formik.handleSubmit}>
                 <div className='form-group'>
-                  <label htmlFor='appointment_date'>Date</label>
+                  <label htmlFor='appointment_date'> New Appointment Date</label>
                   <input
                     type='date'
                     name='appointment_date'
@@ -358,7 +359,7 @@ const CustomAgenda = ({ event }) => {
                 <div className='form-group'>
                   {slots.length !== undefined ? (
                     <>
-                      <label htmlFor='end_time'>Time Slot</label>
+                      <label htmlFor='end_time'> New Time Slot</label>
                       <button
                         onClick={() => fetchSlots()}
                         type='button'
@@ -396,7 +397,7 @@ const CustomAgenda = ({ event }) => {
                     Close
                   </Button>
                   <Button variant='outline-success' type='submit'>
-                    Update time
+                    Confirm Rescheduling
                   </Button>
                 </Modal.Footer>
               </form>

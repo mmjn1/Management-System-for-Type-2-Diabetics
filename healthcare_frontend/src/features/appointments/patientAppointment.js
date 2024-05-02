@@ -110,7 +110,7 @@ export const CreateFollowupNotes = createAsyncThunk(
       },
     };
     const body={FollowupNote:data.FollowupNote}
-    const response = await axios.patch(`api/patient-appointment-other/${data.Appointment}/`, body, header);
+    const response = await axios.patch(`api/appointment-followup/${data.Appointment}/`, body, header);
     return response.data;
   },
 );
