@@ -301,11 +301,33 @@ class FieldResponseSerializer(serializers.ModelSerializer):
         fields = ["id", "form_response", "field", "response"]
 
 class UserMealEntrySerializer(serializers.ModelSerializer):
+    patient = NewPatientSerializer(read_only=True)
     class Meta:
         model = UserMealEntry
-        fields = ['id', 'user_input', 'ai_advice', 'created_at']
+        fields = ['id', 'user_input', 'patient','ai_advice', 'created_at']
 
     def create(self, validated_data):
+        """
+        Creates a new UserMealEntry instance.
+
+        This method overrides the default create method to ensure that the UserMealEntry is associated
+        with the correct patient. It retrieves the patient from the currently authenticated user's associated
+        patient profile, ensuring that the meal entry is correctly linked to the user making the request.
+
+        The `patient_user` attribute is expected to be a direct link from the user model to a patient model,
+        representing the patient profile associated with the user. This link is crucial for maintaining
+        accurate patient records and ensuring that data is only modified by or visible to the correct patient.
+
+        Args:
+        validated_data (dict): The data validated by the serializer, used to create the UserMealEntry.
+
+        Returns:
+        UserMealEntry: The newly created UserMealEntry instance.
+        """
+        patient = self.context['request'].user.patient_user
+
+        validated_data['patient'] = patient # UserMealEntry instance with the specific patient who is linked to the authenticated user making the reques
+
         return UserMealEntry.objects.create(**validated_data)
 
     def update(self, instance, validated_data):

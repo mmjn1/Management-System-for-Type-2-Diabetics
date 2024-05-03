@@ -65,7 +65,7 @@ urlpatterns = [
     path('professional-info/', update_professionalInfo, name='update_professionalInfo'),
     path('practice-details/', update_PracticeInfo, name='update_PracticeInfo'),
     
-    path('create-entry/', get_dietary_advice, name='get_dietary_advice'),
+    path('create-entry/', create_dietary_advice, name='create_dietary_advice'),
     path('update-entry/<int:entry_id>/', update_dietary_advice, name='update_meal_entry'),
     path('delete-entry/<int:entry_id>/', delete_dietary_advice, name='delete_dietary_advice'),
     

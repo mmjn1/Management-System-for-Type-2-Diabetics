@@ -41,6 +41,8 @@ from collections import defaultdict
 from HealthManagementApp.views.test import my_view
 from django.template.loader import get_template
 from HealthManagementApp.views.zoomMeetings import create_zoom_meeting, updateZoomMeeting, deleteZoomMeeting
+from datetime import datetime
+from datetime import timedelta
 
 login_url = os.environ.get('FRONT_END_URL_LOGIN')
 
@@ -53,8 +55,9 @@ from openai import OpenAI
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-@csrf_exempt
-def get_dietary_advice(request):
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_dietary_advice(request):
     """
     Processes POST requests to provide dietary advice based on user input using an AI model.
 
@@ -76,6 +79,13 @@ def get_dietary_advice(request):
             data = json.loads(request.body)
             user_input = data.get("user_input")
 
+            # Ensure the user is authenticated and has an associated patient profile
+            if not request.user.is_authenticated or not hasattr(request.user, 'patient_user'):
+                return JsonResponse({'error': 'Authentication required or no associated patient profile'}, status=403)
+
+            patient = request.user.patient_user
+
+
             response = client.chat.completions.create(
                 model="ft:gpt-3.5-turbo-0125:personal:dietary-advice-bot:9CUENrwC",
                 messages=[
@@ -96,6 +106,7 @@ def get_dietary_advice(request):
             advice = response.choices[0].message.content
 
             entry = UserMealEntry.objects.create(
+                patient=patient,
                 user_input=user_input,
                 ai_advice=advice
             )
@@ -110,6 +121,10 @@ def get_dietary_advice(request):
         return JsonResponse({'error': 'Invalid request'}, status=400)
 
 logger = logging.getLogger(__name__)
+
+
+
+
 
 @api_view(['PATCH'])
 @permission_classes([IsAuthenticated])

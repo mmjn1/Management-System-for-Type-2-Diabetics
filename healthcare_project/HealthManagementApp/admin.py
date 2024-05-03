@@ -232,7 +232,7 @@ class FieldChoiceAdmin(admin.ModelAdmin):
 
 
 class UserMealEntryAdmin(admin.ModelAdmin):
-    list_display = ('user_input', 'ai_advice', 'created_at')  
+    list_display = ('user_input', 'ai_advice', 'created_at', 'patient')  
     search_fields = ('user_input', 'ai_advice')  
     date_hierarchy = 'created_at'  
     ordering = ('-created_at',)  

@@ -8,7 +8,8 @@ import axios from 'axios';
 import { Dialog, DialogTitle, DialogContent, TextField, DialogActions } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import PatientSidebar from '../../components/PatientSidebar';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 /**
  * `DietaryHabits` manages the dietary habits allows patients to add, edit, and delete food entries for different meals throughout the day,
@@ -17,6 +18,8 @@ import PatientSidebar from '../../components/PatientSidebar';
 
 
 const DietaryHabits = () => {
+    const patientId = localStorage.getItem('id');
+
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [open, setOpen] = useState(false);
     const [currentMeal, setCurrentMeal] = useState('');
@@ -45,15 +48,16 @@ const DietaryHabits = () => {
     const loadEntriesForDate = (date) => {
         const dateKey = formatDate(date);
         const savedEntries = localStorage.getItem(`entries_${dateKey}`);
-        return savedEntries ? JSON.parse(savedEntries) : {
-            Breakfast: [],
-            Lunch: [],
-            Dinner: [],
-            Snacks: []
-        };
+        const defaultEntries = { Breakfast: [], Lunch: [], Dinner: [], Snacks: [] };
+        return savedEntries ? JSON.parse(savedEntries) : defaultEntries;
     };
 
     const [entries, setEntries] = useState(() => loadEntriesForDate(new Date()));
+
+    // Function to reset the date to today's date
+    const handleTodayClick = () => {
+        setSelectedDate(new Date()); // Sets the date to today
+    };
 
     // Initializes and updates the entries state whenever the selected date changes.
     useEffect(() => {
@@ -70,6 +74,7 @@ const DietaryHabits = () => {
             return newDate;
         });
     };
+
 
     // Saves the current state of entries to localStorage whenever they change.
     useEffect(() => {
@@ -106,7 +111,12 @@ const DietaryHabits = () => {
         }); setDietaryAdvice(advice);
     };
 
-
+    /**
+   * This function handles the opening of a dialog for dietary entries. It sets up the dialog
+   * based on whether the user intends to add a new entry or edit an existing one. If editing,
+   * it pre-fills the dialog with the existing entry's data. Otherwise, it prepares the dialog
+   * for a new entry.
+   */
     const handleClickOpen = (meal, isEdit = false, index = null) => {
         setCurrentMeal(meal);
         if (isEdit && index !== null) {
@@ -204,7 +214,7 @@ const DietaryHabits = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.post('/api/create-entry/', { user_input: foodEntry }, {
+            const response = await axios.post('/api/create-entry/', { user_input: foodEntry, patient_id: patientId }, {
                 headers: {
                     Authorization: `Token ${token}`
                 }
@@ -240,19 +250,14 @@ const DietaryHabits = () => {
     };
 
 
-
-    // Update food entry state when typing in the text field and clear the error if any
     const handleFoodEntryChange = (event) => {
         setFoodEntry(event.target.value);
-        // Clear the error message when the user starts typing
         if (foodEntryError) setFoodEntryError('');
     };
 
 
     return (
         <div className="dietary-habits-layout">
-            {/* <PatientSidebar /> */}
-
             <main className="main-content">
 
 
@@ -261,20 +266,33 @@ const DietaryHabits = () => {
                         Dietary Habits
                     </Typography>
                     <Typography variant="subtitle1" gutterBottom>
-                        Track and manage your daily food intake to better control your blood sugar levels.
+                        Effectively monitor and regulate your daily food intake with our comprehensive tracking tool, designed to help you maintain optimal blood sugar levels.
+                        This tool empowers you to make informed dietary choices that contribute to better health management.
                     </Typography>
                     <Grid container justifyContent="center" alignItems="center" sx={{ my: 2 }}>
                         <IconButton onClick={() => changeDate(-1)} aria-label="Previous day">
                             <ArrowBackIosIcon />
                         </IconButton>
-                        <Grid item xs={12} sm={'auto'}>
-                            <Typography variant="body1" align="center">
-                                {formatDate(selectedDate)}
-                            </Typography>
-                        </Grid>
+
+                        <DatePicker
+                            selected={selectedDate}
+                            onChange={date => setSelectedDate(date)}
+                            dateFormat="yyyy/MM/dd"
+                            customInput={<TextField />}
+                        />
+
                         <IconButton onClick={() => changeDate(1)} aria-label="Next day">
                             <ArrowForwardIosIcon />
                         </IconButton>
+
+                        <Button
+                            variant="outlined"
+                            size="small"
+                            onClick={handleTodayClick}
+                            sx={{ ml: 2, mt: 1 }}
+                        >
+                            Today
+                        </Button>
                     </Grid>
 
 
@@ -286,40 +304,46 @@ const DietaryHabits = () => {
                                     {meal}
                                 </Typography>
                             </Grid>
-                            {entries[meal].map((entry, index) => (
-                                <React.Fragment key={entry.id}>
-                                    <Grid item container direction="row" justifyContent="space-between" alignItems="center">
-                                        <Grid item xs={10} sm={10} md={11}>
-                                            <TextField
-                                                id={`${meal.toLowerCase()}-input-${index}`}
-                                                label={meal}
-                                                variant="outlined"
-                                                value={entry.food || ''}
-                                                InputProps={{
-                                                    readOnly: true,
-                                                }}
-                                                sx={{
-                                                    m: 1,
-                                                    width: '100%',
-                                                }}
-                                            />
+                            {entries[meal]?.length > 0 ? (
+                                entries[meal].map((entry, index) => (
+                                    <React.Fragment key={entry.id}>
+                                        <Grid item container direction="row" justifyContent="space-between" alignItems="center">
+                                            <Grid item xs={10} sm={10} md={11}>
+                                                <TextField
+                                                    id={`${meal.toLowerCase()}-input-${index}`}
+                                                    label={meal}
+                                                    variant="outlined"
+                                                    value={entry.food || ''}
+                                                    InputProps={{
+                                                        readOnly: true,
+                                                    }}
+                                                    sx={{
+                                                        m: 1,
+                                                        width: '100%',
+                                                    }}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={2} sm={2} md={1}>
+                                                <IconButton color="primary" aria-label="edit food entry" onClick={() => handleClickOpen(meal, true, index)}>
+                                                    <EditIcon />
+                                                </IconButton>
+                                                <IconButton color="secondary" aria-label="delete food entry" onClick={() => handleDelete(meal, index)}>
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            </Grid>
                                         </Grid>
-                                        <Grid item xs={2} sm={2} md={1}>
-                                            <IconButton color="primary" aria-label="edit food entry" onClick={() => handleClickOpen(meal, true, index)}>
-                                                <EditIcon />
-                                            </IconButton>
-                                            <IconButton color="secondary" aria-label="delete food entry" onClick={() => handleDelete(meal, index)}>
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        </Grid>
-                                    </Grid>
-                                    {entry.advice && (
-                                        <Typography variant="body2" color="textSecondary" sx={{ mt: 2, mb: 1, mx: 1 }}>
-                                            {entry.advice}
-                                        </Typography>
-                                    )}
-                                </React.Fragment>
-                            ))}
+                                        {entry.advice && (
+                                            <Typography variant="body2" color="textSecondary" sx={{ mt: 2, mb: 1, mx: 1 }}>
+                                                {entry.advice}
+                                            </Typography>
+                                        )}
+                                    </React.Fragment>
+                                ))
+                            ) : (
+                                <Typography variant="body1" sx={{ ml: 2 }}>
+                                    No entries for {meal}
+                                </Typography>
+                            )}
                             <Button
                                 variant="contained"
                                 size="small"
@@ -327,11 +351,10 @@ const DietaryHabits = () => {
                                 onClick={() => handleClickOpen(meal)}
                                 sx={{
                                     bgcolor: 'primary.main',
-                                    '&:hover': { bgcolor: 'primary.dark' },
-                                    // Adjust width and padding to make the button smaller
-                                    maxWidth: '150px', // Set a max width for the button
-                                    padding: '4px 8px', // Reduced padding
-                                    fontSize: '0.75rem', // Smaller font size
+                                    '&:hover': { bgcolor: 'primary.dark' },                            
+                                    maxWidth: '150px', 
+                                    padding: '4px 8px', 
+                                    fontSize: '0.75rem', 
                                 }}
                             >
                                 ADD FOOD
