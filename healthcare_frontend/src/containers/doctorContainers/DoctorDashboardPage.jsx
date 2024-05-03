@@ -6,8 +6,7 @@ import "../../assets/patientcss/dashboard.css";
 const DoctorDashboardPage = () => {
   const dispatch = useDispatch();
   const doctorDetails = useSelector((state) => state.userDetails.data.user);
-  const welcomeMessage = "The good physician treats the disease; the great physician treats the patient who has the disease. — William Osler";
-
+  const welcomeMessage = "A great doctor sees not just the condition, but the patient who battles it every day.";
   useEffect(() => {
     dispatch(userDetails());
   }, [dispatch]);

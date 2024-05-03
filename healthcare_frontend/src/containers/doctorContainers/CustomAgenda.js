@@ -70,6 +70,8 @@ const CustomAgenda = ({ event }) => {
       dispatch(fetchDoctor());
     }
   }, [dispatch]);
+
+  
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
@@ -223,7 +225,7 @@ const CustomAgenda = ({ event }) => {
           <Modal.Title>Confirm Delete Appointment</Modal.Title>
         </Modal.Header>
         <Modal.Body style={{ padding: '20px' }}>
-          Are you sure to delete this appointment? This action cannot be undone and will remove the appointment from the calendar.
+          Are you sure to cancel this appointment? This action cannot be undone and will remove the appointment from the calendar.
         </Modal.Body>
         <Modal.Footer>
           <Button variant='secondary' onClick={handleDeleteClose}>
@@ -412,4 +414,6 @@ const CustomAgenda = ({ event }) => {
 CustomAgenda.propTypes = {
   event: PropTypes.object,
 };
+
+
 export default CustomAgenda;

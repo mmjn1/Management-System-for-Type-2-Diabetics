@@ -6,8 +6,7 @@ import "../../assets/patientcss/dashboard.css";
 const PatientDashboardPage = () => {
   const dispatch = useDispatch();
   const patientDetails = useSelector((state) => state.userDetails.data.user); 
-  const welcomeMessage = "Health is the greatest possession. Contentment is the greatest treasure. Confidence is the greatest friend. — Lao Tzu";
-
+  const welcomeMessage = "Taking care of your health today gives you a better hope for tomorrow.";
   useEffect(() => {
     dispatch(userDetails()); 
   }, [dispatch]);
