@@ -13,6 +13,8 @@ import base64
 from django.core.files.base import ContentFile
 import mimetypes  
 from django.conf import settings
+from .EmailSys import EmailThreading
+
 
 
 
@@ -41,7 +43,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         adds the connection to a group for group messaging, and sends back previously
         stored messages to the client.
         """
-        print('called 1')
         self.user_id = self.scope['url_route']['kwargs']['user_id']
         self.other_user_id = self.scope['url_route']['kwargs']['other_user_id']
         self.room_group_name = 'chat_room'
@@ -56,7 +57,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         disconnects from the WebSocket. It removes the connection from the group to
         stop further message broadcasting to this client.
         """
-        print('called 2')
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
     async def receive(self, text_data=None, bytes_data=None):
@@ -65,20 +65,31 @@ class ChatConsumer(AsyncWebsocketConsumer):
         a message through the WebSocket. It processes both text and binary data, handles file
         attachments if present, saves the message to the database, and broadcasts it to the group.
         """
-        print('called 3')
+        # Initialize 'data' to None, which will hold the file content if an attachment is present.
         data = None
+        # Define a directory to temporarily store uploaded files.
         directory = 'temp_uploads'
+        # Ensure the directory exists; if not, create it.
         os.makedirs(directory, exist_ok=True)
+        # Parse the incoming text data from JSON format into a Python dictionary.
         text_data_json = json.loads(text_data)
+        # Initialize a dictionary to store information about the attachment.
         dict = {}
         try:
-            file_64 = (text_data_json['attachment'])
+            # Extract the base64 encoded file string from the received JSON data.
+            file_64 = text_data_json['attachment']
+            # Store the filename in the dictionary for later use.
             dict = {
                 'filename': file_64
             }
+            # Extract a temporary ID from the received JSON data.
             tempId = text_data_json['tempId']
+            # Split the base64 string to separate the file format and the actual base64 encoded data.
             format, imgstr = file_64.split(';base64,')
+            # Extract the file extension from the format string.
             ext = format.split('/')[-1]
+            # Decode the base64 string to actual binary data and create a Django ContentFile object.
+            # This object will be named using the temporary ID and the file extension.
             data = ContentFile(base64.b64decode(imgstr), name=str(tempId) + '.' + ext)
         except Exception as e:
             print("No 'attachment' found in the data", e)
@@ -103,7 +114,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         to include additional details such as sender and recipient full names, and formatted timestamps. If attachments are present,
         they are encoded into a base64 format for transmission over the WebSocket.
         """
-        print('called 4')
         queryset = (
             Message.objects.filter(
                 Q(sender_id=self.user_id, recipient_id=self.other_user_id) |
@@ -137,7 +147,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         Retrieves a user object from the database using the provided user ID. This method is essential for fetching
         user details that are necessary for sending personalized messages and managing user-specific data within the chat.
         """
-        print('called 5')
+    
         return User.objects.get(id=user_id)
 
     async def chat_message(self, event):
@@ -146,17 +156,17 @@ class ChatConsumer(AsyncWebsocketConsumer):
         when a message needs to be sent to the client. It formats the message data,
         including attachments, and sends it through the WebSocket.
         """
-        print('called 6')
         message = event['message']
         recipient_id = event['recipient_id']
         sender_id = event['sender_id']
         attachment = event['attachment']
         text = json.loads(attachment)
         file_name = None
+
         try:
             file_name = text['filename']
         except Exception as e:
-            print(e, "xx")
+            print(e, "Raised Exception")
             
         sender = await self.get_user(sender_id)
         recipient = await self.get_user(recipient_id)
@@ -185,7 +195,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         when a user initially connects to the chat. It ensures that users can view recent conversations upon joining the chat.
         Messages are annotated with additional details such as sender and recipient full names and formatted timestamps.
         """
-        print('called 7')
         return list(
             Message.objects.all().annotate(
                 sender_full_name=Concat('sender__first_name', Value(' '), 'sender__last_name',
@@ -205,12 +214,19 @@ class ChatConsumer(AsyncWebsocketConsumer):
         sender and recipient IDs, the message content, and an optional attachment. The attachment, if provided, is stored
         as encoded file data.
         """
-        print('called 8')
-        Message.objects.create(
+        stored_message = Message.objects.create(
             sender_id=sender_id,
             recipient_id=recipient_id,
             message=message,
-            attachment=attachment  
+            attachment=attachment  # Store the encoded file data
         )
+
+        data = {'message': stored_message.message,
+                'recipient_id': stored_message.recipient_id,
+                'sender_id': stored_message.sender_id,
+                'file_name': True}
+        EmailThreading(data).start()
+
+
 
 
