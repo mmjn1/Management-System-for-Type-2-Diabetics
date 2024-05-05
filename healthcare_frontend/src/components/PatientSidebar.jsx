@@ -103,7 +103,7 @@ const PatientSidebar = () => {
                 className={`sidebarListItem ${location.pathname === '/patient/appointments-list' ? 'active' : ''}`}
               >
                 <BookOnlineIcon className='sidebarIcon' />
-                Past appointments
+                Past Appointments
               </li>
             </Link>
 

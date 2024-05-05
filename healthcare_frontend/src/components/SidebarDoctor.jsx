@@ -77,7 +77,7 @@ const SidebarDoctor = () => {
             <Link to='/doctor/appointments-list' className='link'>
               <li className={`sidebarListItem ${location.pathname === '/doctor/appointments-list' ? 'active' : ''}`}>
                 <BookOnlineIcon className='sidebarIcon' />
-                All Appointment
+                Past Appointments
               </li>
             </Link>
           </ul>
