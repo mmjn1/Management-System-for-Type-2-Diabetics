@@ -3,9 +3,6 @@ import "../assets/chat/Chat.css";
 import { useDispatch, useSelector } from "react-redux";
 import { webSocketService } from "../WebSocketConnection/Websocket";
 import { fetchPatient } from "../features/patient/fetchPatients";
-import { FaSearchPlus } from 'react-icons/fa';
-
-
 import moment from "moment";
 import Base64Media from "./Base64Media";
 
@@ -17,7 +14,7 @@ const DoctorChat = () => {
   const [shouldLoadChat, setShouldLoadChat] = useState(false);
   const patients = useSelector((state) => state.PatientSlice.data);
   const tempId = Date.now(); // Using the current timestamp as a simple unique identifier
-  const [userName, setUserName] = useState("Abdullah Rafi");
+  const [userName, setUserName] = useState("Mukhtar");
   const [newMessage, setNewMessage] = useState("");
   const messages = useSelector((state) => state.chat.messages);
   const dispatch = useDispatch();
@@ -29,6 +26,7 @@ const DoctorChat = () => {
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [currentImageBase64, setCurrentImageBase64] = useState("");
   const [zoomLevel, setZoomLevel] = useState(1);
+  const [errorMessage, setErrorMessage] = useState('');
 
 
   useEffect(() => {
@@ -52,15 +50,35 @@ const DoctorChat = () => {
     filterDoctors();
   }, [searchTerm, patients]);
 
+  /**
+   * This useEffect hook automatically scrolls the chat container to the bottom
+   * whenever the 'messages' array updates. This ensures that the user always
+   * sees the most recent messages as soon as they are received.
+   *
+   * The '.custom-scroll' class is used to select the chat container, and
+   * 'scrollHeight' is used to determine the maximum scroll position, allowing
+   * the container to scroll to the bottom.
+   */
   useEffect(() => {
     const scrollContainer = document.querySelector(".custom-scroll");
     if (scrollContainer) {
       setTimeout(() => {
         scrollContainer.scrollTop = scrollContainer.scrollHeight;
-      }, 100); // Adjusted to 100ms for quicker response, but can be set based on your needs
+      }, 100); // Delay of 100ms to ensure the DOM has updated
     }
   }, [messages]);
 
+
+  /**
+   * This useEffect hook is responsible for setting up the initial user data for the chat.
+   * It updates the user's name and ID based on the fetched data and sets the chat to be ready for loading.
+   * This setup is crucial for enabling the chat functionalities tailored to the specific user.
+   *
+   * - It checks if `otherUserData` is available.
+   * - If available, it sets the full name of the user for display in the chat.
+   * - It also sets the user's ID for identifying the chat session.
+   * - Finally, it sets `shouldLoadChat` to true indicating that the chat is ready to be loaded with messages.
+   */
   useEffect(() => {
     if (otherUserData) {
       setUserName(otherUserData.first_name + " " + otherUserData.last_name);
@@ -68,11 +86,32 @@ const DoctorChat = () => {
       setShouldLoadChat(true);
     }
   }, [otherUserData]);
-  // Dependency array now includes 'messages'
+
+  /**
+   * This useEffect hook triggers the fetching of patient data when the component mounts.
+   * The empty dependency array ensures that the fetch operation is executed only once
+   * when the component is first rendered. This is essential for initializing the chat
+   * with the necessary patient data.
+   */
   useEffect(() => {
     dispatch(fetchPatient());
   }, []);
 
+  /**
+   * Establishes or terminates a WebSocket connection based on the chat readiness.
+   * 
+   * This effect hook initiates a WebSocket connection when the chat is ready to be loaded
+   * (i.e., `shouldLoadChat` is true). It uses the `userId` and `otherUserId` to establish
+   * the connection, allowing real-time communication. If the component unmounts or the
+   * dependencies change, it ensures the WebSocket connection is properly closed to prevent
+   * memory leaks and unnecessary data transfer.
+   * 
+   * Dependencies:
+   * - userId: The ID of the current user.
+   * - otherUserId: The ID of the user with whom the current user is chatting.
+   * - dispatch: Redux dispatch function, included to re-establish connection on redux state changes.
+   * - shouldLoadChat: A flag to determine if the WebSocket connection should be established.
+   */
   useEffect(() => {
     if (!shouldLoadChat) return;
     webSocketService.connect(userId, otherUserId);
@@ -82,21 +121,111 @@ const DoctorChat = () => {
     };
   }, [userId, otherUserId, dispatch, shouldLoadChat]);
 
+
+  /**
+   * Sends a message or a file to the recipient.
+   * 
+   * This function checks if there is a file selected for sending. If there is,
+   * it calls the `sendFile` function to handle the file sending process. If no
+   * file is selected, it constructs a message object containing the message text,
+   * sender's ID, recipient's ID, and a temporary unique identifier. This message
+   * object is then sent using the WebSocket service. After sending the message,
+   * the input field is cleared by resetting `newMessage`.
+   * 
+   * Its used when the user wants to send a text message without any attachment.
+   */
   const sendMessage = () => {
+    if (!newMessage.trim() && !selectedFile) {
+      setErrorMessage("Please enter a message or attach a file before sending.");
+      return;
+    }
+    setErrorMessage(""); // Clear any existing error messages
+
     if (selectedFile) {
+      // Assume sendFile handles file sending
       sendFile();
     } else {
       const messageData = {
-        message: newMessage,
+        message: newMessage.trim(),
         sender_id: userId,
         recipient_id: otherUserId,
-        tempId,
       };
       webSocketService.sendMessage(messageData);
       setNewMessage("");
     }
   };
 
+  /**
+   * Handles the process of sending a file over a WebSocket connection.
+   * 
+   * This function initiates a file read operation using FileReader. Once the file is read,
+   * it constructs a message object containing the file data encoded in Base64 along with
+   * metadata such as sender and recipient IDs, and a temporary unique identifier. This message
+   * object is then sent through the WebSocket service. After sending the file, it resets the
+   * file selection state.
+   *
+  */
+  const sendFile = () => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const fileData = event.target.result; // Base64-encoded file content
+      const messageData = {
+        message: newMessage, // Send an empty message if only a file is being sent
+        sender_id: userId,
+        recipient_id: otherUserId,
+        tempId,
+        attachment: fileData,
+        attachment_name: selectedFile.name,
+      };
+      webSocketService.sendMessage(messageData);
+    };
+    reader.readAsDataURL(selectedFile);
+    setSelectedFileName("");
+    setSelectedFile(null); // Clear the file input
+  };
+
+
+
+
+  /**
+ * Handles changes to the message input field.
+ * 
+ * This function is triggered whenever the user types into the message input field.
+ * It performs two main tasks:
+ * 
+ * 1. Updates the `newMessage` state with the current value of the input field, ensuring
+ *    that the component's state is synchronized with the user's input.
+ * 
+ * 2. Manages the visibility and content of the `errorMessage` state based on whether
+ *    the input field is empty. If the input field is empty (or contains only whitespace),
+ *    an error message is set, prompting the user to enter a message or attach a file before sending.
+ *    If there is text in the input field, any existing error message is cleared.
+ * 
+ * @param {Object} e - The event object from the input field, which contains the current input value.
+ */
+  const handleMessageChange = (e) => {
+    const messageText = e.target.value;
+    setNewMessage(messageText);
+
+    // Automatically clear the error message when the user starts typing
+    if (!messageText.trim()) {
+      setErrorMessage("Please enter a message or attach a file before sending.");
+    } else {
+      setErrorMessage(""); // Clear the error message if the user types something
+    }
+  };
+
+  /**
+   * Formats a given time in milliseconds into a human-readable string.
+   * 
+   * This function takes an input time in milliseconds, converts it into hours, minutes,
+   * and seconds, and then constructs a string that represents this duration in a
+   * human-friendly format. Hours and minutes are only included in the output if they
+   * are greater than zero, but seconds are always included.
+   * 
+   * @param {number} inputTime - The time in milliseconds to be formatted.
+   * @returns {string} A string representing the formatted time, e.g., "1 hour, 15 minutes, 30 seconds".
+   */
   function formatTime(inputTime) {
     const inputDate = new Date(inputTime);
     const seconds = inputDate.getSeconds();
@@ -123,24 +252,6 @@ const DoctorChat = () => {
     const file = e.target.files[0];
     setSelectedFileName(file ? file.name : ""); // Update file name+
     setSelectedFile(file);
-  };
-  const sendFile = () => {
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const fileData = event.target.result; // Base64-encoded file content
-      const messageData = {
-        message: newMessage, // Send an empty message if only a file is being sent
-        sender_id: userId,
-        recipient_id: otherUserId,
-        tempId,
-        attachment: fileData,
-        attachment_name: selectedFile.name,
-      };
-      webSocketService.sendMessage(messageData);
-    };
-    reader.readAsDataURL(selectedFile);
-    setSelectedFileName("");
-    setSelectedFile(null); // Clear the file input
   };
 
   const openImageModal = (imageSrc) => {
@@ -448,9 +559,11 @@ const DoctorChat = () => {
                     rows={2}
                     placeholder="Type a message"
                     defaultValue={""}
-                    onChange={(e) => setNewMessage(e.target.value)}
+                    onChange={handleMessageChange}
                     onKeyPress={(e) => e.key === "Enter" && sendMessage()}
                   />
+                  {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
+
                   <div className="d-flex align-items-center justify-content-between mt-5">
                     <div className="mr-3">
                       <input
