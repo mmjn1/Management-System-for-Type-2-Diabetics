@@ -1,4 +1,12 @@
-import axios, * as others from 'axios';
+import axios from 'axios';
+
+/**
+ * This module configures axios for API requests and provides functions to interact with the backend.
+ * It sets up a base URL taken from environment variables and exports common HTTP request methods
+ * such as GET, POST, PUT, PATCH, and DELETE. Each method simplifies sending requests and handling
+ * responses by directly returning the data from the response.
+ */
+
 const API_URL = process.env.REACT_APP_BASE_URL;
 console.log({API_URL});
 const axiosApi = axios.create({

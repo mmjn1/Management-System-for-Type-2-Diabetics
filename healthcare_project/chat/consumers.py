@@ -43,11 +43,19 @@ class ChatConsumer(AsyncWebsocketConsumer):
         adds the connection to a group for group messaging, and sends back previously
         stored messages to the client.
         """
+        # Extract user IDs from the URL route parameters and store them as instance variables
         self.user_id = self.scope['url_route']['kwargs']['user_id']
         self.other_user_id = self.scope['url_route']['kwargs']['other_user_id']
+        
+        # Define a common group name for the chat room
         self.room_group_name = 'chat_room'
+        
+        # Add this WebSocket connection to a group to enable message broadcasting to all users in the group
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+        
+        # Accept the WebSocket connection
         await self.accept()
+        # Retrieve old messages that are relevant to the users in this chat session
         old_messages = await self.get_filtered_messages()
         await self.send(text_data=json.dumps({'type': 'old_messages', 'messages': old_messages}))
 
@@ -61,40 +69,38 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data=None, bytes_data=None):
         """
-        Handles receiving messages from WebSocket. This method is triggered when a client sends
-        a message through the WebSocket. It processes both text and binary data, handles file
-        attachments if present, saves the message to the database, and broadcasts it to the group.
+        Asynchronously handles receiving messages from the WebSocket. This method processes both text and binary data,
+        extracts message content, handles file attachments encoded in base64, and broadcasts the message to the group.
+
+        Args:
+            text_data (str, optional): JSON string containing the message and other metadata.
+            bytes_data (bytes, optional): Binary data (not used in this implementation).
+
+        Processes:
+        - Creates a directory for temporary uploads if it doesn't exist.
+        - Decodes the JSON data from the text_data argument.
+        - Attempts to extract and decode any attached files from the base64 encoded string.
+        - Saves the message and the attachment (if any) to the database.
+        - Broadcasts the message to all users in the chat group.
         """
-        # Initialize 'data' to None, which will hold the file content if an attachment is present.
         data = None
-        # Define a directory to temporarily store uploaded files.
         directory = 'temp_uploads'
-        # Ensure the directory exists; if not, create it.
         os.makedirs(directory, exist_ok=True)
-        # Parse the incoming text data from JSON format into a Python dictionary.
         text_data_json = json.loads(text_data)
-        # Initialize a dictionary to store information about the attachment.
         dict = {}
         try:
-            # Extract the base64 encoded file string from the received JSON data.
-            file_64 = text_data_json['attachment']
-            # Store the filename in the dictionary for later use.
+            file_64 = (text_data_json['attachment'])
             dict = {
                 'filename': file_64
             }
-            # Extract a temporary ID from the received JSON data.
             tempId = text_data_json['tempId']
-            # Split the base64 string to separate the file format and the actual base64 encoded data.
             format, imgstr = file_64.split(';base64,')
-            # Extract the file extension from the format string.
             ext = format.split('/')[-1]
-            # Decode the base64 string to actual binary data and create a Django ContentFile object.
-            # This object will be named using the temporary ID and the file extension.
             data = ContentFile(base64.b64decode(imgstr), name=str(tempId) + '.' + ext)
         except Exception as e:
             print("No 'attachment' found in the data", e)
 
-        message =text_data_json['message'].strip()
+        message = text_data_json['message'].strip()
         recipient_id = text_data_json['recipient_id']
         sender_id = text_data_json['sender_id']
         await self.save_message(message, recipient_id, sender_id, data)
@@ -209,11 +215,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @sync_to_async
     def save_message(self, message, recipient_id, sender_id, attachment=None):
-        """
-        Saves a new message to the database. This method is responsible for creating a message record with the provided
-        sender and recipient IDs, the message content, and an optional attachment. The attachment, if provided, is stored
-        as encoded file data.
-        """
         stored_message = Message.objects.create(
             sender_id=sender_id,
             recipient_id=recipient_id,
@@ -227,6 +228,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'file_name': True}
         EmailThreading(data).start()
 
+        
 
+
+
+
+
+
+    
 
 
