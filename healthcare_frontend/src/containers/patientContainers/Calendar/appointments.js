@@ -7,8 +7,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import events from '../../doctorContainers/events';
 import { fetchAppointmentByPatient } from '../../../features/appointments/patientdataSlice';
 import AppointmentModal from './AppointmentModal';
-import CustomEvent from '../../doctorContainers/CalenderComponent';
-import CustomAgenda from '../../doctorContainers/CustomAgenda';
+import CustomEvent from '../../doctorContainers/DoctorCalendar/CalenderComponent';
+import CustomAgenda from '../../doctorContainers/DoctorCalendar/CustomAgenda';
 
 const localizes = momentLocalizer(moment);
 

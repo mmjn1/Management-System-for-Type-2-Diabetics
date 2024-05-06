@@ -5,14 +5,14 @@ import {
   CreateFollowupNotes,
   deletePatientAppointment,
   updatePatientAppointment,
-} from '../../features/appointments/PatientAppointment';
+} from '../../../features/appointments/PatientAppointment';
 import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import { Formik, useFormik } from 'formik';
 
-import { fetchTimeSlots } from '../../features/appointments/DoctorAvailabilitySlice';
-import { fetchDoctorTimeSlots } from '../../features/appointments/doctor_slots';
-import { fetchDoctor } from '../../features/doctor/FetchDoctor';
+import { fetchTimeSlots } from '../../../features/appointments/DoctorAvailabilitySlice';
+import { fetchDoctorTimeSlots } from '../../../features/appointments/doctor_slots';
+import { fetchDoctor } from '../../../features/doctor/FetchDoctor';
 
 const today = new Date();
 today.setHours(0, 0, 0, 0);
@@ -71,7 +71,7 @@ const CustomAgenda = ({ event }) => {
     }
   }, [dispatch]);
 
-  
+
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
@@ -305,7 +305,7 @@ const CustomAgenda = ({ event }) => {
             <div className='col-6'>
 
               <p>
-                <strong>Appointment #</strong> {event.id} 
+                <strong>Appointment #</strong> {event.id}
               </p>
             </div>
             <div className='col-6'>

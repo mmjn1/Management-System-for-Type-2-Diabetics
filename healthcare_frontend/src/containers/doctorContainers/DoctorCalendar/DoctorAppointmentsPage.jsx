@@ -3,11 +3,11 @@ import React, { useState, Fragment, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
-import AppointmentModal from './DoctorCalendar/Modal';
-import AvailabilityModal from './DoctorCalendar/AvailabilityModal';
-import events from './events';
+import AppointmentModal from './Modal';
+import AvailabilityModal from './AvailabilityModal';
+import events from '../events';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchPatientAppointment } from '../../features/appointments/PatientAppointment';
+import { fetchPatientAppointment } from '../../../features/appointments/PatientAppointment';
 import CustomEvent from './CalenderComponent';
 import CustomAgenda from './CustomAgenda';
 

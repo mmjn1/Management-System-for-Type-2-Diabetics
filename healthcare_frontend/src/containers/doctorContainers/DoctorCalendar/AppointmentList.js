@@ -1,39 +1,37 @@
-import PaginationButtons from './PaginationButtons';
-import { Button, Dropdown, Modal } from 'react-bootstrap';
-import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAppointmentByPatient } from '../../features/appointments/patientdataSlice';
+import React, { useEffect, useState } from 'react';
+import { fetchPatientAppointment } from '../../../features/appointments/PatientAppointment';
+import PaginationButtons from '../PaginationButtons';
+import { Button, Dropdown, Modal } from 'react-bootstrap';
+
 
 /**
- * PastAppointments displays a list of past appointments for a specific patient.
- * It includes functionalities such as pagination, searching, and viewing detailed information about each appointment.
- * 
+ * `AppointmentList` is a React component that renders a list of patient appointments for a doctor.
+ * It provides functionalities such as pagination, searching, and viewing detailed information about each appointment.
+ *
  * Features:
- * - Fetches appointments from a Redux store using the `fetchAppointmentByPatient` action.
- * - Allows users to search through appointments based on doctor's name, appointment ID, date, phone number, and email.
+ * - Fetches appointments from a Redux store using the `fetchPatientAppointment` action.
+ * - Allows users to search through appointments based on patient name, appointment ID, date, phone number, and email.
  * - Implements pagination to manage the display of appointments in a tabular format.
- * - Provides a modal view to display detailed information about a specific appointment when a row is clicked.
- * 
- * State:
- * - currentPage: Tracks the current page number in the pagination.
- * - itemsPerPage: Manages the number of items displayed per page.
- * - totalPages: Calculates the total number of pages needed based on the number of appointments.
- * - searchText: Holds the text used for searching through the appointments.
- * - filteredAppointments: Contains the list of appointments that match the search criteria.
- * - show: Boolean to control the visibility of the modal for detailed appointment information.
- * - rowdata: Holds the data of the selected appointment to be displayed in the modal.
- * 
- * The component uses local storage to retrieve the patient's ID and filters appointments based on this ID.
- * It also handles changes in pagination settings and updates the view accordingly.
+ * - Provides a modal view for detailed appointment information when a row is clicked.
+ *
+ * State Management:
+ * - Uses local state for managing current page, items per page, search text, filtered appointments, modal visibility, and selected row data.
+ * - Utilizes Redux for state management related to fetching and storing appointment data.
+ *
+ * Effects:
+ * - Fetches appointment data on component mount and whenever the doctor ID changes.
+ * - Filters appointments based on search input.
+ * - Calculates total pages for pagination based on the number of appointments and items per page.
+ *
+ * The component is designed to be used within a doctor's dashboard where they can manage their appointments efficiently.
  */
 
-
-const PastAppointments = () => {
+const AppointmentList = () => {
   const dispatch = useDispatch();
-  const appointments = useSelector((state) => state.AppointmentByPatientSlice);
+  const appointments = useSelector((state) => state.PatientAppointmentSlice);
 
-  const patient_id = localStorage.getItem('patient_id');
-
+  const doctor_id = localStorage.getItem('doctor_id');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
@@ -42,42 +40,8 @@ const PastAppointments = () => {
   const [show, setShow] = useState(false);
   const [rowdata, setRowdata] = useState(null);
 
-  console.log(appointments.data);
-  const handleSearch = (event) => {
-    const searchTerm = event.target.value.toLowerCase();
-    setSearchText(searchTerm);
-
-    const filteredData = appointments.data.filter((appointment) => {
-      const doctor = appointment.doctor || {};
-      const user = doctor.user || {};
-
-      // Combine all searchable fields into a single string
-      const searchableFields = [
-        user.first_name || '',
-        user.last_name || '',
-        appointment.id,
-        appointment.appointment_date,
-        doctor.tel_number || '',
-        user.email || '',
-      ].join(' ');
-
-      return searchableFields.toLowerCase().includes(searchTerm);
-    });
-
-    setFilteredAppointments(filteredData);
-  };
-
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredAppointments.slice(indexOfFirstItem, indexOfLastItem);
-
-  const handleRow = (data) => {
-    setRowdata(data);
-    setShow(true);
-  };
-
   useEffect(() => {
-    dispatch(fetchAppointmentByPatient(patient_id));
+    dispatch(fetchPatientAppointment(doctor_id));
   }, [dispatch]);
 
   useEffect(() => {
@@ -99,6 +63,36 @@ const PastAppointments = () => {
     setFilteredAppointments(appointments.data);
   }, [appointments.data]);
 
+  const handleSearch = (event) => {
+    const searchTerm = event.target.value.toLowerCase();
+    setSearchText(searchTerm);
+
+    const filteredData = appointments.data.filter((appointment) => {
+      const patient = appointment.patient || {};
+      const user = patient.user || {};
+
+      // Combine all searchable fields into a single string
+      const searchableFields = [
+        user.first_name || '',
+        user.last_name || '',
+        appointment.id,
+        appointment.appointment_date,
+      ].join(' ');
+
+      return searchableFields.toLowerCase().includes(searchTerm);
+    });
+
+    setFilteredAppointments(filteredData);
+  };
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredAppointments.slice(indexOfFirstItem, indexOfLastItem);
+
+  const handleRow = (data) => {
+    setRowdata(data);
+    setShow(true);
+  };
   return (
     <div className='content d-flex flex-column flex-column-fluid' id='kt_content'>
       <div className='d-flex flex-column-fluid'>
@@ -106,12 +100,12 @@ const PastAppointments = () => {
           <div className='card card-custom gutter-b'>
             <div className='card-header flex-wrap border-0 pt-6 pb-0'>
               <div className='card-title'>
-                <h3 className='card-label'>Doctor Appointment Management</h3>
+                <h3 className='card-label'>Patient Appointment Management</h3>
               </div>
               <div className='card-toolbar'>
                 <input
                   className='form-control'
-                  placeholder='Search Doctor'
+                  placeholder='Search Patient'
                   value={searchText}
                   onChange={handleSearch}
                 />
@@ -119,8 +113,9 @@ const PastAppointments = () => {
                   className='text-muted'
                   style={{ marginLeft: '1rem', fontSize: '0.8rem', color: '#888' }}
                 >
-                  type doctor name, appointment id, date, Phone,Email
+                  type patient name, appointment id, date, Phone,
                 </span>
+                {/*end::Dropdown*/}
               </div>
             </div>
 
@@ -133,7 +128,7 @@ const PastAppointments = () => {
                         <span style={{ width: '40px' }}>#</span>
                       </th>
                       <th className='datatable-cell datatable-cell-sort'>
-                        <span style={{ width: '150px' }}>Doctor name</span>
+                        <span style={{ width: '150px' }}>Patient name</span>
                       </th>
                       <th className='datatable-cell datatable-cell-sort'>
                         <span style={{ width: '100px' }}>Type</span>
@@ -166,14 +161,14 @@ const PastAppointments = () => {
                             <div className='d-flex align-items-center'>
                               <div className='ml-3'>
                                 <div className='text-dark-75 font-weight-bolder font-size-lg mb-0'>
-                                  {item.doctor.user.first_name} {item.doctor.user.last_name}
+                                  {item.patient.user.first_name} {item.patient.user.last_name}
                                 </div>
-                                <a
-                                  href={`tel:${item.doctor.Mobile}`}
+                                {/* <a
+                                  href={`tel:${item.patient.Mobile}`}
                                   className='text-muted font-weight-bold text-hover-primary'
                                 >
-                                  {item.doctor.tel_number}
-                                </a>
+                                  {item.patient.Mobile}
+                                </a> */}
                               </div>
                             </div>
                           </span>
@@ -309,9 +304,7 @@ const PastAppointments = () => {
       {rowdata !== null ? (
         <Modal centered size='lg' show={show} onHide={() => setShow(false)}>
           <Modal.Header closeButton>
-            <Modal.Title>
-              Appointment with {rowdata.doctor.user.first_name} {rowdata.doctor.user.last_name}
-            </Modal.Title>
+            <Modal.Title>Appointment with {rowdata.patient.user.first_name} {rowdata.patient.user.last_name}</Modal.Title>
           </Modal.Header>
           <Modal.Body style={{ padding: '20px' }}>
             <div className='row'>
@@ -334,4 +327,5 @@ const PastAppointments = () => {
     </div>
   );
 };
-export default PastAppointments;
+
+export default AppointmentList;

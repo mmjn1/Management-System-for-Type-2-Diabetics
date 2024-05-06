@@ -2,19 +2,21 @@ import Select from 'react-select';
 import { Fragment, useEffect, useRef, useState } from 'react';
 import BlankPatient from './BlankPatient';
 import { Badge, Dropdown, DropdownButton } from 'react-bootstrap';
-import PlusSVG from '../../assets/SVGS/PlusSVG';
-import MinusSVG from '../../assets/SVGS/MinusSVG';
-import SaveSVG from '../../assets/SVGS/SaveSVG';
-import { fetchPatient } from '../../features/patient/fetchPatients';
+import PlusSVG from '../../../assets/SVGS/PlusSVG';
+import MinusSVG from '../../../assets/SVGS/MinusSVG';
+import SaveSVG from '../../../assets/SVGS/SaveSVG';
+import { fetchPatient } from '../../../features/patient/fetchPatients';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment/moment';
-import { fetchSymptoms } from '../../features/prescription/SymptomsSlice';
-import { fetchTests } from '../../features/prescription/TestsSlice';
-import { fetchSalts } from '../../features/prescription/SaltSlice';
+import { fetchSymptoms } from '../../../features/prescription/SymptomsSlice';
+import { fetchTests } from '../../../features/prescription/TestsSlice';
+import { fetchSalts } from '../../../features/prescription/SaltSlice';
 import BlackMedicine from './BlackMedicine';
-import { createPrescription } from '../../features/prescription/PrescriptionSlice';
+import { createPrescription } from '../../../features/prescription/PrescriptionSlice';
 import Creatable from 'react-select/creatable';
 import { toast } from 'react-hot-toast';
+import { Typography } from '@mui/material';
+
 
 const customStyles = {
   control: (provided) => ({
@@ -81,7 +83,6 @@ const Prescription = () => {
   const [activeTestTab, setActiveTestTab] = useState('add');
   const [activeAdviceTab, setActiveAdviceTab] = useState('add');
   const [activeFollowupTab, setActiveFollowupTab] = useState('add');
-  const [activeDrugsTab, setActiveDrugsTab] = useState('add');
   const [Symptoms, setSymptoms] = useState(false);
   const [Tests, setTests] = useState(false);
   const [AdviceOther, setAdviceOther] = useState(false);
@@ -106,8 +107,6 @@ const Prescription = () => {
   const [selectedTest, setSelectedTest] = useState(null);
   const [drugNameOptions, setDrugNameOptions] = useState([]);
   const [selectedSalt, setSelectedSalt] = useState(null);
-  const [newGenericName, setNewGenericName] = useState('');
-  const [newDrugName, setNewDrugName] = useState('');
   const [selectedMedicine, setSelectedMedicine] = useState({
     salt: null,
     saltName: '',
@@ -123,6 +122,15 @@ const Prescription = () => {
   const [newTests, createNewTests] = useState(null);
   const [modifiedSaltOptions, setModifiedSaltOptions] = useState(null);
 
+  /**
+   * This useEffect is responsible for fetching initial data required for the prescription form.
+   * It dispatches actions to fetch lists of patients, symptoms, tests, and salts from the backend.
+   * These fetch operations are essential to populate form selections and ensure the form has
+   * all necessary data for a comprehensive prescription entry.
+   *
+   * The useEffect depends on the `dispatch` function, meaning it will re-run only if the
+   * `dispatch` function changes, which typically does not change over the component's lifecycle.
+   */
   useEffect(() => {
     dispatch(fetchPatient());
     dispatch(fetchSymptoms());
@@ -130,6 +138,16 @@ const Prescription = () => {
     dispatch(fetchSalts());
   }, [dispatch]);
 
+  /**
+   * This useEffect listens for changes in `Patients.data` or `selectPatient` to set the filtered patient data.
+   * When a patient is selected (`selectPatient`), it searches through the `Patients.data` array to find
+   * a patient object whose `id` matches `selectPatient`. If found, it updates the `filteredPatientData` state
+   * with this patient's data, which is used to display or process patient-specific information in the UI.
+   * If no patient is selected or the patient is not found, it sets `filteredPatientData` to null.
+   *
+   * This hook is crucial for dynamically updating the UI based on the user's patient selection,
+   * ensuring that the displayed data is always synchronized with the selected patient.
+   */
   useEffect(() => {
     if (Patients.data && selectPatient) {
       const selectedData = Patients.data.find((patient) => patient.id === selectPatient);
@@ -139,6 +157,16 @@ const Prescription = () => {
     }
   }, [Patients.data, selectPatient]);
 
+
+  /**
+   * Updates `drugNameOptions` based on the selected salt.
+   * 
+   * This useEffect hook triggers when `selectedSalt` or `salts.data` changes. It finds the salt data
+   * corresponding to `selectedSalt` and maps its medicines to dropdown options. If no salt is selected
+   * or found, it sets `drugNameOptions` to an empty array.
+   * 
+   * This ensures the dropdown displays correct medicine options for the selected salt, improving form accuracy.
+   */
   useEffect(() => {
     if (selectedSalt) {
       const saltData = salts.data.find((salt) => salt.id === selectedSalt);
@@ -156,22 +184,41 @@ const Prescription = () => {
     }
   }, [selectedSalt, salts.data]);
 
+
+  /**
+   * Handles the selection of a medicine by creating a new medicine object and adding it to the list of recommended medicines.
+   * 
+   * This function is triggered when a medicine is selected in the UI. It constructs a new medicine object with initial
+   * default values for dosage, time, and duration, and then appends this object to the `recommendedMedicines` state array.
+   * 
+   * @param {string} salt_id - The ID of the salt associated with the medicine.
+   * @param {string} med_key - The unique key or ID for the selected medicine.
+   * @param {string} medicineName - The name of the selected medicine.
+   * @param {string} saltName - The name of the salt associated with the medicine.
+   */
   const handleMedicineSelect = (salt_id, med_key, medicineName, saltName) => {
     const newMedicine = {
       salt_id: salt_id,
       medicine_id: med_key,
       name: medicineName,
       salt: saltName,
-      dosage: ['0', '0', '0'],
-      time: '',
-      duration: '',
+      dosage: ['0', '0', '0'], // Default dosage values
+      time: '', // Default time (not specified)
+      duration: '', // Default duration (not specified)
     };
 
     setRecommendedMedicines([...recommendedMedicines, newMedicine]);
   };
-  const handleSaltChange = (selectedOption) => {
-    setSelectedSaltToRemove(selectedOption);
-  };
+
+
+
+  /**
+   * Toggles the selection state of a badge based on its current state.
+   * If the badge is already selected, it will be removed from the selectedBadges array.
+   * If it is not selected, it will be added to the selectedBadges array.
+   * 
+   * @param {object} badge - The badge object to be toggled.
+   */
   const handleBadgeClick = (badge) => {
     if (selectedBadges.find((item) => item.id === badge.id)) {
       setSelectedBadges(selectedBadges.filter((item) => item.id !== badge.id));
@@ -179,6 +226,11 @@ const Prescription = () => {
       setSelectedBadges([...selectedBadges, badge]);
     }
   };
+
+  /**
+   * Handles the addition of a new badge from the dropdown.
+   * This function adds a new badge (symptom) to the selectedBadges array and clears the dropdown input.
+   */
   const handleAddDropdownChange = () => {
     const newBadge = newSymptom;
     if (newBadge) {
@@ -187,6 +239,11 @@ const Prescription = () => {
     }
     createNewSymptom(null);
   };
+
+  /**
+   * Handles the removal of a badge from the dropdown.
+   * This function removes a selected badge (symptom) from the selectedBadges array.
+   */
   const handleRemoveDropdownChange = () => {
     const badgeToRemove = selectedSymptoms;
     if (badgeToRemove) {
@@ -194,6 +251,14 @@ const Prescription = () => {
     }
     setSelectedSymptoms(null);
   };
+
+  /**
+   * Toggles the selection state of a test based on its current state.
+   * If the test is already selected, it will be removed from the selectedTests array.
+   * If it is not selected, it will be added to the selectedTests array.
+   * 
+   * @param {object} testdata - The test data object to be toggled.
+   */
   const handleTestClick = (testdata) => {
     if (selectedTests.find((item) => item.id === testdata.id)) {
       setSelectedTests(selectedTests.filter((item) => item.id !== testdata.id));
@@ -201,6 +266,12 @@ const Prescription = () => {
       setSelectedTests([...selectedTests, testdata]);
     }
   };
+
+  /**
+   * Adds a new test to the selectedTests state array from the newTests state.
+   * This function is triggered when a new test is selected from the dropdown.
+   * It also resets the newTests state to null after adding the test.
+   */
   const handleAddDropdownTestChange = () => {
     const newTest = newTests;
     if (newTest !== null) {
@@ -208,6 +279,12 @@ const Prescription = () => {
     }
     setSelectedTest(null);
   };
+
+  /**
+   * Removes a selected test from the selectedTests state array.
+   * This function is triggered when a test needs to be removed, typically from a UI interaction.
+   * It filters out the test to be removed based on its id and updates the state.
+   */
   const handleRemoveDropdownTestChange = () => {
     const TestToRemove = selectedTest;
     if (TestToRemove) {
@@ -215,54 +292,131 @@ const Prescription = () => {
     }
     setSelectedTest(null);
   };
+
+  /**
+   * Adds a new dosage field to a specific medicine entry within the recommendedMedicines array.
+   * This function is called when a new dosage needs to be added to a medicine, identified by its index.
+   * It updates the recommendedMedicines state with the new dosage added to the specified medicine.
+   */
   const handleAddFields = (medicalIndex) => {
     const updatedMedicines = [...recommendedMedicines];
     updatedMedicines[medicalIndex].dosage.push({});
     setRecommendedMedicines(updatedMedicines);
   };
+
+  /**
+   * Removes the last dosage field from a specific medicine entry within the recommendedMedicines array.
+   * This function is called when the last dosage needs to be removed from a medicine, identified by its index.
+   * It updates the recommendedMedicines state by removing the last dosage from the specified medicine.
+   */
   const handleRemoveField = (medicalIndex) => {
     const updatedMedicines = [...recommendedMedicines];
     updatedMedicines[medicalIndex].dosage.pop();
     setRecommendedMedicines(updatedMedicines);
   };
+
+  /**
+   * Adds a new empty vital entry to the vitals state.
+   * This function is used to dynamically add a new vital with default empty values.
+   */
   const handleAddVitals = () => {
     setVitals([...vitalsobject, { name: '', reading: '' }]);
   };
+
+  /**
+   * Updates the value of a specific vital entry in the vitals state.
+   * @param {number} index - The index of the vital in the vitals array to update.
+   * @param {object} event - The event object containing the new value for the vital.
+   * This function is triggered by input field changes, updating the state with the new value.
+   */
   const handleInputChange = (index, event) => {
     const newVitals = [...vitalsobject];
     newVitals[index][event.target.name] = event.target.value;
     setVitals(newVitals);
   };
+
+  /**
+   * Removes a specific vital entry from the vitals state.
+   * @param {number} index - The index of the vital in the vitals array to remove.
+   * This function is used to dynamically remove a selected vital from the state.
+   */
   const handleRemoveVital = (index) => {
     setVitals(vitalsobject.filter((_, i) => i !== index));
   };
+
+  /**
+   * Adds a new empty diagnosis entry to the diagnoses state.
+   * This function is used to dynamically add a new diagnosis with a default empty name.
+   */
   const handleAddDiagnoses = () => {
     setDiagnoses([...Diagnoses, { name: '' }]);
   };
+
+  /**
+   * Updates the value of a specific diagnosis entry in the diagnoses state.
+   * @param {number} index - The index of the diagnosis in the diagnoses array to update.
+   * @param {object} event - The event object containing the new value for the diagnosis.
+   * This function is triggered by input field changes, updating the state with the new value.
+   */
   const handleInputDiagnosesChange = (index, event) => {
     const newDiagonses = [...Diagnoses];
     newDiagonses[index][event.target.name] = event.target.value;
     setDiagnoses(newDiagonses);
   };
+
+  /**
+   * Removes a specific diagnosis entry from the diagnoses state.
+   * @param {number} index - The index of the diagnosis in the diagnoses array to remove.
+   * This function is used to dynamically remove a selected diagnosis from the state.
+   */
   const handleRemoveDiagnoses = (index) => {
     setDiagnoses(Diagnoses.filter((_, i) => i !== index));
   };
+
+  /**
+   * Adds a new empty history entry to the history state.
+   * This function is used to dynamically add a new history record with a default empty name.
+   */
   const handleAddHistory = () => {
     setHistory([...History, { name: '' }]);
   };
+
+  /**
+   * Updates the value of a specific history entry in the history state.
+   * @param {number} index - The index of the history entry in the history array to update.
+   * @param {object} event - The event object containing the new value for the history entry.
+   * This function is triggered by input field changes, updating the state with the new value.
+   */
   const handleInputHistoryChange = (index, event) => {
     const newHistory = [...History];
     newHistory[index][event.target.name] = event.target.value;
     setHistory(newHistory);
   };
+
+  /**
+   * Removes a specific history entry from the history state by index.
+   * @param {number} index - The index of the history entry to remove.
+   */
   const handleRemoveHistory = (index) => {
     setHistory(History.filter((_, i) => i !== index));
   };
+
+  /**
+   * Adds a new advice to the advices state and updates the selected advices.
+   * This function also resets the newAdvice state to an empty string after adding.
+   */
   const handleAddAdvice = () => {
     setAdvices([...advices, newAdvice]);
     setSelectedAdvices([...selectedAdvices, newAdvice]);
     setNewAdvice('');
   };
+
+  /**
+   * Toggles the selection state of an advice.
+   * If the advice is already selected, it is removed from the selectedAdvices state;
+   * otherwise, it is added to the selectedAdvices state.
+   * @param {string} advice - The advice to toggle in the selected advices list.
+   */
   const handleAdviceClick = (advice) => {
     if (selectedAdvices.includes(advice)) {
       setSelectedAdvices(selectedAdvices.filter((item) => item !== advice));
@@ -270,6 +424,13 @@ const Prescription = () => {
       setSelectedAdvices([...selectedAdvices, advice]);
     }
   };
+
+  /**
+   * Toggles the selection state of a follow-up.
+   * If the follow-up is already selected, it is removed from the selectedFollowups state;
+   * otherwise, it is added to the selectedFollowups state.
+   * @param {string} followup - The follow-up to toggle in the selected follow-ups list.
+   */
   const handleFollowUpClick = (followup) => {
     if (selectedFollowups.includes(followup)) {
       setSelectedFollowups(selectedFollowups.filter((item) => item !== followup));
@@ -277,30 +438,67 @@ const Prescription = () => {
       setSelectedFollowups([...selectedFollowups, followup]);
     }
   };
+
+  /**
+   * Removes the currently selected advice from both the advices and selectedAdvices states.
+   */
   const handleRemoveAdvice = () => {
     setSelectedAdvices(selectedAdvices.filter((item) => item !== selectedAdviceToRemove));
-
     setAdvices(advices.filter((item) => item !== selectedAdviceToRemove));
   };
+
+  /**
+   * Updates the state of selectedAdviceToRemove based on user input from a form element.
+   * @param {object} e - The event object from the form input.
+   */
   const handleSelectedAdviceChange = (e) => {
     setSelectedAdviceToRemove(e.target.value);
   };
+
   const handleAddFollowup = () => {
     setFollowup([...followup, newFollowup]);
     setSelectedFollowups([...selectedFollowups, newFollowup]);
     setNewFollowup('');
   };
+
+  /**
+   * Removes a follow-up from both the selectedFollowups and followup states.
+   * This function identifies the follow-up to be removed by using the value stored in selectedFollowUpToRemove.
+   */
   const handleRemoveFollowup = () => {
     setSelectedFollowups(selectedFollowups.filter((item) => item !== selectedFollowUpToRemove));
-
     setFollowup(followup.filter((item) => item !== selectedFollowUpToRemove));
   };
+
+  /**
+   * Updates the state of selectedFollowupToRemove based on user input from a form element.
+   * This function captures the value from an event object and sets it as the new value for selectedFollowupToRemove.
+   * @param {object} e - The event object from the form input.
+   */
   const handleSelectedFollowupChange = (e) => {
     setSelectedFollowupToRemove(e.target.value);
   };
+
+  /**
+   * Removes a specific medicine from the recommendedMedicines state based on its index.
+   * This function filters out the medicine at the specified index, effectively removing it from the list.
+   * @param {number} index - The index of the medicine to remove from the recommendedMedicines list.
+   */
   const handleMedicineRemove = (index) => {
     setRecommendedMedicines(recommendedMedicines.filter((_, i) => i !== index));
   };
+
+  /**
+   * Updates the dosage for a specific medicine in the recommended medicines list.
+   * 
+   * This function takes the index of the medicine in the recommended medicines list,
+   * the specific dosage index to update, and the new dosage value. It then updates the
+   * dosage array for that specific medicine without altering other properties or other medicines.
+   *
+   * @param {number} medicalIndex - The index of the medicine in the recommended medicines list.
+   * @param {number} index - The index of the dosage in the medicine's dosage array to update.
+   * @param {string} value - The new dosage value to set at the specified index.
+   */
   const addDosage = (medicalIndex, index, value) => {
     setRecommendedMedicines((prevMeds) =>
       prevMeds.map((medicine, medIndex) => {
@@ -314,6 +512,17 @@ const Prescription = () => {
       }),
     );
   };
+
+  /**
+   * Updates the time of administration for a specific medicine in the recommended medicines list.
+   * 
+   * This function takes the index of the medicine in the recommended medicines list and the new time
+   * value. It updates the 'time' property of the specified medicine to the new value provided,
+   * without altering other properties or other medicines in the list.
+   *
+   * @param {number} medicalIndex - The index of the medicine in the recommended medicines list.
+   * @param {string} value - The new time value to set for the medicine.
+   */
   const addMedicineTime = (medicalIndex, value) => {
     setRecommendedMedicines((prevMeds) =>
       prevMeds.map((medicine, medIndex) => {
@@ -325,6 +534,17 @@ const Prescription = () => {
       }),
     );
   };
+
+  /**
+   * Updates the duration of medication for a specific medicine in the recommended medicines list.
+   * 
+   * This function takes the index of the medicine in the recommended medicines list (`medicalIndex`)
+   * and the new duration value (`value`). It updates the 'duration' property of the specified medicine
+   * to the new value provided, without altering other properties or other medicines in the list.
+   *
+   * @param {number} medicalIndex - The index of the medicine in the recommended medicines list.
+   * @param {string} value - The new duration value to set for the medicine.
+   */
   const addMedicineDuration = (medicalIndex, value) => {
     setRecommendedMedicines((prevMeds) =>
       prevMeds.map((medicine, medIndex) => {
@@ -337,6 +557,15 @@ const Prescription = () => {
     );
   };
 
+  /**
+   * Submits the prescription form data to the backend.
+   * 
+   * This function gathers all the prescription-related information from the state,
+   * constructs a payload, and dispatches an action to create a prescription in the backend.
+   * 
+   * It checks for any empty required fields (except 'patient') and displays an error if any are found.
+   * If all required fields are filled, it proceeds to dispatch the prescription creation action.
+   */
   const Submit = () => {
     const patient = selectPatient;
     const symptoms = selectedBadges;
@@ -360,6 +589,8 @@ const Prescription = () => {
       drug,
     };
 
+    // This function checks if any of the fields in the 'body' object (except for 'patient')
+    // are arrays and are empty.
     const isEmpty = Object.entries(body).some(([key, value]) => {
       return key !== 'patient' && Array.isArray(value) && value.length === 0;
     });
@@ -375,6 +606,16 @@ const Prescription = () => {
     dispatch(createPrescription(body));
   };
 
+  /**
+   * useEffect hook to transform salts data into a format suitable for a select input component.
+   * 
+   * This hook listens for changes in `salts.data` and updates `modifiedSaltOptions` state.
+   * Each salt item is transformed into an object with `value` and `label` properties,
+   * which are used by select input components for display and selection tracking.
+   * 
+   * This transformation is necessary to interface the raw salt data from the Redux store
+   * with a third-party select component that expects items in a specific format.
+   */
   useEffect(() => {
     const modifiedSaltOptions = salts.data.map((item) => ({
       value: item.id,
@@ -383,79 +624,14 @@ const Prescription = () => {
     setModifiedSaltOptions(modifiedSaltOptions);
   }, [salts.data]);
 
-  const handleChangeNewSalt = (newValue, actionMeta) => {
-    setSelectedSalt(newValue ? newValue.value : null);
-    if (actionMeta.action === 'select-option') {
-      setSelectedMedicine({
-        ...selectedMedicine,
-        salt: newValue.value,
-        saltName: newValue.label,
-      });
-    }
-    if (actionMeta.action === 'create-option') {
-      setNewGenericName(newValue.value);
-      setModifiedSaltOptions((prevOptions) => [
-        ...prevOptions,
-        { value: newValue.value, label: newValue.value },
-      ]);
-    }
-  };
 
-  const handleChangeDrugName = (newValue, actionMeta) => {
-    if (actionMeta.action === 'select-option') {
-      setSelectedMedicine({
-        ...selectedMedicine,
-        drug: newValue.value,
-        drugName: newValue.label,
-      });
-    }
-    if (actionMeta.action === 'create-option') {
-      setNewDrugName(newValue.value);
-    }
-  };
 
-  const addMedicine = () => {
-    const existingDrugIndex = medicines.findIndex(
-      (medicine) => medicine.saltName === selectedMedicine.saltName,
-    );
 
-    const newDrug = {
-      drug: 'temp_id' || selectedMedicine.drug,
-      drugName: newDrugName ? newDrugName : selectedMedicine.drugName,
-    };
-
-    if (existingDrugIndex !== -1) {
-      setMedicines((prevMedicines) => {
-        const updatedMedicines = [...prevMedicines];
-        updatedMedicines[existingDrugIndex].drugs.push(newDrug);
-        return updatedMedicines;
-      });
-    } else {
-      setMedicines([
-        ...medicines,
-        {
-          id: Date.now(),
-          salt: 'temp_id' || selectedMedicine.salt,
-          saltName: newGenericName ? newGenericName : selectedMedicine.saltName,
-          drugs: [newDrug],
-        },
-      ]);
-    }
-
-    setSelectedMedicine({ salt: null, saltName: '', drug: null, drugName: '' });
-    setNewGenericName('');
-    setNewDrugName('');
-    genericNameRef.current.clearValue();
-    drugNameRef.current.clearValue();
-  };
-
-  const handleMedicineRemoveNonIndex = () => {
-    setRecommendedMedicines(
-      recommendedMedicines.filter((_, i) => i !== selectedSaltToRemove.value),
-    );
-    setSelectedSaltToRemove(null);
-  };
-
+  /**
+   * Handles changes in the symptoms selection. It creates a new symptom entry based on the user's selection or input.
+   * If the user selects an existing symptom, it creates a symptom with an ID and name.
+   * If the user inputs a new symptom (not in the list), it creates a symptom with just the name.
+   */
   const handleChangeSymptoms = (newValue, actionMeta) => {
     if (actionMeta.action === 'select-option') {
       createNewSymptom({ id: newValue.value, name: newValue.label });
@@ -465,6 +641,11 @@ const Prescription = () => {
     }
   };
 
+  /**
+   * Handles changes in the tests selection similar to symptoms. It creates a new test entry based on the user's selection or input.
+   * If the user selects an existing test, it creates a test with an ID and name.
+   * If the user inputs a new test (not in the list), it creates a test with just the name.
+   */
   const handleChangeTests = (newValue, actionMeta) => {
     if (actionMeta.action === 'select-option') {
       createNewTests({ id: newValue.value, name: newValue.label });
@@ -491,18 +672,14 @@ const Prescription = () => {
                         {/*begin::Body*/}
                         <div className='d-flex align-items-center justify-content-between flex-wrap py-3'>
                           {/*begin::Info*/}
-                          <div className='d-flex align-items-center mr-2 py-2'>
-                            <h3 className='font-weight-bold mb-0 mr-10'>Prescriptions</h3>
-                          </div>
+                          <Typography variant="h5" gutterBottom>
+                            Prescriptions
+
+                          </Typography>
+
                           {/*end::Info*/}
                           {/*begin::Users*/}
                           <div className='symbol-group symbol-hover py-2'>
-                            <button className='btn btn-primary'>
-                              <span className='svg-icon mb-5'>
-                                <PlusSVG />
-                              </span>
-                              New Prescription
-                            </button>
                           </div>
                           {/*end::Users*/}
                         </div>
@@ -1194,21 +1371,21 @@ const Prescription = () => {
                                           </div>
                                           <div className='mt-2'>
                                             <select
-                                              onChange={(e) =>
-                                                addMedicineDuration(medicalIndex, e.target.value)
-                                              }
+                                              onChange={(e) => addMedicineDuration(medicalIndex, e.target.value)}
                                               className='form-select'
                                             >
-                                              <option value='-1' disabled selected>
-                                                Select duration
-                                              </option>
-                                              <option>1 month</option>
-                                              <option>Continued</option>
-                                              <option>7 days</option>
-                                              <option>14 days</option>
-                                              <option>20 days</option>
-                                              <option>2 months</option>
-                                              <option>3 months</option>
+                                              <option value='' disabled selected>Select duration</option>
+                                              <option value='30'>1 month</option>
+                                              <option value='7'>7 days</option>
+                                              <option value='14'>14 days</option>
+                                              <option value='20'>20 days</option>
+                                              <option value='28'>4 weeks</option>
+                                              <option value='42'>6 weeks</option>
+                                              <option value='60'>2 months</option>
+                                              <option value='90'>3 months</option>
+                                              <option value='180'>6 months</option>
+                                              <option value='365'>1 year</option>
+                                              <option value='9999'>Continued</option>
                                             </select>
                                           </div>
                                         </div>
@@ -1429,9 +1606,9 @@ const Prescription = () => {
                                       <span
                                         onClick={() => setDrugs(!Drugs)}
                                         className='ml-5 svg-icon my-plus-button'
-                                        title='Add or remove Symptoms'
+
                                       >
-                                        {Drugs ? <MinusSVG /> : <PlusSVG />}
+
                                       </span>
                                     </h6>
                                     <div
@@ -1440,78 +1617,6 @@ const Prescription = () => {
                                         display: Drugs ? 'flex' : 'none',
                                       }}
                                     >
-                                      <div className='card-header'>
-                                        <ul className='nav nav-tabs card-header-tabs'>
-                                          <li className='nav-item'>
-                                            <button
-                                              className={`nav-link ${activeDrugsTab === 'add' ? 'active' : ''}`}
-                                              onClick={() => setActiveDrugsTab('add')}
-                                            >
-                                              Add
-                                            </button>
-                                          </li>
-                                          <li className='nav-item'>
-                                            <button
-                                              className={`nav-link ${activeFollowupTab === 'remove' ? 'active' : ''}`}
-                                              onClick={() => setActiveDrugsTab('remove')}
-                                            >
-                                              Remove
-                                            </button>
-                                          </li>
-                                        </ul>
-                                      </div>
-
-                                      <div className='card-body'>
-                                        {activeDrugsTab === 'add' ? (
-                                          <div>
-                                            <Creatable
-                                              isClearable={true}
-                                              id='Generic-name-select'
-                                              options={modifiedSaltOptions}
-                                              onChange={handleChangeNewSalt}
-                                              ref={genericNameRef}
-                                              placeholder='Generic name'
-                                            />
-
-                                            <Creatable
-                                              isClearable={true}
-                                              id='Drug-name-select'
-                                              options={drugNameOptions}
-                                              onChange={handleChangeDrugName}
-                                              ref={drugNameRef}
-                                              placeholder='Drug name'
-                                              className='my-2'
-                                            />
-
-                                            <button
-                                              className='btn btn-primary mt-2'
-                                              onClick={addMedicine}
-                                            >
-                                              Add Medicine
-                                            </button>
-                                          </div>
-                                        ) : (
-                                          <div>
-                                            <Select
-                                              options={recommendedMedicines.map(
-                                                (medicine, medicalIndex) => ({
-                                                  value: medicalIndex,
-                                                  label: `${medicalIndex + 1}. ${medicine.name} ${medicine.salt}`,
-                                                }),
-                                              )}
-                                              onChange={handleSaltChange}
-                                              value={selectedSaltToRemove}
-                                              placeholder='Select item to remove'
-                                            />
-                                            <button
-                                              className='btn btn-danger mt-2'
-                                              onClick={handleMedicineRemoveNonIndex}
-                                            >
-                                              Remove Medicine
-                                            </button>
-                                          </div>
-                                        )}
-                                      </div>
                                     </div>
                                   </div>
                                 </div>

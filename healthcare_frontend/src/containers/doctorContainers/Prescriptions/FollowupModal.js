@@ -1,17 +1,17 @@
 import { Modal, Button, Badge, DropdownButton, Dropdown } from 'react-bootstrap';
 import moment from 'moment';
-import MinusSVG from '../../assets/SVGS/MinusSVG';
-import PlusSVG from '../../assets/SVGS/PlusSVG';
+import MinusSVG from '../../../assets/SVGS/MinusSVG';
+import PlusSVG from '../../../assets/SVGS/PlusSVG';
 import BlackMedicine from './BlackMedicine';
 import { Fragment, useEffect, useRef, useState } from 'react';
 import Creatable from 'react-select/creatable';
 import Select from 'react-select';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchPatient } from '../../features/patient/fetchPatients';
-import { fetchSymptoms } from '../../features/prescription/SymptomsSlice';
-import { fetchTests } from '../../features/prescription/TestsSlice';
-import { fetchSalts } from '../../features/prescription/SaltSlice';
-import { updatePrescription } from '../../features/prescription/PrescriptionSlice';
+import { fetchPatient } from '../../../features/patient/fetchPatients';
+import { fetchSymptoms } from '../../../features/prescription/SymptomsSlice';
+import { fetchTests } from '../../../features/prescription/TestsSlice';
+import { fetchSalts } from '../../../features/prescription/SaltSlice';
+import { updatePrescription } from '../../../features/prescription/PrescriptionSlice';
 
 
 /**
