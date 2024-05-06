@@ -8,9 +8,7 @@ import DashboardLayout from "./layout/PatientLayout";
 import BloodSugarPage from "../src/containers/patientContainers/BloodSugarPage";
 import DietaryHabits from "../src/containers/patientContainers/DietaryHabits";
 import EducationalResources from "../src/containers/patientContainers/EducationalResources";
-// import PatientAppointmentsPage from "../src/containers/patientContainers/Calendar/Appointments";
 import PatientDashboardPage from "../src/containers/patientContainers/PatientDashboardPage";
-import PatientPrescriptionsPage from "../src/containers/patientContainers/PatientPrescriptionsPage";
 import Profile from "../src/containers/patientContainers/Profile";
 import DoctorDashboardPage from "../src/containers/doctorContainers/DoctorDashboardPage";
 import DoctorProfile from "../src/containers/doctorContainers/DoctorProfile";
@@ -27,15 +25,23 @@ import MyRecords from "../src/containers/patientContainers/MyRecords";
 import Prescription from '../src/containers/doctorContainers/Prescription';
 import PrescriptionManagement from '../src/containers/doctorContainers/PrescriptionManagement';
 import PatientPrescription from '../src/containers/patientContainers/PatientPrescription';
-import { useDispatch, useSelector } from 'react-redux';
 import DoctorAppointmentsPage from '../src/containers/doctorContainers/DoctorAppointmentsPage';
 import AppointmentList from './containers/doctorContainers/AppointmentList';
 import Appointments from './containers/patientContainers/Calendar/appointments';
 import PastAppointments from './containers/doctorContainers/PastAppointments';
 
-
-
-
+/**
+ * This is the main React component for routing in the application.
+ * It uses React Router to define a series of routes that render different components based on the current URL path.
+ * It supports different layouts and pages for both patient and doctor roles, encapsulating them within appropriate layout components.
+ * 
+ * Routes:
+ * - Root (`/*`): Renders the main entry point of the application.
+ * - Patient-specific routes (e.g., `/patient/dashboard`, `/patient/bloodsugar`): Wrapped within `DashboardLayout` to maintain consistent styling and functionality.
+ * - Doctor-specific routes (e.g., `/doctor/dashboard`, `/doctor/patient-records`): Wrapped within `DoctorLayout` for similar reasons.
+ * 
+ * 
+ */
 const App = () => {
   return (
     <KThemeProvider>
@@ -43,22 +49,16 @@ const App = () => {
         <Route path="/*" element={<Main />} />
         <Route path="/chat" element={<Chat />} />
         <Route path="/patient/dashboard" element={<DashboardLayout> <PatientDashboardPage /> </DashboardLayout>} />
-
         <Route path="/patient/bloodsugar" element={<DashboardLayout> <BloodSugarPage /></DashboardLayout>} />
         <Route path="/diet" element={<DashboardLayout> <DietaryHabits /> </DashboardLayout>} />
         <Route path="/patient/chat" element={<DashboardLayout> {" "} <ChatComponent />{" "} </DashboardLayout>} />
         <Route path="/resources" element={<DashboardLayout> <EducationalResources /> </DashboardLayout>} />
-        {/* <Route path="/patient/appointments" element={<DashboardLayout> <PatientAppointmentsPage /> </DashboardLayout>} /> */}
-        <Route path="/prescriptions" element={<DashboardLayout> <PatientPrescriptionsPage /> </DashboardLayout>} />
         <Route path="/patient/profile" element={<DashboardLayout> <Profile /> </DashboardLayout>} />
         <Route path="/myrecords" element={<DashboardLayout> <MyRecords /> </DashboardLayout>} />
         <Route path="/patient/prescription" element={<DashboardLayout> <PatientPrescription /> </DashboardLayout>} />
         <Route path='/patient/appointments' element={ <DashboardLayout> <Appointments /> </DashboardLayout>}/>
-        
         <Route path='/patient/appointments-list' element={ <DashboardLayout> <PastAppointments /> </DashboardLayout> }/>
-        
         <Route path='/doctor/appointments-list' element={ <DoctorLayout> <AppointmentList /> </DoctorLayout>} />
-        
         <Route path='/doctor/past-appointments' element={<DoctorLayout> <PastAppointments /> </DoctorLayout>} />
         <Route path="/doctor/appointment-list" element={<DoctorLayout> <AppointmentList /> </DoctorLayout>} />
         <Route path="/doctor/appointments" element={<DoctorLayout> <DoctorAppointmentsPage /> </DoctorLayout>} />
@@ -71,10 +71,8 @@ const App = () => {
         <Route path="/forms/create" element={<DoctorLayout> <CreateForm /> </DoctorLayout>} />
         <Route path="/forms/:formId/edit" element={<DoctorLayout> <CreateForm /> </DoctorLayout>} />
         <Route path="/forms/:formId/details" element={<DoctorLayout> <FormDetail /> </DoctorLayout>} />
-
         <Route path='/doctor/prescription' element={<DoctorLayout> {' '} <Prescription />{' '} </DoctorLayout>} />
         <Route path='/doctor/prescription-management' element={<DoctorLayout> {' '} <PrescriptionManagement />{' '} </DoctorLayout>} />
-
       </Routes>
     </KThemeProvider>
   );

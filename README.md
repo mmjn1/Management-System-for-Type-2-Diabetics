@@ -52,7 +52,7 @@ Create a superuser to access the admin panel:
 
     python manage.py createsuperuser
 
-This will ask for your Email, First Name, Last Name, Password, and Confirm Password. 
+This will ask for your email, first name, last Name, password, and confirm password. 
 
 Apply migrations to create the database schema:
 
@@ -64,7 +64,7 @@ Run the Django development server:
 
 Your Django development server will be running at http://127.0.0.1:8000/
 
-You can access the admin panel by adding - http://127.0.0.1:8000/admin in the search bar and then enter your email and password
+You can access the admin panel by adding - http://127.0.0.1:8000/admin in the search bar and then enter your email and password.
 
 
 ## Setting Up WebSocket Connections with Daphne
@@ -104,14 +104,14 @@ Download the `.msi` file and follow the installation instructions. After install
 
 ## Running Celery Worker and Beat Services:
 
-Celery is used in this project to handle background tasks such as sending automated appointment reminders to users. These reminders are crucial for ensuring that patients do not miss their important appointments. Celery Worker processes these tasks, while Celery Beat schedules them at specified intervals.
+Celery is used in this project to handle background tasks such as sending automated appointment reminders to users. These reminders ensure that both patients and doctors are reminded of important appointments. The Celery Worker processes these tasks, while Celery Beat schedules them at specified intervals.
 
-After setting up Redis, which acts as the message broker for Celery, follow these steps to run the Celery worker and beat services:
+After setting up Redis, which acts as the message broker for Celery, follow these steps to run the Celery worker and beat services.
 
 
 After setting up Redis, you will need to run Celery worker and beat services to handle task processing and scheduling.
 
-Open a new terminal window and type cd /mmjn1/healthcare_project and run the following command to start the Celery worker, which will process the tasks:
+Open a new terminal window and type **cd /mmjn1/healthcare_project** and then run the following command to start the Celery worker, which will process the tasks:
 
     celery -A healthcare_project.celery worker --pool=solo -l info
     
