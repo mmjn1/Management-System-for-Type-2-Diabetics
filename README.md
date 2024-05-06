@@ -14,7 +14,7 @@ The primary users of this application are:
 
 ## Getting Started
 
-Follow these instructions to set up the project on your local machine for development and testing purposes.
+Follow these instructions to set up the project on your local machine for development and testing purposes. Note that running the entire application will require opening multiple terminal windows to manage different components simultaneously. In total, you should expect to have five terminal windows open.
 
 
 **Cloning the Repository**
@@ -103,6 +103,11 @@ Download the `.msi` file and follow the installation instructions. After install
 
 
 ## Running Celery Worker and Beat Services:
+
+Celery is used in this project to handle background tasks such as sending automated appointment reminders to users. These reminders are crucial for ensuring that patients do not miss their important appointments. Celery Worker processes these tasks, while Celery Beat schedules them at specified intervals.
+
+After setting up Redis, which acts as the message broker for Celery, follow these steps to run the Celery worker and beat services:
+
 
 After setting up Redis, you will need to run Celery worker and beat services to handle task processing and scheduling.
 
