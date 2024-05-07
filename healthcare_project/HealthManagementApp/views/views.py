@@ -731,11 +731,10 @@ def DoctorAvailability(request):
         return Response({"error": "No 'days' data provided"}, status=status.HTTP_400_BAD_REQUEST)
 
     with transaction.atomic():  # For data integrity
-        # Bulk update for efficiency
         selected_days = [item['day'] for item in days_data if item.get('selected')]
 
         WeeklyAvailability.objects.filter(doctor=doctor, day_of_week__in=selected_days).exclude(
-            is_working=True  # Ensure we don't overwrite True with False
+            is_working=True  
         ).update(is_working=False)
 
         new_availabilities = [
