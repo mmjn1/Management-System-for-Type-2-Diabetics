@@ -3,13 +3,24 @@ from HealthManagementApp.models.users import *
 
 
 class Salt(models.Model): # For example - Metformin, Paracetamol, etc.
+    """
+    Represents a chemical compound or substance used as the base ingredient in medications.
+    Attributes:
+        name (models.CharField): The name of the salt, unique across the model.
+    """
     name = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
         return str(self.name)
 
 
-class Medicine(models.Model): # Represents the brand name that produce the Salt (Medicine) for example - Panadol, Axpinet, Diagemet, etc.
+class Medicine(models.Model): # Represents a specific brand of medication that contains a particular salt.
+    """
+    Represents a specific brand of medication that contains a particular salt.
+    Attributes:
+        salt (models.ForeignKey): A reference to the Salt instance that this medicine contains.
+        name (models.CharField): The commercial name of the medicine.
+    """
     salt = models.ForeignKey(Salt, on_delete=models.CASCADE, related_name='medicines')
     name = models.CharField(max_length=100)
 
@@ -18,6 +29,15 @@ class Medicine(models.Model): # Represents the brand name that produce the Salt 
 
 
 class Drugs(models.Model):
+    """
+    Represents a prescribed drug including its dosage and administration details.
+    Attributes:
+        Medical_name (models.ForeignKey): A reference to the Medicine instance prescribed.
+        frequency (models.CharField): How often the drug should be taken.
+        Time_of_day (models.CharField): Recommended time(s) of the day for taking the drug.
+        duration (models.CharField): The length of time the drug should be taken.
+        dosage (models.CharField): The amount of drug to be taken each time.
+    """
     Medical_name = models.ForeignKey(Medicine, on_delete=models.CASCADE, max_length=200)
     frequency = models.CharField(max_length=200, null=True, blank=True)
     Time_of_day = models.CharField(max_length=200, null=True, blank=True)
@@ -29,6 +49,11 @@ class Drugs(models.Model):
 
 
 class Symptoms(models.Model):
+    """
+    Represents symptoms reported by the patient or observed by the healthcare provider.
+    Attributes:
+        name (models.CharField): Description of the symptom, unique across the model.
+    """
     name = models.CharField(max_length=200, null=True, blank=True, unique=True)
 
     def __str__(self):
@@ -36,6 +61,11 @@ class Symptoms(models.Model):
 
 
 class Tests(models.Model):
+    """
+    Represents medical tests that may be ordered as part of the patient's diagnosis.
+    Attributes:
+        name (models.CharField): The name of the test.
+    """
     name = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self):
@@ -43,6 +73,13 @@ class Tests(models.Model):
 
 
 class Vitals(models.Model):
+    """
+    Represents vital signs measurements recorded during patient visits.
+    Attributes:
+        name (models.CharField): The type of vital sign measured.
+        reading (models.CharField): The recorded value of the vital sign.
+        date (models.DateField): The date when the measurement was taken.
+    """
     name = models.CharField(max_length=200, null=True, blank=True)
     reading = models.CharField(max_length=200, null=True, blank=True)
     date = models.DateField(auto_created=True, auto_now_add=True)
@@ -52,6 +89,11 @@ class Vitals(models.Model):
 
 
 class Diagnoses(models.Model):
+    """
+    Represents medical diagnoses made based on patient symptoms, tests, and other assessments.
+    Attributes:
+        name (models.TextField): Detailed description of the diagnosis.
+    """
     name = models.TextField(null=True, blank=True, max_length=500)
 
     def __str__(self):
@@ -59,6 +101,11 @@ class Diagnoses(models.Model):
 
 
 class Histories(models.Model):
+    """
+    Represents historical medical information about the patient, including past conditions and treatments.
+    Attributes:
+        name (models.TextField): Detailed description of the patient's medical history.
+    """
     name = models.TextField(null=True, blank=True, max_length=500)
 
     def __str__(self):
@@ -66,6 +113,11 @@ class Histories(models.Model):
 
 
 class Advices(models.Model):
+    """
+    Represents medical advice given to the patient by healthcare providers.
+    Attributes:
+        name (models.TextField): The content of the advice provided.
+    """
     name = models.TextField(null=True, blank=True, max_length=500)
 
     def __str__(self):
@@ -73,6 +125,11 @@ class Advices(models.Model):
 
 
 class FollowUps(models.Model):
+    """
+    Represents follow-up actions or appointments recommended for the patient.
+    Attributes:
+        name (models.TextField): Description of the follow-up required.
+    """
     name = models.TextField(null=True, blank=True, max_length=500)
 
     def __str__(self):
@@ -80,6 +137,9 @@ class FollowUps(models.Model):
 
 
 class Prescription(models.Model):
+    """∫
+    Represents a medical prescription issued to a patient.
+    """
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=True, blank=True)
     prescribing_doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, null=True, blank=True)
 
@@ -108,10 +168,17 @@ class Prescription(models.Model):
         return str(self.id)
 
     def request_refill(self):
+        """
+        Sets the refill request status to pending and saves the prescription instance.
+        """
         self.refill_request_pending = True
         self.save()
 
     def approve_refill(self):
+        """
+        Approves a refill request by incrementing the refill count, updating the last refilled date,
+        resetting the refill request status, and saving the prescription instance.
+        """
         self.refill_count += 1
         self.last_refilled_date = timezone.now()
         self.refill_request_pending = False

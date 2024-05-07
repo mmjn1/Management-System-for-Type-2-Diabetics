@@ -1,3 +1,4 @@
+
 import os
 import threading
 from django.contrib.auth import get_user_model
@@ -7,6 +8,7 @@ from django.core.mail import EmailMultiAlternatives
 User = get_user_model()
 EMAIL_HOST_USER = os.environ.get('EMAIL_USER')
 site_name = os.environ.get('SITE_NAME')
+
 
 class EmailThreading(threading.Thread):
     """
@@ -39,7 +41,6 @@ class EmailThreading(threading.Thread):
         recipient_id = self.data['recipient_id']
         message = self.data['message']
         file_name = self.data['file_name']
-        
         if message:
             message = message.strip()
         user_sender = User.objects.get(id=sender_id)
