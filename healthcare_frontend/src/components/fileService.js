@@ -1,3 +1,19 @@
+/**
+ * Asynchronously uploads a file to the server and returns the URL of the uploaded file.
+ * 
+ * This function takes a single file object as an argument, creates a FormData object, and appends
+ * the file to it under the key 'file', which is the field name expected by the server. It retrieves
+ * the user's authentication token from local storage and uses it to set the Authorization header
+ * for the POST request to the server's file upload endpoint.
+ * 
+ * If the server responds with a non-OK HTTP status, the function logs and throws an error with the
+ * response text. If the upload is successful, it parses the JSON response to extract and return the
+ * URL of the uploaded file.
+ * 
+ * @param {File} file - The file to be uploaded.
+ * @returns {Promise<string>} A promise that resolves to the URL of the uploaded file.
+ * @throws {Error} Throws an error if the file upload fails or if the server response is not OK.
+ */
 const uploadFile = async (file) => {
   const formData = new FormData();
   formData.append('file', file); // 'file' is the name of the form field expected by the server

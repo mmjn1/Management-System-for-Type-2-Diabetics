@@ -153,10 +153,9 @@ export const PrescriptionSlice = createSlice({
 
           toast.success('Refill requested...', { id: TID });
         } else {
-          // Handle if the Prescription is not found (might be an error condition)
+        
         }
-        // state.Prescription = [...state.Prescription, action.payload]
-        toast.success('Updated...', { id: TID });
+        toast.success('Prescription Updated', { id: TID });
       })
       .addCase(updatePatientPrescription.rejected, (state, action) => {
         state.status = 'failed';
@@ -189,12 +188,11 @@ export const PrescriptionSlice = createSlice({
           (item) => item.id === action.payload.id,
         );
         if (PrescriptionIndex !== -1) {
-          // Update the is_blocked property
           state.Prescription[PrescriptionIndex].is_blocked = action.payload.is_blocked;
 
           toast.success('Updated...', { id: TID });
         } else {
-          // Handle if the Prescription is not found (might be an error condition)
+          
         }
         // state.Prescription = [...state.Prescription, action.payload]
         toast.success('Updated...', { id: TID });

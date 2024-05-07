@@ -9,8 +9,6 @@ from .models.users import *
 from .models.doctor_availability import *
 from .models.patient_appointment import *
 from .models.doctor_appointment import *
-
-
 from django.contrib import admin
 
 
@@ -92,7 +90,7 @@ class FollowUpsAdmin(admin.ModelAdmin):
 
 @admin.register(Prescription)
 class PrescriptionAdmin(admin.ModelAdmin):
-    list_display = ('patient', 'prescribing_doctor', 'start_date', 'end_date', 'prescription_approved')
+    list_display = ('patient', 'prescribing_doctor', 'start_date', 'end_date', 'prescription_approved', 'last_refilled_date', 'refill_request_pending', 'refill_requested')
     list_filter = ('prescribing_doctor', 'prescription_approved', 'start_date')
     search_fields = ('patient__user__first_name', 'patient__user__last_name', 'prescribing_doctor__user__first_name', 'prescribing_doctor__user__last_name')
     inlines = [

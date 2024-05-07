@@ -22,13 +22,13 @@ import CustomForms from "./containers/doctorContainers/DynamicForms/CustomForms"
 import FormDetail from "./containers/doctorContainers/DynamicForms/FormDetail";
 import CreateForm from "./containers/doctorContainers/DynamicForms/CreateForm";
 import MyRecords from "../src/containers/patientContainers/MyRecords";
-import Prescription from '../src/containers/doctorContainers/Prescription';
-import PrescriptionManagement from '../src/containers/doctorContainers/PrescriptionManagement';
+import Prescription from './containers/doctorContainers/Prescriptions/Prescription';
+import PrescriptionManagement from './containers/doctorContainers/Prescriptions/PrescriptionManagement';
 import PatientPrescription from '../src/containers/patientContainers/PatientPrescription';
-import DoctorAppointmentsPage from '../src/containers/doctorContainers/DoctorAppointmentsPage';
-import AppointmentList from './containers/doctorContainers/AppointmentList';
+import DoctorAppointmentsPage from './containers/doctorContainers/DoctorCalendar/DoctorAppointmentsPage';
+import AppointmentList from './containers/doctorContainers/DoctorCalendar/AppointmentList';
 import Appointments from './containers/patientContainers/Calendar/appointments';
-import PastAppointments from './containers/doctorContainers/PastAppointments';
+import PastAppointments from './containers/doctorContainers/DoctorCalendar/PastAppointments';
 
 /**
  * This is the main React component for routing in the application.
@@ -56,9 +56,9 @@ const App = () => {
         <Route path="/patient/profile" element={<DashboardLayout> <Profile /> </DashboardLayout>} />
         <Route path="/myrecords" element={<DashboardLayout> <MyRecords /> </DashboardLayout>} />
         <Route path="/patient/prescription" element={<DashboardLayout> <PatientPrescription /> </DashboardLayout>} />
-        <Route path='/patient/appointments' element={ <DashboardLayout> <Appointments /> </DashboardLayout>}/>
-        <Route path='/patient/appointments-list' element={ <DashboardLayout> <PastAppointments /> </DashboardLayout> }/>
-        <Route path='/doctor/appointments-list' element={ <DoctorLayout> <AppointmentList /> </DoctorLayout>} />
+        <Route path='/patient/appointments' element={<DashboardLayout> <Appointments /> </DashboardLayout>} />
+        <Route path='/patient/appointments-list' element={<DashboardLayout> <PastAppointments /> </DashboardLayout>} />
+        <Route path='/doctor/appointments-list' element={<DoctorLayout> <AppointmentList /> </DoctorLayout>} />
         <Route path='/doctor/past-appointments' element={<DoctorLayout> <PastAppointments /> </DoctorLayout>} />
         <Route path="/doctor/appointment-list" element={<DoctorLayout> <AppointmentList /> </DoctorLayout>} />
         <Route path="/doctor/appointments" element={<DoctorLayout> <DoctorAppointmentsPage /> </DoctorLayout>} />
