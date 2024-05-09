@@ -11,6 +11,14 @@ python manage.py migrate --noinput
 echo "Collecting static files..."
 python manage.py collectstatic --noinput --clear
 
-# Start command passed to the script. For example:
-# if passed "gunicorn", it starts Gunicorn; if passed "daphne", it starts Daphne
-exec "$@"
+# Check if celery command is passed
+if [[ "$1" == "celery" ]]; then
+    # Shift command line arguments left
+    shift 1
+    # Execute the celery command with the passed arguments
+    exec celery -A healthcare_project "$@"
+else
+    # Start command passed to the script. For example:
+    # if passed "gunicorn", it starts Gunicorn; if passed "daphne", it starts Daphne
+    exec "$@"
+fi
