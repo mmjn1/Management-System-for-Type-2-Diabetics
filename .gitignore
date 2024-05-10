@@ -51,8 +51,7 @@ node_modules/
 npm-debug.log
 yarn-error.log
 
-# Environment variables
-.env
+
 
 # Virtual Environment
 health_env

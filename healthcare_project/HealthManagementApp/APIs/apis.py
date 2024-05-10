@@ -183,7 +183,7 @@ class PatientCreate(APIView):
             user.type = request.data['role']
             user.save()
             date_of_diagnosis_str = request.data['date_of_diagnosis']
-            date_of_diagnosis_obj = datetime.datetime.strptime(date_of_diagnosis_str.split('T')[0], "%Y-%m-%d").date()
+            date_of_diagnosis_obj = datetime.strptime(date_of_diagnosis_str.split('T')[0], "%Y-%m-%d").date()
 
             patient = Patient.objects.create(
                 user=user,
