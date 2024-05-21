@@ -7,10 +7,7 @@ import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchLocations } from '../../../features/appointments/LocationSlice';
 import { fetchTimeSlots } from '../../../features/appointments/DoctorAvailabilitySlice';
-import {
-  useUpdateAvailabilityMutation,
-  useCreateAvailabilityMutation,
-} from '../../../features/appointments/old_availabilitySlice';
+import { useUpdateAvailabilityMutation, useCreateAvailabilityMutation, } from '../../../features/appointments/old_availabilitySlice';
 import { DoctorAvailability } from '../../../features/appointments/AvailabilitySlice';
 
 const daysOfWeek = [
@@ -90,31 +87,45 @@ const AvailabilityModal = ({ showModal, handleClose }) => {
     dispatch(fetchTimeSlots(doctorId));
   }, [showModal, doctorId]);
 
+  /**
+   * This function, `handleDayChange`, manages the selection or deselection of days for a doctor's availability.
+   * It updates both the internal state and the form values to reflect changes in the selected days and their corresponding time slots.
+   *
+   * @param {string} day - The day being toggled.
+   * @param {function} setFieldValue - Formik's method to set the value of a field directly.
+   * @param {object} values - Current form values.
+   */
   const handleDayChange = (day, setFieldValue, values) => {
+    // Find the index of the day in the week.
     const dayIndex = daysOfWeek.findIndex((d) => d.value === day);
+    // Check if the day is already selected.
     const isSelected = availability.includes(day);
+    // Retrieve existing slots for the day from Formik's state.
     const formikDaySlots = values.days[dayIndex]?.slots ?? [];
+
     if (isSelected) {
+      // If the day is already selected, remove it and its slots.
       setAvailability(availability.filter((d) => d !== day));
       setFieldValue(`days[${dayIndex}].slots`, formikDaySlots.length === 0 ? [] : formikDaySlots);
     } else {
+      // If the day is not selected, add it and update slots.
       setAvailability([...availability, day]);
+      // Fetch matching slots from the global state.
       const matchingSlots = timeslots.data[day];
-      const updatedSlots =
-        matchingSlots !== undefined
-          ? [
-              ...matchingSlots.filter(
-                (slot) =>
-                  !formikDaySlots.some(
-                    (fSlot) =>
-                      fSlot.start_time === slot.start_time && fSlot.end_time === slot.end_time,
-                  ),
-              ),
-              ...formikDaySlots,
-            ]
-          : formikDaySlots;
+      // Combine and deduplicate slots from global state and Formik's state.
+      const updatedSlots = matchingSlots !== undefined
+        ? [
+          ...matchingSlots.filter(
+            (slot) => !formikDaySlots.some(
+              (fSlot) => fSlot.start_time === slot.start_time && fSlot.end_time === slot.end_time
+            )
+          ),
+          ...formikDaySlots,
+        ]
+        : formikDaySlots;
       setFieldValue(`days[${dayIndex}].slots`, updatedSlots.length === 0 ? [] : updatedSlots);
     }
+    // Toggle the selection state of the day.
     setFieldValue(`days[${dayIndex}].selected`, !isSelected);
   };
 
@@ -122,16 +133,33 @@ const AvailabilityModal = ({ showModal, handleClose }) => {
     days: daysOfWeek.map((day) => ({
       day: day.value,
       selected: false,
-      slots: [{ start_time: '', end_time: '', location: { id: 'temp', name: '', mode: '' } }],
+      slots: [{ start_time: '08:00', end_time: '09:00', location: { id: 'temp', name: '', mode: '' } }],
     })),
   });
 
-  const findTimeIndex = (time) => timeSlots.findIndex((t) => t === time);
+  const findTimeIndex = (time) => {
+    // Ensure the time is in the correct format expected by the timeSlots array
+    return timeSlots.findIndex((t) => t === moment(time, 'HH:mm:ss').format('HH:mm'));
+  };
 
-  const formatTimeForBackend = (time) => moment(time, 'H:mm').format('HH:mm:ss');
-
+ 
   const handleSubmit = (values) => {
-    dispatch(DoctorAvailability(values));
+    const formattedValues = {
+      days: values.days.map(day => ({
+        ...day,
+        slots: day.slots.map(slot => ({
+          ...slot,
+          location: {
+            ...slot.location,
+            id: slot.location && !isNaN(parseInt(slot.location.id)) ? parseInt(slot.location.id) : null
+          },
+          start_time: moment(slot.start_time, 'HH:mm').format('HH:mm:ss'),
+          end_time: moment(slot.end_time, 'HH:mm').format('HH:mm:ss')
+        }))
+      }))
+    };
+  
+    dispatch(DoctorAvailability(formattedValues));
     handleClose();
   };
 
@@ -188,160 +216,162 @@ const AvailabilityModal = ({ showModal, handleClose }) => {
                     </div>
                   </div>
 
-                  {values.days
-                    .filter((day) => day.selected)
-                    .map((day, index) => (
-                      <div key={day.day} className='mb-3'>
-                        <strong>{day.day.toUpperCase()}:</strong>
-                        <FieldArray
-                          name={`days[${index}].slots`}
-                          render={(slotHelpers) =>
-                            day.slots.map((slot, slotIndex) => {
-                              const previousSlotEndTime =
-                                slotIndex > 0 ? day.slots[slotIndex - 1].end_time : null;
-                              const earliestStartTimeIndex = previousSlotEndTime
-                                ? findTimeIndex(previousSlotEndTime) + 1
-                                : 0;
-                              const validStartTimes = timeSlots.slice(earliestStartTimeIndex);
-                              const selectedStartTimeIndex = findTimeIndex(slot.start_time);
-                              const validEndTimes = timeSlots.slice(selectedStartTimeIndex + 1);
+                  {/** 
+                   * Renders a list of selected days with configurable time slots for each day.
+                   * For each selected day, it displays a section allowing the doctor to set available time slots.
+                   * 
+                   * - `values.days.filter((day) => day.selected)`: Filters the days array to include only those days that are selected.
+                   * - `map((day, index) => ...)`: Maps over each selected day to render its configuration options.
+                   * - `FieldArray`: A component that helps manage an array of fields (time slots in this case).
+                   * - `day.slots.map((slot, slotIndex) => ...)`: Maps over each slot in a day to allow setting start and end times.
+                   * - `previousSlotEndTime`: Determines the end time of the previous slot to set the minimum start time for the current slot.
+                   * - `findTimeIndex(previousSlotEndTime) + 1`: Finds the index of the next valid start time after the previous slot's end time.
+                   * - `validStartTimes`: An array of start times that are valid for the current slot based on the end time of the previous slot.
+                   * - `selectedStartTimeIndex`: Finds the index of the currently selected start time to determine valid end times.
+                   * - `validEndTimes`: An array of end times that are valid for the current slot based on its start time.
+                   */
+                    }
+                  {values.days.filter((day) => day.selected).map((day, index) => (
+                    <div key={day.day} className='mb-3'>
+                      <strong>{day.day.toUpperCase()}:</strong>
+                      <FieldArray
+                        name={`days[${index}].slots`}
+                        render={(slotHelpers) => day.slots.map((slot, slotIndex) => {
+                          const previousSlotEndTime = slotIndex > 0 ? day.slots[slotIndex - 1].end_time : null;
+                          const earliestStartTimeIndex = previousSlotEndTime ? findTimeIndex(previousSlotEndTime) + 1 : 0;
+                          const validStartTimes = timeSlots.slice(earliestStartTimeIndex);
+                          const selectedStartTimeIndex = findTimeIndex(slot.start_time);
+                          const validEndTimes = timeSlots.slice(selectedStartTimeIndex + 1);
 
-                              return (
-                                <div key={slotIndex} className='d-flex align-items-center mb-2'>
-                                  <DropdownButton
-                                    id={`dropdown-start-time-${index}-${slotIndex}`}
-                                    title={slot.start_time || 'Start Time'}
-                                    variant='outline-secondary'
-                                    className='me-2'
+                          return (
+                            <div key={slotIndex} className='d-flex align-items-center mb-2'>
+                              <DropdownButton
+                                id={`dropdown-start-time-${index}-${slotIndex}`}
+                                title={slot.start_time || 'Start Time'}
+                                variant='outline-secondary'
+                                className='me-2'
+                              >
+                                {validStartTimes.map((time, timeIndex) => (
+                                  <Dropdown.Item
+                                    key={timeIndex}
+                                    onClick={() => {
+                                      setFieldValue(`days[${index}].slots[${slotIndex}].start_time`, time);
+                                    }}
                                   >
-                                    {validStartTimes.map((time, timeIndex) => (
-                                      <Dropdown.Item
-                                        key={timeIndex}
-                                        onClick={() => {
-                                          setFieldValue(
-                                            `days[${index}].slots[${slotIndex}].start_time`,
-                                            time,
-                                          );
-                                        }}
-                                      >
-                                        {time}
-                                      </Dropdown.Item>
-                                    ))}
-                                  </DropdownButton>
-
-                                  <span className='me-2'>to</span>
-                                  <DropdownButton
-                                    id={`dropdown-end-time-${index}-${slotIndex}`}
-                                    title={slot.end_time || 'End Time'}
-                                    variant='outline-secondary'
-                                    className='ms-2 me-3'
+                                    {time}
+                                  </Dropdown.Item>
+                                ))}
+                              </DropdownButton>
+                              <span className='me-2'>to</span>
+                              <DropdownButton
+                                id={`dropdown-end-time-${index}-${slotIndex}`}
+                                title={slot.end_time || 'End Time'}
+                                variant='outline-secondary'
+                                className='ms-2 me-3'
+                              >
+                                {validEndTimes.map((time, timeIndex) => (
+                                  <Dropdown.Item
+                                    key={timeIndex}
+                                    onClick={() => {
+                                      setFieldValue(`days[${index}].slots[${slotIndex}].end_time`, time);
+                                    }}
                                   >
-                                    {validEndTimes.map((time, timeIndex) => (
-                                      <Dropdown.Item
-                                        key={timeIndex}
-                                        onClick={() =>
-                                          setFieldValue(
-                                            `days[${index}].slots[${slotIndex}].end_time`,
-                                            time,
-                                          )
-                                        }
-                                      >
-                                        {time}
-                                      </Dropdown.Item>
-                                    ))}
-                                  </DropdownButton>
+                                    {time}
+                                  </Dropdown.Item>
+                                ))}
+                              </DropdownButton>
 
-                                  <DropdownButton
-                                    id={`dropdown-location-${index}-${slotIndex}`}
-                                    title={slot.location.name || 'Location'}
-                                    variant='outline-secondary'
-                                    className='ms-3'
+                              <DropdownButton
+                                id={`dropdown-location-${index}-${slotIndex}`}
+                                title={slot.location?.name || 'Location'}
+                                variant='outline-secondary'
+                                className='ms-3'
+                              >
+                                {locations.data.map((item, key) => (
+                                  <Dropdown.Item
+                                    key={key}
+                                    onClick={() =>
+                                      setFieldValue(
+                                        `days[${index}].slots[${slotIndex}].location`,
+                                        item || { id: null, name: '', mode: '' } // Ensure it defaults to an object
+                                      )
+                                    }
                                   >
-                                    {locations.data.map((item, key) => (
-                                      <Dropdown.Item
-                                        key={key}
-                                        onClick={() =>
-                                          setFieldValue(
-                                            `days[${index}].slots[${slotIndex}].location`,
-                                            item,
-                                          )
-                                        }
-                                      >
-                                        {item.name}
-                                      </Dropdown.Item>
-                                    ))}
-                                  </DropdownButton>
+                                    {item.name}
+                                  </Dropdown.Item>
+                                ))}
+                              </DropdownButton>
 
-                                  <DropdownButton
-                                    id={`dropdown-location-${index}-${slotIndex}`}
-                                    title={slot.location.mode || 'mode'}
-                                    variant='outline-secondary'
-                                    className='ms-3'
+                              <DropdownButton
+                                id={`dropdown-location-${index}-${slotIndex}`}
+                                title={slot.location?.mode || 'mode'}
+                                variant='outline-secondary'
+                                className='ms-3'
+                              >
+                                {locations.data.map((item, key) => (
+                                  <Dropdown.Item
+                                    key={key}
+                                    onClick={() =>
+                                      setFieldValue(
+                                        `days[${index}].slots[${slotIndex}].location.mode`,
+                                        item.mode,
+                                      )
+                                    }
                                   >
-                                    {locations.data.map((item, key) => (
-                                      <Dropdown.Item
-                                        key={key}
-                                        onClick={() =>
-                                          setFieldValue(
-                                            `days[${index}].slots[${slotIndex}].location.mode`,
-                                            item.mode,
-                                          )
-                                        }
-                                      >
-                                        {item.mode}
-                                      </Dropdown.Item>
-                                    ))}
-                                  </DropdownButton>
+                                    {item.mode}
+                                  </Dropdown.Item>
+                                ))}
+                              </DropdownButton>
 
-                                  {day.slots.length - 1 === slotIndex && (
-                                    <>
-                                      <Button
-                                        variant='outline-primary btn-icon btn-sm'
-                                        onClick={() =>
-                                          slotHelpers.insert(slotIndex + 1, {
-                                            start_time: '',
-                                            end_time: '',
-                                            location: '',
-                                            mode: '',
-                                          })
-                                        }
-                                        className='ms-2 p-0'
-                                      >
-                                        <BsPlus />
-                                      </Button>
-                                      {slotIndex > 0 && (
-                                        <Button
-                                          variant='outline-danger btn-icon btn-sm'
-                                          onClick={() => slotHelpers.remove(slotIndex)}
-                                          className='ms-2 p-0'
-                                        >
-                                          <BsFillTrashFill />
-                                        </Button>
-                                      )}
-                                    </>
+                              {day.slots.length - 1 === slotIndex && (
+                                <>
+                                  <Button
+                                    variant='outline-primary btn-icon btn-sm'
+                                    onClick={() =>
+                                      slotHelpers.insert(slotIndex + 1, {
+                                        start_time: '',
+                                        end_time: '',
+                                        location: '',
+                                        mode: '',
+                                      })
+                                    }
+                                    className='ms-2 p-0'
+                                  >
+                                    <BsPlus />
+                                  </Button>
+                                  {slotIndex > 0 && (
+                                    <Button
+                                      variant='outline-danger btn-icon btn-sm'
+                                      onClick={() => slotHelpers.remove(slotIndex)}
+                                      className='ms-2 p-0'
+                                    >
+                                      <BsFillTrashFill />
+                                    </Button>
                                   )}
-                                  <ErrorMessage
-                                    name={`days[${index}].slots[${slotIndex}].start_time`}
-                                    component='div'
-                                    className='text-danger'
-                                  />
-                                  <ErrorMessage
-                                    name={`days[${index}].slots[${slotIndex}].end_time`}
-                                    component='div'
-                                    className='text-danger'
-                                  />
-                                  <ErrorMessage
-                                    name={`days[${index}].slots[${slotIndex}].location`}
-                                    component='div'
-                                    className='text-danger'
-                                  />
-                                </div>
-                              );
-                            })
-                          }
-                        />
-                      </div>
-                    ))}
+                                </>
+                              )}
+                              <ErrorMessage
+                                name={`days[${index}].slots[${slotIndex}].start_time`}
+                                component='div'
+                                className='text-danger'
+                              />
+                              <ErrorMessage
+                                name={`days[${index}].slots[${slotIndex}].end_time`}
+                                component='div'
+                                className='text-danger'
+                              />
+                              <ErrorMessage
+                                name={`days[${index}].slots[${slotIndex}].location`}
+                                component='div'
+                                className='text-danger'
+                              />
+                            </div>
+                          );
+                        })
+                        }
+                      />
+                    </div>
+                  ))}
                 </>
               )}
               {submissionError && (
@@ -365,7 +395,7 @@ const AvailabilityModal = ({ showModal, handleClose }) => {
               <Button
                 variant='primary'
                 type='submit'
-                // disabled={isSubmitting || isLoading}
+              // disabled={isSubmitting || isLoading}
               >
                 {isLoading ? 'Saving...' : 'Send Availability'}
               </Button>

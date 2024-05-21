@@ -9,9 +9,8 @@ import axios from "axios";
 import { Provider } from 'react-redux';
 import { store } from "./store";
 
-// axios.defaults.baseURL = "http://frontend-alb-429183472.eu-west-2.elb.amazonaws.com/";
+// axios.defaults.baseURL="http://ALB-716538553.eu-west-2.elb.amazonaws.com/";
 axios.defaults.baseURL = 'http://127.0.0.1:8000/';
-
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

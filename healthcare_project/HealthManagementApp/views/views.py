@@ -680,7 +680,6 @@ def update_weekly_availability(request, pk):
     if serializer.is_valid():
         serializer.save()
 
-        # Send a WebSocket message to the doctor's channel group
         channel_layer = get_channel_layer()
         group_name = f'doctor_{weekly_availability.doctor_id}'
         message = {

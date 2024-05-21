@@ -8,7 +8,7 @@ const MyRecords = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const patientId = localStorage.getItem('id');
+        const patientId = localStorage.getItem('patient_id');
         const token = localStorage.getItem('token');
 
         const config = {

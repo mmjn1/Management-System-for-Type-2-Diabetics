@@ -52,6 +52,10 @@ npm-debug.log
 yarn-error.log
 
 
+# env
+.env
+
+
 
 # Virtual Environment
 health_env
@@ -73,7 +77,8 @@ ehthumbs.db
 Thumbs.db
 
 # Jazzmin
-static/
+staticfiles/
+
 
 # dependencies
 /node_modules

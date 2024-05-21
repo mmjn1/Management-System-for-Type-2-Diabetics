@@ -1,24 +1,23 @@
 #!/bin/bash
 
-# Exit script in case of error
-set -e
+set -e  # Exit on error
 
-# Apply database migrations
 echo "Applying database migrations..."
 python manage.py migrate --noinput
 
-# Collect static files
 echo "Collecting static files..."
 python manage.py collectstatic --noinput --clear
 
-# Check if celery command is passed
-if [[ "$1" == "celery" ]]; then
-    # Shift command line arguments left
-    shift 1
-    # Execute the celery command with the passed arguments
-    exec celery -A healthcare_project "$@"
+echo "Installed Python packages:"
+pip freeze
+echo "Current PATH: $PATH"
+
+if [ "$SERVICE" == "worker" ]; then
+    exec celery -A healthcare_project worker -l info
+elif [ "$SERVICE" == "beat" ]; then
+    exec celery -A healthcare_project beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+elif [ "$SERVICE" == "asgi" ]; then
+    exec daphne -b 0.0.0.0 -p 8000 healthcare_project.asgi:application
 else
-    # Start command passed to the script. For example:
-    # if passed "gunicorn", it starts Gunicorn; if passed "daphne", it starts Daphne
-    exec "$@"
+    exec gunicorn --bind 0.0.0.0:8000 healthcare_project.wsgi:application
 fi

@@ -4,6 +4,23 @@ from celery import Celery
 from django.conf import settings
 from celery.schedules import crontab
 
+"""
+This module configures Celery for the healthcare_project, setting up asynchronous task management
+and scheduled tasks using Celery Beat. It integrates Celery with Django's settings and schedules
+specific tasks to run at defined intervals.
+
+Celery is used here to handle background tasks asynchronously, 
+so the web server can remain responsive to user requests while performing 
+time-consuming operations in the background
+
+Key Components:
+- Celery instance initialization with Django settings integration.
+- Timezone configuration for task scheduling.
+- Definition of periodic tasks using Celery Beat for automated execution.
+- Automatic discovery of task modules in Django applications.
+- Example of a simple Celery task for debugging purposes.
+"""
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'healthcare_project.settings')
 
 app = Celery('django_celery_project') # This instance will be used to define tasks and configure the Celery worker.
@@ -33,19 +50,3 @@ def debug_task(self):
     print(f'Request: {self.request!r}')
 
 
-"""
-This module configures Celery for the healthcare_project, setting up asynchronous task management
-and scheduled tasks using Celery Beat. It integrates Celery with Django's settings and schedules
-specific tasks to run at defined intervals.
-
-Celery is used here to handle background tasks asynchronously, 
-so the web server can remain responsive to user requests while performing 
-time-consuming operations in the background
-
-Key Components:
-- Celery instance initialization with Django settings integration.
-- Timezone configuration for task scheduling.
-- Definition of periodic tasks using Celery Beat for automated execution.
-- Automatic discovery of task modules in Django applications.
-- Example of a simple Celery task for debugging purposes.
-"""

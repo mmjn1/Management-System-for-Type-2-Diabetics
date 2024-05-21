@@ -141,7 +141,12 @@ const CreateForm = () => {
 
 
   const handleSubmit = (values) => {
-    const doctorId = localStorage.getItem('id');
+    const doctorId = localStorage.getItem('doctor_id');
+
+    if (!doctorId) {
+      toast.error('Doctor ID is not set. Please log in again.');
+      return;
+    }
 
 
     const formattedSections = values.sections.map(section => ({

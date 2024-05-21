@@ -26,5 +26,7 @@ EXPOSE 8000
 # Use the entrypoint script to configure the container
 ENTRYPOINT ["/app/entrypoint.sh"]
 
-# Start Gunicorn for the Django project
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "healthcare_project.wsgi:application"]
+# Remove the specific CMD for Gunicorn
+# This allows external configuration (e.g., ECS task definitions) to dictate the service to start
+# CMD ["gunicorn", "--bind", "0.0.0.0:8000", "healthcare_project.wsgi:application"]
+CMD []

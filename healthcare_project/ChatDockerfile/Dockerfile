@@ -26,7 +26,7 @@ EXPOSE 8000
 # Use the entrypoint script to configure the container
 ENTRYPOINT ["/app/entrypoint.sh"]
 
-# Start Gunicorn for the Django project
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "healthcare_project.wsgi:application"]
+# Start Daphne for the Django ASGI application
+CMD ["daphne", "-b", "0.0.0.0", "-p", "8000", "healthcare_project.asgi:application"]
 
 

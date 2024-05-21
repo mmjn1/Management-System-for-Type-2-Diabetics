@@ -10,6 +10,8 @@ from .models.doctor_availability import *
 from .models.patient_appointment import *
 from .models.doctor_appointment import *
 from django.contrib import admin
+from django.contrib.auth.forms import UserChangeForm, UserCreationForm
+
 
 
 class DrugsInline(admin.TabularInline):
@@ -133,15 +135,34 @@ class FieldResponseAdmin(admin.ModelAdmin):
         return False
 
 
-class CustomUserAdmin(UserAdmin):
-    list_display = ('email', 'first_name', 'last_name', 'is_staff', 'is_active', 'role')
-    ordering = ('email',)  
+class CustomUserChangeForm(UserChangeForm):
+    class Meta(UserChangeForm.Meta):
+        model = CustomUser  # Assuming your user model is named CustomUser
+        fields = ('email', 'first_name', 'last_name', 'role')  # Add all necessary fields
 
+class CustomUserCreationForm(UserCreationForm):
+    class Meta(UserCreationForm.Meta):
+        model = CustomUser
+        fields = ('email',)  # Add fields that are required during creation
+
+class CustomUserAdmin(UserAdmin):
+    form = CustomUserChangeForm
+    add_form = CustomUserCreationForm
+    list_display = ('email', 'first_name', 'last_name', 'is_staff', 'is_active', 'role')
+    ordering = ('email',)
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        ('Personal info', {'fields': ('first_name', 'last_name', 'role')}),  
+        ('Personal info', {'fields': ('first_name', 'last_name', 'role')}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
     )
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('email', 'password1', 'password2'),
+        }),
+    )
+    search_fields = ('email', 'first_name', 'last_name')
+    ordering = ('email',)
     
     
 @admin.register(SupportInquiry)
