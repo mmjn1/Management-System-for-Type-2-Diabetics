@@ -316,92 +316,6 @@ const Prescription = () => {
   };
 
   /**
-   * Adds a new empty vital entry to the vitals state.
-   * This function is used to dynamically add a new vital with default empty values.
-   */
-  const handleAddVitals = () => {
-    setVitals([...vitalsobject, { name: '', reading: '' }]);
-  };
-
-  /**
-   * Updates the value of a specific vital entry in the vitals state.
-   * @param {number} index - The index of the vital in the vitals array to update.
-   * @param {object} event - The event object containing the new value for the vital.
-   * This function is triggered by input field changes, updating the state with the new value.
-   */
-  const handleInputChange = (index, event) => {
-    const newVitals = [...vitalsobject];
-    newVitals[index][event.target.name] = event.target.value;
-    setVitals(newVitals);
-  };
-
-  /**
-   * Removes a specific vital entry from the vitals state.
-   * @param {number} index - The index of the vital in the vitals array to remove.
-   * This function is used to dynamically remove a selected vital from the state.
-   */
-  const handleRemoveVital = (index) => {
-    setVitals(vitalsobject.filter((_, i) => i !== index));
-  };
-
-  /**
-   * Adds a new empty diagnosis entry to the diagnoses state.
-   * This function is used to dynamically add a new diagnosis with a default empty name.
-   */
-  const handleAddDiagnoses = () => {
-    setDiagnoses([...Diagnoses, { name: '' }]);
-  };
-
-  /**
-   * Updates the value of a specific diagnosis entry in the diagnoses state.
-   * @param {number} index - The index of the diagnosis in the diagnoses array to update.
-   * @param {object} event - The event object containing the new value for the diagnosis.
-   * This function is triggered by input field changes, updating the state with the new value.
-   */
-  const handleInputDiagnosesChange = (index, event) => {
-    const newDiagonses = [...Diagnoses];
-    newDiagonses[index][event.target.name] = event.target.value;
-    setDiagnoses(newDiagonses);
-  };
-
-  /**
-   * Removes a specific diagnosis entry from the diagnoses state.
-   * @param {number} index - The index of the diagnosis in the diagnoses array to remove.
-   * This function is used to dynamically remove a selected diagnosis from the state.
-   */
-  const handleRemoveDiagnoses = (index) => {
-    setDiagnoses(Diagnoses.filter((_, i) => i !== index));
-  };
-
-  /**
-   * Adds a new empty history entry to the history state.
-   * This function is used to dynamically add a new history record with a default empty name.
-   */
-  const handleAddHistory = () => {
-    setHistory([...History, { name: '' }]);
-  };
-
-  /**
-   * Updates the value of a specific history entry in the history state.
-   * @param {number} index - The index of the history entry in the history array to update.
-   * @param {object} event - The event object containing the new value for the history entry.
-   * This function is triggered by input field changes, updating the state with the new value.
-   */
-  const handleInputHistoryChange = (index, event) => {
-    const newHistory = [...History];
-    newHistory[index][event.target.name] = event.target.value;
-    setHistory(newHistory);
-  };
-
-  /**
-   * Removes a specific history entry from the history state by index.
-   * @param {number} index - The index of the history entry to remove.
-   */
-  const handleRemoveHistory = (index) => {
-    setHistory(History.filter((_, i) => i !== index));
-  };
-
-  /**
    * Adds a new advice to the advices state and updates the selected advices.
    * This function also resets the newAdvice state to an empty string after adding.
    */
@@ -570,9 +484,6 @@ const Prescription = () => {
     const patient = selectPatient;
     const symptoms = selectedBadges;
     const tests = selectedTests;
-    const vitals = vitalsobject;
-    const diagnoses = Diagnoses;
-    const histories = History;
     const advices = selectedAdvices;
     const followups = selectedFollowups;
     const drug = recommendedMedicines;
@@ -581,9 +492,6 @@ const Prescription = () => {
       patient,
       symptoms,
       tests,
-      vitals,
-      diagnoses,
-      histories,
       advices,
       followups,
       drug,
@@ -1105,165 +1013,8 @@ const Prescription = () => {
                                 </div>
                               </div>
                               {/*end: Tests*/}
-                              {/*start: Vitals*/}
-                              <div className='row my-4'>
-                                <div className='col-12'>
-                                  <h6 className='font-weight-boldest'>
-                                    <span>Vitals</span>
-                                    <span
-                                      onClick={handleAddVitals}
-                                      className='ml-5 svg-icon my-plus-button'
-                                      title='Add Vitals'
-                                    >
-                                      <PlusSVG />
-                                    </span>
-                                  </h6>
-                                  {vitalsobject.length === 0 ? (
-                                    <div className='MuiBox-root css-0'>
-                                      <span
-                                        className='MuiSkeleton-root MuiSkeleton-text css-gwx6oe'
-                                        style={{ width: '80%', height: '10px' }}
-                                      />
-                                      <span
-                                        className='MuiSkeleton-root MuiSkeleton-text css-gwx6oe'
-                                        style={{ width: '60%', height: '10px' }}
-                                      />
-                                    </div>
-                                  ) : (
-                                    vitalsobject.map((vital, index) => (
-                                      <div className='wrapper d-flex mb-2' key={index}>
-                                        {' '}
-                                        {/* d-flex for responsiveness */}
-                                        <input
-                                          className='form-control me-2'
-                                          type='text'
-                                          name='name'
-                                          placeholder='Name of vital'
-                                          value={vital.name}
-                                          onChange={(event) => handleInputChange(index, event)}
-                                        />
-                                        <input
-                                          className='form-control me-2'
-                                          type='text'
-                                          name='reading'
-                                          placeholder='Reading of vital'
-                                          value={vital.reading}
-                                          onChange={(event) => handleInputChange(index, event)}
-                                        />
-                                        <button
-                                          className='btn svg-icon'
-                                          onClick={() => handleRemoveVital(index)}
-                                        >
-                                          <MinusSVG />
-                                        </button>
-                                      </div>
-                                    ))
-                                  )}
-                                </div>
-                              </div>
-                              {/*end: Vitals*/}
-                              {/*start: Diagnoses*/}
-                              <div className='row my-4'>
-                                <div className='col-12'>
-                                  <h6 className='font-weight-boldest'>
-                                    <span>Diagnoses</span>
-                                    <span
-                                      onClick={handleAddDiagnoses}
-                                      className='ml-5 svg-icon my-plus-button'
-                                      title='Add Diagnoses'
-                                    >
-                                      <PlusSVG />
-                                    </span>
-                                  </h6>
-                                  {Diagnoses.length === 0 ? (
-                                    <div className='MuiBox-root css-0'>
-                                      <span
-                                        className='MuiSkeleton-root MuiSkeleton-text css-gwx6oe'
-                                        style={{ width: '80%', height: '10px' }}
-                                      />
-                                      <span
-                                        className='MuiSkeleton-root MuiSkeleton-text css-gwx6oe'
-                                        style={{ width: '60%', height: '10px' }}
-                                      />
-                                    </div>
-                                  ) : (
-                                    Diagnoses.map((dia, index) => (
-                                      <div className='wrapper d-flex mb-2' key={index}>
-                                        {' '}
-                                        {/* d-flex for responsiveness */}
-                                        <input
-                                          className='form-control me-2'
-                                          type='text'
-                                          name='name'
-                                          placeholder='Write down a dianosis here'
-                                          value={dia.name}
-                                          onChange={(event) =>
-                                            handleInputDiagnosesChange(index, event)
-                                          }
-                                        />
-                                        <button
-                                          className='btn svg-icon'
-                                          onClick={() => handleRemoveDiagnoses(index)}
-                                        >
-                                          <MinusSVG />
-                                        </button>
-                                      </div>
-                                    ))
-                                  )}
-                                </div>
-                              </div>
-                              {/*end: Diagnoses*/}
-                              {/*start: Histories*/}
-                              <div className='row my-4'>
-                                <div className='col-12'>
-                                  <h6 className='font-weight-boldest'>
-                                    <span>Histories</span>
-                                    <span
-                                      onClick={handleAddHistory}
-                                      className='ml-5 svg-icon my-plus-button'
-                                      title='Add History'
-                                    >
-                                      <PlusSVG />
-                                    </span>
-                                  </h6>
-                                  {History.length === 0 ? (
-                                    <div className='MuiBox-root css-0'>
-                                      <span
-                                        className='MuiSkeleton-root MuiSkeleton-text css-gwx6oe'
-                                        style={{ width: '80%', height: '10px' }}
-                                      />
-                                      <span
-                                        className='MuiSkeleton-root MuiSkeleton-text css-gwx6oe'
-                                        style={{ width: '60%', height: '10px' }}
-                                      />
-                                    </div>
-                                  ) : (
-                                    History.map((history, index) => (
-                                      <div className='wrapper d-flex mb-2' key={index}>
-                                        {' '}
-                                        {/* d-flex for responsiveness */}
-                                        <input
-                                          className='form-control me-2'
-                                          type='text'
-                                          name='name'
-                                          placeholder='Write down a history here'
-                                          value={history.name}
-                                          onChange={(event) =>
-                                            handleInputHistoryChange(index, event)
-                                          }
-                                        />
-                                        <button
-                                          className='btn svg-icon'
-                                          onClick={() => handleRemoveHistory(index)}
-                                        >
-                                          <MinusSVG />
-                                        </button>
-                                      </div>
-                                    ))
-                                  )}
-                                </div>
-                              </div>
-                              {/*end: Histories*/}
+                             
+                       
                             </div>
                             <div className='col-12 col-md-6 col-lg-6'>
                               {/*start: Medications*/}

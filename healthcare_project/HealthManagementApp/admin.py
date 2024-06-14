@@ -26,17 +26,6 @@ class TestsInline(admin.TabularInline):
     model = Prescription.Tests.through
     extra = 1
 
-class VitalsInline(admin.TabularInline):
-    model = Prescription.Vitals.through
-    extra = 1
-
-class DiagnosesInline(admin.TabularInline):
-    model = Prescription.Diagnoses.through
-    extra = 1
-
-class HistoriesInline(admin.TabularInline):
-    model = Prescription.Histories.through
-    extra = 1
 
 class AdvicesInline(admin.TabularInline):
     model = Prescription.Advices.through
@@ -70,17 +59,6 @@ class SymptomsAdmin(admin.ModelAdmin):
 class TestsAdmin(admin.ModelAdmin):
     list_display = ('name',)
 
-@admin.register(Vitals)
-class VitalsAdmin(admin.ModelAdmin):
-    list_display = ('name', 'reading', 'date')
-
-@admin.register(Diagnoses)
-class DiagnosesAdmin(admin.ModelAdmin):
-    list_display = ('name',)
-
-@admin.register(Histories)
-class HistoriesAdmin(admin.ModelAdmin):
-    list_display = ('name',)
 
 @admin.register(Advices)
 class AdvicesAdmin(admin.ModelAdmin):
@@ -96,7 +74,7 @@ class PrescriptionAdmin(admin.ModelAdmin):
     list_filter = ('prescribing_doctor', 'prescription_approved', 'start_date')
     search_fields = ('patient__user__first_name', 'patient__user__last_name', 'prescribing_doctor__user__first_name', 'prescribing_doctor__user__last_name')
     inlines = [
-        DrugsInline, SymptomsInline, TestsInline, VitalsInline, DiagnosesInline, HistoriesInline, AdvicesInline, FollowUpsInline
+        DrugsInline, SymptomsInline, TestsInline, AdvicesInline, FollowUpsInline
     ]
     readonly_fields = ('updated_at',)
 

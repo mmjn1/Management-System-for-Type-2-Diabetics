@@ -97,9 +97,6 @@ const FollowupModal = ({ item, show, onHide }) => {
   );
   const [activeAdviceTab, setActiveAdviceTab] = useState('add');
   const [activeFollowupTab, setActiveFollowupTab] = useState('add');
-  const [existingVitals, setExistingVitals] = useState(item.Vitals);
-  const [Diagnoses, setDiagnoses] = useState(item.Diagnoses);
-  const [History, setHistory] = useState(item.Histories);
   const [newAdvice, setNewAdvice] = useState('');
   const [newFollowup, setNewFollowup] = useState('');
   const [selectedAdvices, setSelectedAdvices] = useState(item.Advices);
@@ -247,47 +244,8 @@ const FollowupModal = ({ item, show, onHide }) => {
     ...TestBadges.filter((item) => !existingTests.some((exItem) => exItem.id === item.id)),
   ];
 
-  const handleAddVitals = () => {
-    setExistingVitals([...existingVitals, { name: '', reading: '' }]);
-  };
-  const handleInputChange = (index, event) => {
-    setExistingVitals((prevVitals) =>
-      prevVitals.map((vital, i) =>
-        i === index ? { ...vital, [event.target.name]: event.target.value } : vital,
-      ),
-    );
-  };
-  const handleRemoveVital = (index) => {
-    setExistingVitals(existingVitals.filter((_, i) => i !== index));
-  };
 
-  const handleAddDiagnoses = () => {
-    setDiagnoses([...Diagnoses, { name: '' }]);
-  };
-  const handleInputDiagnosesChange = (index, event) => {
-    setDiagnoses((prevVitals) =>
-      prevVitals.map((vital, i) =>
-        i === index ? { ...vital, [event.target.name]: event.target.value } : vital,
-      ),
-    );
-  };
-  const handleRemoveDiagnoses = (index) => {
-    setDiagnoses(Diagnoses.filter((_, i) => i !== index));
-  };
 
-  const handleAddHistory = () => {
-    setHistory([...History, { name: '' }]);
-  };
-  const handleInputHistoryChange = (index, event) => {
-    setHistory((prevVitals) =>
-      prevVitals.map((vital, i) =>
-        i === index ? { ...vital, [event.target.name]: event.target.value } : vital,
-      ),
-    );
-  };
-  const handleRemoveHistory = (index) => {
-    setHistory(History.filter((_, i) => i !== index));
-  };
 
   const handleSelectedAdviceChange = (e) => {
     setSelectedAdviceToRemove(e.target.value);
@@ -479,9 +437,6 @@ const FollowupModal = ({ item, show, onHide }) => {
   const Submit = () => {
     const symptoms = selectedBadges;
     const tests = TestBadges;
-    const vitals = existingVitals;
-    const diagnoses = Diagnoses;
-    const histories = History;
     const drug = recommendedMedicines;
     const advices = selectedAdvices;
     const followups = selectedFollowups;
@@ -492,9 +447,6 @@ const FollowupModal = ({ item, show, onHide }) => {
       patient,
       symptoms,
       tests,
-      vitals,
-      diagnoses,
-      histories,
       advices,
       followups,
       drug,
@@ -903,158 +855,7 @@ const FollowupModal = ({ item, show, onHide }) => {
                   </div>
                 </div>
                 {/*end: Tests*/}
-                {/*start: Vitals*/}
-                <div className='row my-4'>
-                  <div className='col-12'>
-                    <h6 className='font-weight-boldest'>
-                      <span>Vitals</span>
-                      <span
-                        onClick={handleAddVitals}
-                        className='ml-5 svg-icon my-plus-button'
-                        title='Add Vitals'
-                      >
-                        <PlusSVG />
-                      </span>
-                    </h6>
-                    {existingVitals.length === 0 ? (
-                      <div className='MuiBox-root css-0'>
-                        <span
-                          className='MuiSkeleton-root MuiSkeleton-text css-gwx6oe'
-                          style={{ width: '80%', height: '10px' }}
-                        />
-                        <span
-                          className='MuiSkeleton-root MuiSkeleton-text css-gwx6oe'
-                          style={{ width: '60%', height: '10px' }}
-                        />
-                      </div>
-                    ) : (
-                      existingVitals.map((vital, index) => (
-                        <div className='wrapper d-flex mb-2' key={index}>
-                          {' '}
-                          {/* d-flex for responsiveness */}
-                          <input
-                            className='form-control me-2'
-                            type='text'
-                            name='name'
-                            placeholder='Name of vital'
-                            value={vital.name}
-                            onChange={(event) => handleInputChange(index, event)}
-                          />
-                          <input
-                            className='form-control me-2'
-                            type='text'
-                            name='reading'
-                            placeholder='Reading of vital'
-                            value={vital.reading}
-                            onChange={(event) => handleInputChange(index, event)}
-                          />
-                          <button className='btn svg-icon' onClick={() => handleRemoveVital(index)}>
-                            <MinusSVG />
-                          </button>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-                {/*end: Vitals*/}
-                {/*start: Diagnoses*/}
-                <div className='row my-4'>
-                  <div className='col-12'>
-                    <h6 className='font-weight-boldest'>
-                      <span>Diagnoses</span>
-                      <span
-                        onClick={handleAddDiagnoses}
-                        className='ml-5 svg-icon my-plus-button'
-                        title='Add Diagnoses'
-                      >
-                        <PlusSVG />
-                      </span>
-                    </h6>
-                    {Diagnoses.length === 0 ? (
-                      <div className='MuiBox-root css-0'>
-                        <span
-                          className='MuiSkeleton-root MuiSkeleton-text css-gwx6oe'
-                          style={{ width: '80%', height: '10px' }}
-                        />
-                        <span
-                          className='MuiSkeleton-root MuiSkeleton-text css-gwx6oe'
-                          style={{ width: '60%', height: '10px' }}
-                        />
-                      </div>
-                    ) : (
-                      Diagnoses.map((dia, index) => (
-                        <div className='wrapper d-flex mb-2' key={index}>
-                          {' '}
-                          {/* d-flex for responsiveness */}
-                          <input
-                            className='form-control me-2'
-                            type='text'
-                            name='name'
-                            placeholder='Write down a dianosis here'
-                            value={dia.name}
-                            onChange={(event) => handleInputDiagnosesChange(index, event)}
-                          />
-                          <button
-                            className='btn svg-icon'
-                            onClick={() => handleRemoveDiagnoses(index)}
-                          >
-                            <MinusSVG />
-                          </button>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-                {/*end: Diagnoses*/}
-                {/*start: Histories*/}
-                <div className='row my-4'>
-                  <div className='col-12'>
-                    <h6 className='font-weight-boldest'>
-                      <span>Histories</span>
-                      <span
-                        onClick={handleAddHistory}
-                        className='ml-5 svg-icon my-plus-button'
-                        title='Add History'
-                      >
-                        <PlusSVG />
-                      </span>
-                    </h6>
-                    {History.length === 0 ? (
-                      <div className='MuiBox-root css-0'>
-                        <span
-                          className='MuiSkeleton-root MuiSkeleton-text css-gwx6oe'
-                          style={{ width: '80%', height: '10px' }}
-                        />
-                        <span
-                          className='MuiSkeleton-root MuiSkeleton-text css-gwx6oe'
-                          style={{ width: '60%', height: '10px' }}
-                        />
-                      </div>
-                    ) : (
-                      History.map((history, index) => (
-                        <div className='wrapper d-flex mb-2' key={index}>
-                          {' '}
-                          {/* d-flex for responsiveness */}
-                          <input
-                            className='form-control me-2'
-                            type='text'
-                            name='name'
-                            placeholder='Write down a history here'
-                            value={history.name}
-                            onChange={(event) => handleInputHistoryChange(index, event)}
-                          />
-                          <button
-                            className='btn svg-icon'
-                            onClick={() => handleRemoveHistory(index)}
-                          >
-                            <MinusSVG />
-                          </button>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-                {/*end: Histories*/}
+               
               </div>
               <div className='col-12 col-md-6 col-lg-6'>
                 {/*start: Medications*/}
