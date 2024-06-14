@@ -361,23 +361,6 @@ class TestsSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class VitalsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Vitals
-        fields = '__all__'
-
-
-class DiagnosesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Diagnoses
-        fields = '__all__'
-
-
-class HistoriesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Histories
-        fields = '__all__'
-
 
 class AdvicesSerializer(serializers.ModelSerializer):
     class Meta:

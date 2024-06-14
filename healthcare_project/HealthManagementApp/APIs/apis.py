@@ -485,7 +485,7 @@ class PrescriptionCreate(APIView):
 
         This method is crucial for ensuring that all related data is accurately associated with a prescription, facilitating comprehensive management of patient care details.
         """
-        fields = ['Symptoms', 'Tests', 'Vitals', 'Diagnoses', 'Histories', 'Advices', 'FollowUps', 'Drug']
+        fields = ['Symptoms', 'Tests', 'Advices', 'FollowUps', 'Drug']
 
         for field_name in fields:
 
@@ -513,21 +513,8 @@ class PrescriptionCreate(APIView):
                             name=item['name'])  # Assuming 'name' is the only other field
                     related_manager.add(test)
 
-            elif field_name == 'Vitals':
-                for item in items:
-                    vital = related_manager.model.objects.create(name=item['name'], reading=item['reading'])
-                    related_manager.add(vital)
 
-            elif field_name == 'Diagnoses':
-                for item in items:
-                    diagnose = related_manager.model.objects.create(name=item['name'])
-                    related_manager.add(diagnose)
-
-            elif field_name == 'Histories':
-                for item in items:
-                    history = related_manager.model.objects.create(name=item['name'])
-                    related_manager.add(history)
-
+       
             elif field_name == 'Advices':
                 for item in items:
                     try:
@@ -660,27 +647,6 @@ def generate_drug_info(drugs_data):
     return drug_info
 
 
-def generate_vitals_info(vitals):
-    """
-    Generates a formatted string containing information about each vital sign in the provided list.
-
-    This function iterates over a list of vital sign objects, extracting and 
-    formatting the name, reading, and date of each vital sign into a readable string format. 
-
-    Parameters:
-    - vitals (list of Vital objects): A list of Vital objects where each object contains details of a vital sign, including its name, reading, and date.
-
-    Returns:
-    - str: A formatted string where each line contains the name, reading, and date of a vital sign, separated by a newline.
-
-    Example of usage:
-    - vitals = [Vital(name='Blood Pressure', reading='120/80', date='2023-01-01')]
-    - generate_vitals_info(vitals) returns "- Blood Pressure: 120/80 (2023-01-01)\n"
-    """
-    vitals_info = ""
-    for vital in vitals:
-        vitals_info += f"- {vital.name}: {vital.reading} ({vital.date})\n"
-    return vitals_info
 
 
 @api_view(['POST'])
@@ -696,7 +662,7 @@ def send_prescription(request):
     Workflow:
     1. Validate the presence of 'primaryEmail' and 'prescription' in the request data.
     2. Retrieve the prescription from the database using the provided 'prescription_id'.
-    3. Collect related data such as drugs, tests, symptoms, diagnoses, histories, advices, follow-ups, and vitals linked to the prescription.
+    3. Collect related data such as drugs, tests, symptoms, advices, follow-ups, and linked to the prescription.
     4. Format the collected data for email presentation, including converting dosage information into a readable format.
     5. Prepare and send an HTML formatted email to the primary and optional secondary email addresses.
 
@@ -743,11 +709,6 @@ def send_prescription(request):
     symptoms = prescription.Symptoms.all()
     symptoms_data = [symptom.name for symptom in symptoms]
 
-    diagnoses = prescription.Diagnoses.all()
-    diagnoses_data = [item.name for item in diagnoses]
-
-    history = prescription.Histories.all()
-    history_data = [item.name for item in history]
 
     advice = prescription.Advices.all()
     advice_data = [item.name for item in advice]
@@ -755,7 +716,6 @@ def send_prescription(request):
     followups = prescription.FollowUps.all()
     followup_data = [followup.name for followup in followups]
 
-    vitals = prescription.Vitals.all()
     recipient_list = [primary_email]
 
     subject, from_email = f'Prescription of {first_name} {last_name} ', EMAIL_HOST_USER
@@ -768,10 +728,7 @@ def send_prescription(request):
         'last_name': last_name,
         'symptoms_data': symptoms_data,
         'test_data': test_data,
-        'vitals': vitals,
         'drugs_data': drugs_data,
-        'diagnoses_data': diagnoses_data,
-        'history_data': history_data,
         'advice_data': advice_data,
         'followup_data': followup_data,
         'date': date
@@ -827,9 +784,6 @@ class PrescriptionData(APIView):
         if serializer.is_valid():
             symptoms = request.data.get("symptoms")
             test = request.data.get("tests")
-            vitals = request.data.get("vitals")
-            diagnoses = request.data.get("diagnoses")
-            histories = request.data.get("histories")
             advices = request.data.get("advices")
             followups = request.data.get("followups")
             drug = request.data.get("drug")
@@ -837,9 +791,6 @@ class PrescriptionData(APIView):
             snippet.Symptoms.clear()
             snippet.Drug.clear()
             snippet.Tests.clear()
-            snippet.Vitals.clear()
-            snippet.Diagnoses.clear()
-            snippet.Histories.clear()
             snippet.Advices.clear()
             snippet.FollowUps.clear()
 
@@ -851,29 +802,6 @@ class PrescriptionData(APIView):
                 test, _ = Tests.objects.get_or_create(name=test_data['name'])
                 snippet.Tests.add(test)
 
-            for vitals_data in vitals:
-                try:
-                    Vitals.objects.filter(id=vitals_data.get("id")).delete()
-                except Exception as e:
-                    print(e)
-                item = Vitals.objects.create(name=vitals_data.get('name'), reading=vitals_data.get('reading'))
-                snippet.Vitals.add(item)
-
-            for diagnoses_data in diagnoses:
-                try:
-                    Diagnoses.objects.filter(id=diagnoses_data.get("id")).delete()
-                except Exception as e:
-                    print(e)
-                item = Diagnoses.objects.create(name=diagnoses_data.get('name'))
-                snippet.Diagnoses.add(item)
-
-            for history_data in histories:
-                try:
-                    Histories.objects.filter(id=history_data.get("id")).delete()
-                except Exception as e:
-                    print(e)
-                item = Histories.objects.create(name=history_data.get('name'))
-                snippet.Histories.add(item)
 
             for advices_data in advices:
                 item = None
@@ -1060,121 +988,6 @@ class TestsData(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = TestsSerializer
 
 
-class VitalsCreate(APIView):
-    serializer_class = VitalsSerializer
-
-    def get_queryset(self):
-        # Returns all Tests records from the database.
-        return Vitals.objects.all()
-
-    def get(self, request, format=None):
-        data = Vitals.objects.all()
-        serializer = VitalsSerializer(data, many=True)
-        return Response(serializer.data)
-
-    def post(self, request, format=None):
-        serializer = VitalsSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class VitalsData(generics.RetrieveUpdateDestroyAPIView):
-    def get_queryset(self):
-        return Vitals.objects.filter(id=self.kwargs['pk'])
-
-    serializer_class = VitalsSerializer
-
-
-class DiagnosesCreate(APIView):
-    """
-    API view to handle the creation and retrieval of Diagnoses records.
-
-    Methods:
-    - get_queryset: Returns a queryset of all Diagnoses records.
-    - get: Retrieves all Diagnoses records and returns them in a serialized format, useful for viewing a comprehensive list of diagnoses.
-    - post: Creates a new Diagnoses record from the provided data if it is valid, otherwise returns errors. This method is crucial for adding new diagnoses to the system, enhancing the database as medical knowledge expands or as new cases are encountered.
-
-    This view is essential for managing the diagnoses inventory, allowing both viewing the entire list and adding new entries to the system.
-    """
-    serializer_class = DiagnosesSerializer
-
-    def get_queryset(self):
-        return Diagnoses.objects.all()
-
-    def get(self, request, format=None):
-        data = Diagnoses.objects.all()
-        serializer = DiagnosesSerializer(data, many=True)
-        return Response(serializer.data)
-
-    def post(self, request, format=None):
-        serializer = PrescriptionSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class DiagnosesData(generics.RetrieveUpdateDestroyAPIView):
-    """
-    API view to handle retrieval, updating, and deletion of a specific Diagnoses record identified by its primary key.
-
-    This view extends Django's generic RetrieveUpdateDestroyAPIView to provide standard operations for a single Diagnoses record, facilitating detailed management of individual diagnoses entries in the database. It supports precise operations on a specific record, allowing healthcare professionals to efficiently access, modify, or remove diagnoses as required.
-
-    Methods:
-    - get_queryset: Returns the specific Diagnoses record by primary key from the database, ensuring targeted data retrieval.
-    """
-    def get_queryset(self):
-        return Diagnoses.objects.filter(id=self.kwargs['pk'])
-
-    serializer_class = DiagnosesSerializer
-
-
-class HistoriesCreate(APIView):
-    """
-    API view to handle the creation and retrieval of patient Histories records.
-
-    Methods:
-    - get_queryset: Returns a queryset of all Histories records.
-    - get: Retrieves all Histories records and returns them in a serialized format. This is useful for viewing a comprehensive list of patient histories.
-    - post: Creates a new Histories record from the provided data if it is valid, otherwise returns errors. This method is crucial for documenting new patient histories into the system, enhancing the database with detailed patient background information.
-
-    This view is essential for managing the patient histories inventory, allowing both viewing the entire list and adding new entries to the system.
-    """
-    serializer_class = HistoriesSerializer
-
-    def get_queryset(self):
-        # Returns all Histories records from the database. The method is used to fetch all patient history entries for viewing or manipulation.
-        return Histories.objects.all()
-
-    def get(self, request, format=None):
-        data = Histories.objects.all()
-        serializer = HistoriesSerializer(data, many=True)
-        return Response(serializer.data)
-
-    def post(self, request, format=None):
-        serializer = HistoriesSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class HistoriesData(generics.RetrieveUpdateDestroyAPIView):
-    """
-    API view to handle retrieval, updating, and deletion of a specific Histories record identified by its primary key.
-
-    This view extends Django's generic RetrieveUpdateDestroyAPIView to provide standard operations for a single Histories record, facilitating detailed management of individual patient history entries in the database. It supports precise operations on a specific record, allowing healthcare professionals to efficiently access, modify, or remove patient histories as required.
-
-    Methods:
-    - get_queryset: Returns the specific Histories record by primary key from the database, ensuring targeted data retrieval.
-    """
-    def get_queryset(self):
-        # Retrieves a specific Histories record by primary key, ensuring precise and efficient data handling.
-        return Histories.objects.filter(id=self.kwargs['pk'])
-
-    serializer_class = HistoriesSerializer
 
 
 class AdvicesCreate(APIView):

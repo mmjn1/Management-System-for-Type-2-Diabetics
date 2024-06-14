@@ -92,15 +92,7 @@ urlpatterns = [
     path('Tests/', TestsCreate.as_view(), name='Create Tests'),
     path('Tests/<int:pk>/', TestsData.as_view(), name='Update Tests'),
 
-    path('Vitals/', VitalsCreate.as_view(), name='Create Vitals'),
-    path('Vitals/<int:pk>/', VitalsData.as_view(), name='update Vitals'),
-
-    path('Diagnoses/', DiagnosesCreate.as_view(), name='Create Diagnoses'),
-    path('Diagnoses/<int:pk>/', DiagnosesData.as_view(), name='Update Diagnoses'),
-
-    path('Histories/', HistoriesCreate.as_view(), name='Create Histories'),
-    path('Histories/<int:pk>/', HistoriesData.as_view(), name='Update Histories'),
-
+   
     path('Advices/', AdvicesCreate.as_view(), name='Create Advices'),
     path('Advices/<int:pk>/', AdvicesData.as_view(), name='Update Advices'),
 

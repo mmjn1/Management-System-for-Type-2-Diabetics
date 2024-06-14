@@ -72,44 +72,6 @@ class Tests(models.Model):
         return f'{self.name}'
 
 
-class Vitals(models.Model):
-    """
-    Represents vital signs measurements recorded during patient visits.
-    Attributes:
-        name (models.CharField): The type of vital sign measured.
-        reading (models.CharField): The recorded value of the vital sign.
-        date (models.DateField): The date when the measurement was taken.
-    """
-    name = models.CharField(max_length=200, null=True, blank=True)
-    reading = models.CharField(max_length=200, null=True, blank=True)
-    date = models.DateField(auto_created=True, auto_now_add=True)
-
-    def __str__(self):
-        return f'{self.name}: {self.reading} - {self.date}'
-
-
-class Diagnoses(models.Model):
-    """
-    Represents medical diagnoses made based on patient symptoms, tests, and other assessments.
-    Attributes:
-        name (models.TextField): Detailed description of the diagnosis.
-    """
-    name = models.TextField(null=True, blank=True, max_length=500)
-
-    def __str__(self):
-        return str(self.name)
-
-
-class Histories(models.Model):
-    """
-    Represents historical medical information about the patient, including past conditions and treatments.
-    Attributes:
-        name (models.TextField): Detailed description of the patient's medical history.
-    """
-    name = models.TextField(null=True, blank=True, max_length=500)
-
-    def __str__(self):
-        return str(self.name)
 
 
 class Advices(models.Model):
@@ -146,9 +108,6 @@ class Prescription(models.Model):
     Drug = models.ManyToManyField(Drugs, blank=True)
     Symptoms = models.ManyToManyField(Symptoms, blank=True)
     Tests = models.ManyToManyField(Tests, blank=True)
-    Vitals = models.ManyToManyField(Vitals, blank=True)
-    Diagnoses = models.ManyToManyField(Diagnoses, blank=True)
-    Histories = models.ManyToManyField(Histories, blank=True)
     Advices = models.ManyToManyField(Advices, blank=True)
     FollowUps = models.ManyToManyField(FollowUps, blank=True)
 
