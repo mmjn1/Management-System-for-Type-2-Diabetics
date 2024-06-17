@@ -153,7 +153,7 @@ export const PrescriptionSlice = createSlice({
 
           toast.success('Refill requested...', { id: TID });
         } else {
-        
+
         }
         toast.success('Prescription Updated', { id: TID });
       })
@@ -182,21 +182,41 @@ export const PrescriptionSlice = createSlice({
         state.status = 'loading';
         TID = toast.loading('Updating...');
       })
+
       .addCase(updatePrescription.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        const PrescriptionIndex = state.Prescription.findIndex(
-          (item) => item.id === action.payload.id,
-        );
-        if (PrescriptionIndex !== -1) {
-          state.Prescription[PrescriptionIndex].is_blocked = action.payload.is_blocked;
-
-          toast.success('Updated...', { id: TID });
-        } else {
-          
+    
+        // Log the current state and action payload for debugging
+        console.log('Current state:', state);
+        console.log('Action payload:', action.payload);
+    
+        // Ensure state.Prescription is an array
+        if (!Array.isArray(state.Prescription)) {
+            // If it's a Proxy or some other type, convert it to an array
+            state.Prescription = Array.isArray(state.Prescription) ? state.Prescription : Object.values(state.Prescription);
+            console.warn('Converted state.Prescription to array:', state.Prescription);
         }
-        // state.Prescription = [...state.Prescription, action.payload]
+    
+        // Find the index of the prescription to update
+        const PrescriptionIndex = state.Prescription.findIndex(
+            (item) => item && item.id === action.payload.id
+        );
+    
+        // If the prescription is found, update it
+        if (PrescriptionIndex !== -1) {
+            state.Prescription[PrescriptionIndex].is_blocked = action.payload.is_blocked;
+            toast.success('Updated...', { id: TID });
+        } else {
+            // Handle if the Prescription is not found (might be an error condition)
+            console.error('Prescription with specified ID not found');
+        }
+    
         toast.success('Updated...', { id: TID });
-      })
+    })
+    
+    
+    
+
       .addCase(updatePrescription.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message;

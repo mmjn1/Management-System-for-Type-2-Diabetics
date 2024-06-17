@@ -804,13 +804,13 @@ const PrescriptionManagement = () => {
                       </svg>
                       <h6 className='ml-1 mt-4'>Diagnoses</h6>
                     </div>
-                    <div>
+                    {/* <div>
                       {row.Diagnoses.map((item, key) => (
                         <p key={key}>
                           {key + 1}. {item.name}
                         </p>
                       ))}
-                    </div>
+                    </div> */}
                   </div>
                   <div className=''>
                     <div className='d-flex align-items-center'>
@@ -831,13 +831,13 @@ const PrescriptionManagement = () => {
                       </svg>
                       <h6 className='ml-1 mt-4'>Histories</h6>
                     </div>
-                    <div className=''>
+                    {/* <div className=''>
                       {row.Histories.map((item, key) => (
                         <p key={key}>
                           {key + 1}. {item.name}
                         </p>
                       ))}
-                    </div>
+                    </div> */}
                   </div>
                   <div className=''>
                     <div className='d-flex align-items-center'>

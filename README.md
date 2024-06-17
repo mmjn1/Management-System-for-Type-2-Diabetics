@@ -21,7 +21,7 @@ Follow these instructions to set up the project on your local machine for develo
 
 Start by cloning the repository to your local machine using a code editor such as Visual Studio Code:
 
-    git clone https://campus.cs.le.ac.uk/gitlab/ug_project/23-24/mmjn1.git
+    git clone https://github.com/mmjn1/Management-System-for-Type-2-Diabetics.git
 
 
 ## Setting up the Backend (Django)
