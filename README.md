@@ -2,7 +2,14 @@
 
 ## Overview
 
-This project is a management application for type 2 diabetic patients who are currently diagonosed with this condition. This application will be built using Django, React, and Djoser for User Authentication.
+This project is a management application for type 2 diabetic patients who are currently diagonosed with this condition. This application will be built using Django, React, and Djoser for User Authentication. The application was containerised using Docker and deployed onto AWS Elastic Container Service (ECS), ensuring scalability and ease of management.
+
+
+## AWS Architecture
+
+Below is the architecutre diagram of the application deployed on AWS:
+
+![AWS Architecture Diagram](./images/aws_architecture.png)
 
 
 ## Users
@@ -147,9 +154,6 @@ Start the React development server:
 
 **Accessing the Application**
 - **Development Mode:** Open http://localhost:3000 in your browser to view the application.
-
-
-
 
 
     
